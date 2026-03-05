@@ -1128,13 +1128,12 @@ Solo responde con el JSON, sin texto extra.`;
     const AUTH = { 'X-Mc-Auth': MC.token };
     const QS   = `blogId=${MC.blogId}&userId=${MC.userId}&integrationSource=MCP`;
 
-    let _firstRaw = null;
+    const _errors = [];
     async function tl(network, metric, subject, extra = '') {
       const url = `${BASE}/v2/analytics/timelines?network=${network}&metric=${metric}&subject=${subject}&from=${from}&to=${to}&${QS}${extra}`;
       const r = await fetch(mcProxyUrl(url), { headers: AUTH });
       const json = await r.json().catch(() => null);
-      if (!_firstRaw) _firstRaw = { endpoint: `${network}/${metric}`, status: r.status, data: json };
-      if (!r.ok) return null;
+      if (!r.ok) { _errors.push({ e: `${network}/${metric}`, s: r.status, d: json?.detail ?? json?.title ?? json }); return null; }
       return json;
     }
 
@@ -1172,7 +1171,7 @@ Solo responde con el JSON, sin texto extra.`;
         tl('instagram', 'impressions', 'posts'),
         tl('instagram', 'likes',       'posts'),
         tl('instagram', 'comments',    'posts'),
-        tl('instagram', 'saves',       'posts'),
+        tl('instagram', 'saved',       'posts'),
         tl('instagram', 'engagement',  'posts'),
 
         tl('tiktok', 'followers_count', 'account'),
@@ -1239,7 +1238,7 @@ Solo responde con el JSON, sin texto extra.`;
         li_seguidores: last(liFollowers),
         yt_suscriptores: last(ytSubs),
       };
-      mcSetStatus('success', `✅ Sync. Debug: ${JSON.stringify(debug)} | Raw ig/followers: ${JSON.stringify(_firstRaw)?.slice(0, 400) ?? 'null'}`);
+      mcSetStatus('success', `✅ Sync. Debug: ${JSON.stringify(debug)} | Errors(${_errors.length}): ${JSON.stringify(_errors).slice(0, 500)}`);
 
     } catch (err) {
       if (err instanceof TypeError && err.message.toLowerCase().includes('fetch')) {
