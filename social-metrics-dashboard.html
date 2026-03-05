@@ -777,7 +777,8 @@ Solo responde con el JSON, sin texto extra.`;
           'Content-Type': 'application/json',
           'x-api-key': apiKey,
           'anthropic-version': '2023-06-01',
-          'anthropic-beta': 'files-api-2025-04-14'
+          'anthropic-beta': 'files-api-2025-04-14',
+          'anthropic-dangerous-direct-browser-access': 'true'
         },
         body: JSON.stringify({
           model: 'claude-opus-4-6',
