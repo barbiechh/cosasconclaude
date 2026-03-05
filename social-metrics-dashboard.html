@@ -1226,7 +1226,15 @@ Solo responde con el JSON, sin texto extra.`;
         },
       });
 
-      mcSetStatus('success', `✅ Datos sincronizados desde Metricool (${from} → ${to}).`);
+      const debug = {
+        ig_seguidores: last(igFollowers),
+        ig_alcance: sum(igReach),
+        tt_seguidores: last(ttFollowers),
+        tt_vistas: sum(ttViews),
+        li_seguidores: last(liFollowers),
+        yt_suscriptores: last(ytSubs),
+      };
+      mcSetStatus('success', `✅ Sincronizado. Datos recibidos: ${JSON.stringify(debug)}`);
 
     } catch (err) {
       if (err instanceof TypeError && err.message.toLowerCase().includes('fetch')) {
