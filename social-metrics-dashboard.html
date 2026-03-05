@@ -801,11 +801,15 @@ Solo responde con el JSON, sin texto extra.`;
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error?.message || `HTTP ${res.status}`);
+        const errBody = await res.json();
+        console.error('API error full response:', JSON.stringify(errBody, null, 2));
+        const msg = errBody.error?.message || `HTTP ${res.status}`;
+        const type = errBody.error?.type || '';
+        throw new Error(`[${res.status}] ${type}: ${msg}`);
       }
 
       const data = await res.json();
+      console.log('API success response:', JSON.stringify(data, null, 2));
       const text = data.content[0].text.trim();
 
       // Extract JSON
