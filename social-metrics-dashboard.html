@@ -1148,7 +1148,9 @@ Solo responde con el JSON, sin texto extra.`;
 
     function toArr(data) {
       if (!data) return [];
-      const raw = Array.isArray(data) ? data : (data.data ?? data.timeline ?? data.values ?? Object.values(data));
+      // v2 timelines: { data: [{ metric, values: [{dateTime, value}] }] }
+      if (data.data?.[0]?.values) return data.data[0].values.map(v => v.value ?? 0);
+      const raw = Array.isArray(data) ? data : (data.timeline ?? data.values ?? Object.values(data));
       return raw.map(item => (typeof item === 'number' ? item : (item.value ?? item.count ?? 0)));
     }
 
