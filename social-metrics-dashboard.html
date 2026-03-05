@@ -976,6 +976,16 @@ Solo responde con el JSON, sin texto extra.`;
   // ── METRICOOL INTEGRATION ─────────────────────
   const MC = { token: '', userId: '', blogId: '' };
 
+  // Convert a full Metricool URL to go through our Vercel proxy
+  function mcProxyUrl(fullUrl) {
+    const mcBase = 'https://app.metricool.com/api';
+    const rest = fullUrl.slice(mcBase.length); // e.g. /v2/settings/brands?userId=123
+    const [path, qs] = rest.split('?');
+    const params = new URLSearchParams(qs || '');
+    params.set('path', path);
+    return `/api/metricool?${params.toString()}`;
+  }
+
   (function initMc() {
     const t = localStorage.getItem('mc_token');
     if (t) { document.getElementById('mcToken').value = t; }
@@ -1057,7 +1067,7 @@ Solo responde con el JSON, sin texto extra.`;
     let brands = null;
     for (const url of tryUrls) {
       try {
-        const r = await fetch(url, { headers: AUTH });
+        const r = await fetch(mcProxyUrl(url), { headers: AUTH });
         if (r.ok) {
           const data = await r.json();
           const arr = Array.isArray(data) ? data : (data.brands ?? data.data ?? []);
@@ -1075,7 +1085,7 @@ Solo responde con el JSON, sin texto extra.`;
     // Step 3: fallback — try /admin/simpleProfiles without userId (long shot)
     if (!brands && userId) {
       try {
-        const r = await fetch(`${BASE}/admin/simpleProfiles?userId=${userId}`, { headers: AUTH });
+        const r = await fetch(mcProxyUrl(`${BASE}/admin/simpleProfiles?userId=${userId}`), { headers: AUTH });
         if (r.ok) {
           const data = await r.json();
           const arr = Array.isArray(data) ? data : (data.profiles ?? data.data ?? []);
@@ -1085,7 +1095,7 @@ Solo responde con el JSON, sin texto extra.`;
     }
 
     if (!brands || !brands.length) {
-      mcSetStatus('error', '❌ No se pudo obtener la lista de cuentas. Verifica que el token sea correcto. Si el error persiste, el API de Metricool puede estar bloqueando peticiones desde el navegador (CORS).');
+      mcSetStatus('error', '❌ No se pudo obtener la lista de cuentas. Verifica que el token sea correcto.');
       return;
     }
 
@@ -1118,14 +1128,14 @@ Solo responde con el JSON, sin texto extra.`;
 
     async function tl(network, metric, subject, extra = '') {
       const url = `${BASE}/v2/analytics/timelines?network=${network}&metric=${metric}&subject=${subject}&from=${from}&to=${to}&${QS}${extra}`;
-      const r = await fetch(url, { headers: AUTH });
+      const r = await fetch(mcProxyUrl(url), { headers: AUTH });
       if (!r.ok) return null;
       return r.json();
     }
 
     async function legacy(metric) {
       const url = `${BASE}/stats/timeline/${metric}?start=${fromLegacy}&end=${toLegacy}&${QS}`;
-      const r = await fetch(url, { headers: AUTH });
+      const r = await fetch(mcProxyUrl(url), { headers: AUTH });
       if (!r.ok) return null;
       return r.json();
     }
@@ -1220,7 +1230,7 @@ Solo responde con el JSON, sin texto extra.`;
 
     } catch (err) {
       if (err instanceof TypeError && err.message.toLowerCase().includes('fetch')) {
-        mcSetStatus('error', '❌ Error de CORS: Metricool no permite llamadas directas desde el navegador. El dashboard necesita ejecutarse desde un servidor o con un proxy CORS.');
+        mcSetStatus('error', '❌ Error de red al conectar con Metricool. Verifica tu conexión.');
       } else {
         mcSetStatus('error', '❌ Error: ' + err.message);
       }
