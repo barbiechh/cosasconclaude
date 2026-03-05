@@ -1129,21 +1129,12 @@ Solo responde con el JSON, sin texto extra.`;
     const QS   = `blogId=${MC.blogId}&userId=${MC.userId}&integrationSource=MCP`;
 
     const _errors = [];
-    let _firstOk = null;
     async function tl(network, metric, subject, extra = '') {
       const url = `${BASE}/v2/analytics/timelines?network=${network}&metric=${metric}&subject=${subject}&from=${from}&to=${to}&${QS}${extra}`;
       const r = await fetch(mcProxyUrl(url), { headers: AUTH });
       const json = await r.json().catch(() => null);
       if (!r.ok) { _errors.push({ e: `${network}/${metric}`, s: r.status, d: json?.detail ?? json?.title ?? json }); return null; }
-      if (!_firstOk) _firstOk = { e: `${network}/${metric}`, data: json };
       return json;
-    }
-
-    async function legacy(metric) {
-      const url = `${BASE}/stats/timeline/${metric}?start=${fromLegacy}&end=${toLegacy}&${QS}`;
-      const r = await fetch(mcProxyUrl(url), { headers: AUTH });
-      if (!r.ok) return null;
-      return r.json();
     }
 
     function toArr(data) {
@@ -1192,7 +1183,7 @@ Solo responde con el JSON, sin texto extra.`;
         tl('linkedin', 'comments',    'posts'),
         tl('linkedin', 'engagement',  'posts'),
 
-        legacy('yttotalSubscribers'),
+        tl('youtube', 'subscribers', 'account'),
         tl('youtube', 'views',    'videos', '&postsType=publishedInRange'),
         tl('youtube', 'likes',    'videos', '&postsType=publishedInRange'),
         tl('youtube', 'comments', 'videos', '&postsType=publishedInRange'),
@@ -1234,15 +1225,8 @@ Solo responde con el JSON, sin texto extra.`;
         },
       });
 
-      const debug = {
-        ig_seguidores: last(igFollowers),
-        ig_alcance: sum(igReach),
-        tt_seguidores: last(ttFollowers),
-        tt_vistas: sum(ttViews),
-        li_seguidores: last(liFollowers),
-        yt_suscriptores: last(ytSubs),
-      };
-      mcSetStatus('success', `✅ Sync. Debug: ${JSON.stringify(debug)} | Errors(${_errors.length}): ${JSON.stringify(_errors).slice(0, 300)} | FirstOK: ${JSON.stringify(_firstOk?.data).slice(0, 300)}`);
+      const errTxt = _errors.length ? ` | ⚠️ ${_errors.map(e => e.e).join(', ')}` : '';
+      mcSetStatus('success', `✅ Datos actualizados: ${fromDate} → ${toDate}${errTxt}`);
 
     } catch (err) {
       if (err instanceof TypeError && err.message.toLowerCase().includes('fetch')) {
