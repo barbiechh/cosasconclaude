@@ -269,20 +269,24 @@
   <h2 style="color:#00c3ff">🔗 Sincronizar con Metricool</h2>
 
   <div class="api-row" style="flex-wrap:wrap;gap:10px;margin-bottom:10px">
-    <input type="password" id="mcToken" placeholder="userToken de Metricool" style="flex:2;min-width:200px" />
-    <input type="text" id="mcUserId" placeholder="userId" style="flex:1;min-width:100px" />
-    <input type="text" id="mcBlogId" placeholder="blogId" style="flex:1;min-width:100px" />
-    <button class="btn-pdf" style="margin-top:0" onclick="saveMcKeys()">💾 Guardar</button>
+    <input type="password" id="mcToken" placeholder="Token de acceso a la API REST" style="flex:1;min-width:260px" />
+    <button class="btn-pdf" style="margin-top:0" onclick="mcConnect()">🔍 Conectar</button>
   </div>
 
-  <div class="api-row" style="gap:10px;align-items:center;flex-wrap:wrap">
-    <label style="color:var(--muted);font-size:0.85rem;white-space:nowrap">Período:</label>
-    <input type="date" id="mcFrom" style="flex:1;min-width:130px" />
-    <span style="color:var(--muted)">→</span>
-    <input type="date" id="mcTo" style="flex:1;min-width:130px" />
-    <button class="btn-analyze" id="btnSync" onclick="syncMetricool()" style="margin:0;flex:0 0 auto">
-      🔄 Sincronizar datos
-    </button>
+  <div id="mcBrandRow" style="display:none">
+    <div class="api-row" style="gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+      <label style="color:var(--muted);font-size:0.85rem;white-space:nowrap">Cuenta:</label>
+      <select id="mcBrandSelect" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 14px;color:var(--text);font-size:0.85rem"></select>
+    </div>
+    <div class="api-row" style="gap:10px;align-items:center;flex-wrap:wrap">
+      <label style="color:var(--muted);font-size:0.85rem;white-space:nowrap">Período:</label>
+      <input type="date" id="mcFrom" style="flex:1;min-width:130px" />
+      <span style="color:var(--muted)">→</span>
+      <input type="date" id="mcTo" style="flex:1;min-width:130px" />
+      <button class="btn-analyze" id="btnSync" onclick="syncMetricool()" style="margin:0;flex:0 0 auto">
+        🔄 Sincronizar datos
+      </button>
+    </div>
   </div>
 
   <div class="analysis-status" id="mcStatus"></div>
@@ -970,40 +974,132 @@ Solo responde con el JSON, sin texto extra.`;
   }
 
   // ── METRICOOL INTEGRATION ─────────────────────
+  const MC = { token: '', userId: '', blogId: '' };
+
   (function initMc() {
     const t = localStorage.getItem('mc_token');
-    const u = localStorage.getItem('mc_userId');
-    const b = localStorage.getItem('mc_blogId');
-    if (t) document.getElementById('mcToken').value = t;
-    if (u) document.getElementById('mcUserId').value = u;
-    if (b) document.getElementById('mcBlogId').value = b;
+    if (t) { document.getElementById('mcToken').value = t; }
 
     const to   = new Date();
     const from = new Date();
     from.setDate(from.getDate() - 30);
     document.getElementById('mcTo').value   = to.toISOString().slice(0, 10);
     document.getElementById('mcFrom').value = from.toISOString().slice(0, 10);
+
+    // If we have cached credentials, restore brand selector and show it
+    const u = localStorage.getItem('mc_userId');
+    const b = localStorage.getItem('mc_blogId');
+    const brands = JSON.parse(localStorage.getItem('mc_brands') || 'null');
+    if (t && u && b && brands) {
+      MC.token = t; MC.userId = u; MC.blogId = b;
+      mcPopulateBrands(brands, b);
+    }
   })();
 
-  function saveMcKeys() {
-    const t = document.getElementById('mcToken').value.trim();
-    const u = document.getElementById('mcUserId').value.trim();
-    const b = document.getElementById('mcBlogId').value.trim();
-    if (!t || !u || !b) { alert('Completa los tres campos de Metricool'); return; }
-    localStorage.setItem('mc_token',  t);
-    localStorage.setItem('mc_userId', u);
-    localStorage.setItem('mc_blogId', b);
-    const st = document.getElementById('mcStatus');
-    st.className = 'analysis-status success';
-    st.textContent = '✅ Credenciales guardadas correctamente.';
+  function mcSetStatus(type, text) {
+    const el = document.getElementById('mcStatus');
+    el.className = 'analysis-status ' + type;
+    el.textContent = text;
+  }
+
+  function mcPopulateBrands(brands, selectedBlogId) {
+    const sel = document.getElementById('mcBrandSelect');
+    sel.innerHTML = '';
+    brands.forEach(b => {
+      const opt = document.createElement('option');
+      opt.value = JSON.stringify({ blogId: b.id ?? b.blogId, userId: b.userId ?? MC.userId });
+      opt.textContent = b.name ?? b.label ?? b.id;
+      if ((b.id ?? b.blogId) == selectedBlogId) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.onchange = () => {
+      const v = JSON.parse(sel.value);
+      MC.blogId = v.blogId;
+      MC.userId = v.userId;
+      localStorage.setItem('mc_blogId', MC.blogId);
+      localStorage.setItem('mc_userId', MC.userId);
+    };
+    // Set initial selection
+    const v = JSON.parse(sel.value);
+    MC.blogId = v.blogId;
+    MC.userId = v.userId;
+    document.getElementById('mcBrandRow').style.display = 'block';
+  }
+
+  async function mcConnect() {
+    const token = document.getElementById('mcToken').value.trim();
+    if (!token) { alert('Pega tu token de Metricool primero.'); return; }
+
+    MC.token = token;
+    localStorage.setItem('mc_token', token);
+    mcSetStatus('loading', '⏳ Conectando con Metricool...');
+
+    const BASE = 'https://app.metricool.com/api';
+    const AUTH = { 'X-Mc-Auth': token };
+
+    // Step 1: try to extract userId from the token (JWT payload)
+    let userId = null;
+    try {
+      const parts = token.split('.');
+      if (parts.length === 3) {
+        const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+        userId = payload.userId ?? payload.user_id ?? payload.sub ?? payload.id ?? null;
+        if (userId) userId = String(userId);
+      }
+    } catch (_) { /* not a JWT */ }
+
+    // Step 2: try /v2/settings/brands — works with or without userId
+    const tryUrls = userId
+      ? [`${BASE}/v2/settings/brands?userId=${userId}&integrationSource=MCP`,
+         `${BASE}/v2/settings/brands?integrationSource=MCP`]
+      : [`${BASE}/v2/settings/brands?integrationSource=MCP`];
+
+    let brands = null;
+    for (const url of tryUrls) {
+      try {
+        const r = await fetch(url, { headers: AUTH });
+        if (r.ok) {
+          const data = await r.json();
+          const arr = Array.isArray(data) ? data : (data.brands ?? data.data ?? []);
+          if (arr.length) {
+            // Inject userId into each brand if available
+            brands = arr.map(b => ({ ...b, userId: b.userId ?? userId }));
+            // Extract userId from first brand if not found yet
+            if (!userId && brands[0]?.userId) userId = String(brands[0].userId);
+            break;
+          }
+        }
+      } catch (_) { /* try next */ }
+    }
+
+    // Step 3: fallback — try /admin/simpleProfiles without userId (long shot)
+    if (!brands && userId) {
+      try {
+        const r = await fetch(`${BASE}/admin/simpleProfiles?userId=${userId}`, { headers: AUTH });
+        if (r.ok) {
+          const data = await r.json();
+          const arr = Array.isArray(data) ? data : (data.profiles ?? data.data ?? []);
+          if (arr.length) brands = arr.map(b => ({ ...b, userId: b.userId ?? userId }));
+        }
+      } catch (_) { /* give up */ }
+    }
+
+    if (!brands || !brands.length) {
+      mcSetStatus('error', '❌ No se pudo obtener la lista de cuentas. Verifica que el token sea correcto. Si el error persiste, el API de Metricool puede estar bloqueando peticiones desde el navegador (CORS).');
+      return;
+    }
+
+    MC.userId = userId ?? String(brands[0].userId ?? '');
+    localStorage.setItem('mc_userId', MC.userId);
+    localStorage.setItem('mc_brands', JSON.stringify(brands));
+
+    mcPopulateBrands(brands, null);
+    mcSetStatus('success', `✅ Conectado. ${brands.length} cuenta(s) encontrada(s). Selecciona una y elige el período.`);
   }
 
   async function syncMetricool() {
-    const token  = document.getElementById('mcToken').value.trim()  || localStorage.getItem('mc_token')  || '';
-    const userId = document.getElementById('mcUserId').value.trim() || localStorage.getItem('mc_userId') || '';
-    const blogId = document.getElementById('mcBlogId').value.trim() || localStorage.getItem('mc_blogId') || '';
-    if (!token || !userId || !blogId) {
-      alert('Configura tus credenciales de Metricool primero.');
+    if (!MC.token || !MC.userId || !MC.blogId) {
+      alert('Primero conecta tu cuenta de Metricool.');
       return;
     }
 
@@ -1012,17 +1108,14 @@ Solo responde con el JSON, sin texto extra.`;
     const fromLegacy = from.replace(/-/g, '');
     const toLegacy   = to.replace(/-/g, '');
 
-    const mcStatus = document.getElementById('mcStatus');
-    const btnSync  = document.getElementById('btnSync');
-    mcStatus.className = 'analysis-status loading';
-    mcStatus.textContent = '⏳ Conectando con Metricool...';
+    const btnSync = document.getElementById('btnSync');
     btnSync.disabled = true;
+    mcSetStatus('loading', '⏳ Obteniendo métricas...');
 
     const BASE = 'https://app.metricool.com/api';
-    const AUTH = { 'X-Mc-Auth': token };
-    const QS   = `blogId=${blogId}&userId=${userId}&integrationSource=MCP`;
+    const AUTH = { 'X-Mc-Auth': MC.token };
+    const QS   = `blogId=${MC.blogId}&userId=${MC.userId}&integrationSource=MCP`;
 
-    // Fetch a v2 timeline metric
     async function tl(network, metric, subject, extra = '') {
       const url = `${BASE}/v2/analytics/timelines?network=${network}&metric=${metric}&subject=${subject}&from=${from}&to=${to}&${QS}${extra}`;
       const r = await fetch(url, { headers: AUTH });
@@ -1030,7 +1123,6 @@ Solo responde con el JSON, sin texto extra.`;
       return r.json();
     }
 
-    // Fetch a legacy /stats/timeline endpoint
     async function legacy(metric) {
       const url = `${BASE}/stats/timeline/${metric}?start=${fromLegacy}&end=${toLegacy}&${QS}`;
       const r = await fetch(url, { headers: AUTH });
@@ -1038,23 +1130,28 @@ Solo responde con el JSON, sin texto extra.`;
       return r.json();
     }
 
-    // Normalize response to a flat array of numeric values
     function toArr(data) {
       if (!data) return [];
       const raw = Array.isArray(data) ? data : (data.data ?? data.timeline ?? data.values ?? Object.values(data));
       return raw.map(item => (typeof item === 'number' ? item : (item.value ?? item.count ?? 0)));
     }
 
-    const sum  = d => toArr(d).reduce((a, b) => a + b, 0) || null;
-    const last = d => { const a = toArr(d); return a.length ? a[a.length - 1] : null; };
+    const sum    = d => toArr(d).reduce((a, b) => a + b, 0) || null;
+    const last   = d => { const a = toArr(d); return a.length ? a[a.length - 1] : null; };
     const avgPct = d => {
       const a = toArr(d).filter(v => v > 0);
       return a.length ? (a.reduce((x, y) => x + y, 0) / a.length).toFixed(2) + '%' : null;
     };
 
     try {
-      mcStatus.textContent = '⏳ Obteniendo Instagram...';
-      const [igFollowers, igReach, igImpressions, igLikes, igComments, igSaves, igEngagement] = await Promise.all([
+      mcSetStatus('loading', '⏳ Obteniendo Instagram, TikTok, LinkedIn y YouTube en paralelo...');
+
+      const [
+        igFollowers, igReach, igImpressions, igLikes, igComments, igSaves, igEngagement,
+        ttFollowers, ttViews, ttLikes, ttComments, ttShares, ttEngagement,
+        liFollowers, liImpressions, liClicks, liLikes, liComments, liEngagement,
+        ytSubs, ytViews, ytLikes, ytComments
+      ] = await Promise.all([
         tl('instagram', 'followers',   'account'),
         tl('instagram', 'reach',       'posts'),
         tl('instagram', 'impressions', 'posts'),
@@ -1062,30 +1159,21 @@ Solo responde con el JSON, sin texto extra.`;
         tl('instagram', 'comments',    'posts'),
         tl('instagram', 'saves',       'posts'),
         tl('instagram', 'engagement',  'posts'),
-      ]);
 
-      mcStatus.textContent = '⏳ Obteniendo TikTok...';
-      const [ttFollowers, ttViews, ttLikes, ttComments, ttShares, ttEngagement] = await Promise.all([
         tl('tiktok', 'followers_count', 'account'),
         tl('tiktok', 'video_views',     'account'),
         tl('tiktok', 'likes',           'account'),
         tl('tiktok', 'comments',        'account'),
         tl('tiktok', 'shares',          'account'),
         tl('tiktok', 'engagement',      'videos'),
-      ]);
 
-      mcStatus.textContent = '⏳ Obteniendo LinkedIn...';
-      const [liFollowers, liImpressions, liClicks, liLikes, liComments, liEngagement] = await Promise.all([
         tl('linkedin', 'followers',   'account'),
         tl('linkedin', 'impressions', 'posts'),
         tl('linkedin', 'clicks',      'posts'),
         tl('linkedin', 'likes',       'posts'),
         tl('linkedin', 'comments',    'posts'),
         tl('linkedin', 'engagement',  'posts'),
-      ]);
 
-      mcStatus.textContent = '⏳ Obteniendo YouTube...';
-      const [ytSubs, ytViews, ytLikes, ytComments] = await Promise.all([
         legacy('yttotalSubscribers'),
         tl('youtube', 'views',    'videos', '&postsType=publishedInRange'),
         tl('youtube', 'likes',    'videos', '&postsType=publishedInRange'),
@@ -1112,31 +1200,29 @@ Solo responde con el JSON, sin texto extra.`;
           engagement:   avgPct(ttEngagement),
         },
         linkedin: {
-          seguidores:   last(liFollowers),
-          impresiones:  sum(liImpressions),
-          alcance:      sum(liImpressions),
-          clics:        sum(liClicks),
-          reacciones:   sum(liLikes),
-          comentarios:  sum(liComments),
-          engagement:   avgPct(liEngagement),
+          seguidores:  last(liFollowers),
+          impresiones: sum(liImpressions),
+          alcance:     sum(liImpressions),
+          clics:       sum(liClicks),
+          reacciones:  sum(liLikes),
+          comentarios: sum(liComments),
+          engagement:  avgPct(liEngagement),
         },
         youtube: {
-          suscriptores:  last(ytSubs),
+          suscriptores:   last(ytSubs),
           vistas_totales: sum(ytViews),
           likes:          sum(ytLikes),
           comentarios:    sum(ytComments),
         },
       });
 
-      mcStatus.className = 'analysis-status success';
-      mcStatus.textContent = `✅ Datos sincronizados desde Metricool (${from} → ${to}).`;
+      mcSetStatus('success', `✅ Datos sincronizados desde Metricool (${from} → ${to}).`);
 
     } catch (err) {
-      mcStatus.className = 'analysis-status error';
       if (err instanceof TypeError && err.message.toLowerCase().includes('fetch')) {
-        mcStatus.textContent = '❌ Error de CORS: Metricool no permite llamadas directas desde el navegador. Prueba desde un servidor con proxy, o ejecuta el dashboard localmente con un servidor CORS habilitado.';
+        mcSetStatus('error', '❌ Error de CORS: Metricool no permite llamadas directas desde el navegador. El dashboard necesita ejecutarse desde un servidor o con un proxy CORS.');
       } else {
-        mcStatus.textContent = '❌ Error: ' + err.message;
+        mcSetStatus('error', '❌ Error: ' + err.message);
       }
     } finally {
       btnSync.disabled = false;
