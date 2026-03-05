@@ -1113,10 +1113,12 @@ Solo responde con el JSON, sin texto extra.`;
       return;
     }
 
-    const from = document.getElementById('mcFrom').value;
-    const to   = document.getElementById('mcTo').value;
-    const fromLegacy = from.replace(/-/g, '');
-    const toLegacy   = to.replace(/-/g, '');
+    const fromDate = document.getElementById('mcFrom').value;
+    const toDate   = document.getElementById('mcTo').value;
+    const from = `${fromDate}T00:00:00`;
+    const to   = `${toDate}T23:59:59`;
+    const fromLegacy = fromDate.replace(/-/g, '');
+    const toLegacy   = toDate.replace(/-/g, '');
 
     const btnSync = document.getElementById('btnSync');
     btnSync.disabled = true;
