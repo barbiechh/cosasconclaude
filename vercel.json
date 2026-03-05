@@ -1,5 +1,6 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" }
+    { "source": "/api/metricool", "destination": "/api/metricool" },
+    { "source": "/", "destination": "/social-metrics-dashboard.html" }
   ]
 }
