@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Stocks vs Cash</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Arial', sans-serif;
+      gap: 16px;
+    }
+    canvas { display: block; border-radius: 8px; }
+    .controls { display: flex; gap: 12px; }
+    button {
+      padding: 10px 24px;
+      background: #1a1a1a;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background 0.2s;
+    }
+    button:hover { background: #333; }
+    #status { color: #aaa; font-size: 13px; height: 20px; }
+  </style>
+</head>
+<body>
+  <canvas id="chart" width="400" height="700"></canvas>
+  <div class="controls">
+    <button id="playBtn">▶ Reproducir</button>
+    <button id="recordBtn">⏺ Grabar Video</button>
+  </div>
+  <div id="status"></div>
+
+  <script>
+    // S&P 500 monthly closes Jan 1993 – Dec 1998 (aproximados)
+    const sp500 = [
+      435,443,451,440,450,450,448,453,459,467,461,466, // 1993
+      472,468,445,443,451,444,456,473,465,472,453,459, // 1994
+      470,487,500,514,533,544,562,561,584,581,605,615, // 1995
+      636,640,645,654,669,670,639,651,687,705,736,741, // 1996
+      786,790,757,801,848,885,954,899,947,983,955,970, // 1997
+      980,1021,1082,1112,1091,1133,1120,957,1017,1099,1164,1229 // 1998
+    ];
+
+    const base = sp500[0];
+    const stocksData = sp500.map(v => ((v - base) / base) * 100);
+    const cashData   = sp500.map((_, i) => -13 * (i / (sp500.length - 1)));
+
+    const canvas = document.getElementById('chart');
+    const ctx    = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+
+    const margin = { top: 90, right: 70, bottom: 110, left: 65 };
+    const cW = W - margin.left - margin.right;
+    const cH = H - margin.top - margin.bottom;
+
+    const Y_MAX = 200, Y_MIN = -20;
+
+    function toX(i) { return margin.left + (i / (sp500.length - 1)) * cW; }
+    function toY(v) { return margin.top + cH - ((v - Y_MIN) / (Y_MAX - Y_MIN)) * cH; }
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    function getAtProgress(p) {
+      const idx = p * (sp500.length - 1);
+      const lo  = Math.floor(idx);
+      const hi  = Math.min(lo + 1, sp500.length - 1);
+      const t   = idx - lo;
+      return {
+        idx,
+        stocks: lerp(stocksData[lo], stocksData[hi], t),
+        cash:   lerp(cashData[lo],   cashData[hi],   t),
+        lo
+      };
+    }
+
+    function formatDate(progress) {
+      const totalMonths = (sp500.length - 1) * progress;
+      const year  = 1993 + Math.floor(totalMonths / 12);
+      const month = Math.floor(totalMonths % 12) + 1;
+      const yy    = String(year).slice(-2);
+      return `${month}/1/${yy}`;
+    }
+
+    function draw(progress) {
+      const { idx, stocks, cash } = getAtProgress(progress);
+      const n = Math.floor(idx);
+
+      ctx.fillStyle = '#080808';
+      ctx.fillRect(0, 0, W, H);
+
+      // Título
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 21px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('"Stocks Are a Scam"', W / 2, 50);
+
+      // Grid y etiquetas Y
+      [0, 50, 100, 150].forEach(tick => {
+        const y = toY(tick);
+        ctx.strokeStyle = '#1e1e1e';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(margin.left, y);
+        ctx.lineTo(margin.left + cW, y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#888';
+        ctx.font = '11px Arial';
+        ctx.textAlign = 'right';
+        ctx.fillText(`${tick}%`, margin.left - 8, y + 4);
+      });
+
+      // Etiquetas X
+      const xLabels = [
+        { label: '1/1/93', idx: 0 },
+        { label: '1/1/95', idx: 24 },
+        { label: '1/1/97', idx: 48 },
+      ];
+      xLabels.forEach(({ label, idx: xi }) => {
+        const x = toX(xi);
+        ctx.fillStyle = '#888';
+        ctx.font = '11px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(label, x, margin.top + cH + 22);
+      });
+
+      // Eje X base
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(margin.left, toY(0));
+      ctx.lineTo(margin.left + cW, toY(0));
+      ctx.stroke();
+
+      // Línea Stocks
+      ctx.save();
+      ctx.beginPath();
+      for (let i = 0; i <= n; i++) {
+        const x = toX(i);
+        const y = toY(stocksData[i]);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      // Punto parcial interpolado
+      if (idx > n && n < sp500.length - 1) {
+        ctx.lineTo(toX(idx), toY(stocks));
+      }
+      ctx.strokeStyle = '#00e87a';
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = '#00e87a';
+      ctx.shadowBlur = 8;
+      ctx.stroke();
+      ctx.restore();
+
+      // Línea Cash
+      ctx.beginPath();
+      for (let i = 0; i <= n; i++) {
+        const x = toX(i);
+        const y = toY(cashData[i]);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      if (idx > n && n < sp500.length - 1) {
+        ctx.lineTo(toX(idx), toY(cash));
+      }
+      ctx.strokeStyle = '#ff4040';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Labels en punta de líneas
+      if (progress > 0.05) {
+        const ex = toX(idx);
+
+        ctx.font = 'bold 12px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#00e87a';
+        ctx.fillText(`Stocks ${stocks.toFixed(0)}%`, ex + 6, toY(stocks) + 4);
+
+        ctx.fillStyle = '#ff4040';
+        ctx.font = '11px Arial';
+        ctx.fillText(`● Cash ${cash.toFixed(0)}%`, ex + 6, toY(cash) + 4);
+      }
+
+      // Fecha grande abajo
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${Math.round(38 + progress * 4)}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.fillText(formatDate(progress), W / 2, H - 32);
+    }
+
+    // --- Animación ---
+    const FPS      = 30;
+    const DURATION = 22; // segundos
+    const TOTAL_FRAMES = FPS * DURATION;
+
+    let frameCount = 0;
+    let rafId      = null;
+    let animating  = false;
+    let recording  = false;
+    let recorder, chunks;
+
+    function easeInOut(t) {
+      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    }
+
+    function step() {
+      if (frameCount > TOTAL_FRAMES) {
+        animating = false;
+        document.getElementById('status').textContent = '';
+        document.getElementById('playBtn').textContent = '▶ Reproducir';
+        if (recording && recorder.state !== 'inactive') recorder.stop();
+        return;
+      }
+      const rawP = frameCount / TOTAL_FRAMES;
+      const p    = easeInOut(rawP);
+      draw(p);
+      frameCount++;
+      rafId = requestAnimationFrame(step);
+    }
+
+    function startAnimation() {
+      if (rafId) cancelAnimationFrame(rafId);
+      frameCount = 0;
+      animating  = true;
+      document.getElementById('playBtn').textContent = '⏹ Detener';
+      step();
+    }
+
+    document.getElementById('playBtn').addEventListener('click', () => {
+      if (animating) {
+        cancelAnimationFrame(rafId);
+        animating = false;
+        document.getElementById('playBtn').textContent = '▶ Reproducir';
+        document.getElementById('status').textContent = '';
+      } else {
+        startAnimation();
+      }
+    });
+
+    document.getElementById('recordBtn').addEventListener('click', () => {
+      chunks    = [];
+      recording = true;
+      document.getElementById('status').textContent = '⏺ Grabando...';
+
+      const stream = canvas.captureStream(FPS);
+
+      // Intentar VP9, fallback a VP8
+      let mimeType = 'video/webm; codecs=vp9';
+      if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
+
+      recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 4_000_000 });
+
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = 'stocks-vs-cash.webm';
+        a.click();
+        URL.revokeObjectURL(url);
+        recording = false;
+        document.getElementById('status').textContent = '✅ Video descargado (stocks-vs-cash.webm)';
+      };
+
+      recorder.start();
+      startAnimation();
+    });
+
+    // Dibujo inicial
+    draw(0);
+  </script>
+</body>
+</html>
