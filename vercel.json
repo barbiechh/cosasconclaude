@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/api/metricool", "destination": "/api/metricool" },
+    { "source": "/stocks", "destination": "/stocks-vs-cash.html" },
     { "source": "/", "destination": "/social-metrics-dashboard.html" }
   ]
 }
