@@ -102,7 +102,7 @@
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 21px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText('"Stocks Are a Scam"', W / 2, 50);
+      ctx.fillText('"Las Acciones Son una Estafa"', W / 2, 50);
 
       // Grid y etiquetas Y
       [0, 50, 100, 150].forEach(tick => {
@@ -182,11 +182,11 @@
         ctx.font = 'bold 12px Arial';
         ctx.textAlign = 'left';
         ctx.fillStyle = '#00e87a';
-        ctx.fillText(`Stocks ${stocks.toFixed(0)}%`, ex + 6, toY(stocks) + 4);
+        ctx.fillText(`Acciones ${stocks.toFixed(0)}%`, ex + 6, toY(stocks) + 4);
 
         ctx.fillStyle = '#ff4040';
         ctx.font = '11px Arial';
-        ctx.fillText(`● Cash ${cash.toFixed(0)}%`, ex + 6, toY(cash) + 4);
+        ctx.fillText(`● Efectivo ${cash.toFixed(0)}%`, ex + 6, toY(cash) + 4);
       }
 
       // Fecha grande abajo
