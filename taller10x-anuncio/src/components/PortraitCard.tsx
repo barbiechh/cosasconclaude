@@ -21,10 +21,16 @@ export const PortraitCard: React.FC<{
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const translateX = interpolate(frame, [enterFrame, enterFrame + 16], [fromLeft ? -24 : 24, 0], {
+  const translateX = interpolate(frame, [enterFrame, enterFrame + 16], [fromLeft ? -50 : 50, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.bezier(0.16, 1, 0.3, 1),
+  });
+  const scale = interpolate(frame, [enterFrame, enterFrame + 10, enterFrame + 20], [0.88, 1.03, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.bezier(0.16, 1, 0.3, 1),
+    output: "perceptual-scale",
   });
 
   const isDark = background === "petroleo";
@@ -37,6 +43,7 @@ export const PortraitCard: React.FC<{
         alignItems: "center",
         opacity,
         translate: `${translateX}px 0px`,
+        scale: `${scale}`,
       }}
     >
       <div

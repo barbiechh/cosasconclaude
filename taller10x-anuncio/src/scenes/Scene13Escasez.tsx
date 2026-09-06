@@ -16,6 +16,23 @@ export const Scene13Escasez: React.FC = () => {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
+  const cardScale = interpolate(frame, [0, 16], [0.93, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.bezier(0.16, 1, 0.3, 1),
+    output: "perceptual-scale",
+  });
+  const cardY = interpolate(frame, [0, 16], [24, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.bezier(0.16, 1, 0.3, 1),
+  });
+  const pushIn = interpolate(frame, [0, 120], [1, 1.035], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.linear,
+    output: "perceptual-scale",
+  });
 
   const highlightWeightFrame = 80;
   const highlightScale = interpolate(frame, [highlightWeightFrame, highlightWeightFrame + 6, highlightWeightFrame + 14], [1, 1.12, 1], {
@@ -33,7 +50,13 @@ export const Scene13Escasez: React.FC = () => {
         alignItems: "center",
       }}
     >
-      <div style={{ opacity: cardOpacity }}>
+      <div
+        style={{
+          opacity: cardOpacity,
+          scale: `${cardScale * pushIn}`,
+          translate: `0px ${cardY}px`,
+        }}
+      >
         <Card width={1000} padding={56}>
           {ROWS.map((row, i) => {
             const dim = row.strike

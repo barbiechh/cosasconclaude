@@ -17,11 +17,24 @@ export const Scene12Acompanamiento: React.FC = () => {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-
-  const lineProgress = interpolate(frame, [55, 90], [0, 1], {
+  const titleScale = interpolate(frame, [0, 14], [0.9, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.bezier(0.16, 1, 0.3, 1),
+    output: "perceptual-scale",
+  });
+
+  const lineProgress = interpolate(frame, [55, 88], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.bezier(0.16, 1, 0.3, 1),
+  });
+
+  const stitchPunch = interpolate(frame, [88, 93, 102], [1, 1.03, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.bezier(0.16, 1, 0.3, 1),
+    output: "perceptual-scale",
   });
 
   return (
@@ -32,7 +45,15 @@ export const Scene12Acompanamiento: React.FC = () => {
         alignItems: "center",
       }}
     >
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 56 }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 56,
+          scale: `${stitchPunch}`,
+        }}
+      >
         <div
           style={{
             fontFamily,
@@ -41,6 +62,7 @@ export const Scene12Acompanamiento: React.FC = () => {
             letterSpacing: 2,
             color: COLORS.textPrimary,
             opacity: titleOpacity,
+            scale: `${titleScale}`,
           }}
         >
           45 DÍAS DE ACOMPAÑAMIENTO
