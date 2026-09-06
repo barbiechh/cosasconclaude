@@ -11,20 +11,20 @@ export const G04_NingunaFueTuya: React.FC = () => {
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 18 }}>
         <Line
           enterFrame={0}
-          fontSize={80}
+          fontSize={64}
           color={COLORS.marfil}
           weight={400}
           segments={[
             { text: "Ninguna", color: COLORS.durazno, decoration: "underline", decorationFrame: 4 },
-            { text: " fue tuya." },
+            { text: " hora fue una decisión tuya." },
           ]}
         />
         <Line
           enterFrame={70}
-          fontSize={80}
+          fontSize={64}
           color={COLORS.marfil}
           weight={400}
-          segments={[{ text: "Fue " }, { text: "formato.", color: COLORS.durazno }]}
+          segments={[{ text: "Fue el " }, { text: "formato.", color: COLORS.durazno }, { text: " No tú." }]}
         />
       </div>
 

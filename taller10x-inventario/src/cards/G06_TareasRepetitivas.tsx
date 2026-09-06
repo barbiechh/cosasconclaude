@@ -10,7 +10,7 @@ export const G06_TareasRepetitivas: React.FC = () => {
     <AbsoluteFill style={{ backgroundColor: COLORS.petroleo, justifyContent: "center", alignItems: "center" }}>
       <NodesDiagram color={COLORS.durazno} labelColor={COLORS.durazno} startFrame={10} staggerFrames={8} unravelFrame={82} />
 
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, translate: "0px -160px" }}>
         <Line enterFrame={0} fontSize={68} color={COLORS.marfil} weight={400} segments={[{ text: "Las tareas repetitivas" }]} />
         <Line
           enterFrame={78}

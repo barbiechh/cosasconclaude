@@ -1,8 +1,7 @@
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { COLORS, fontFamily } from "../theme";
 import { Line } from "../components/Line";
-import { SilhouetteIcon } from "../components/icons/SilhouetteIcon";
-import { RadiatingArrows } from "../components/icons/RadiatingArrows";
+import { DirectorHub } from "../components/icons/DirectorHub";
 
 // T14 (0-72) + T15 (72-150) — carbón. The peak of the anuncio: "dirigir."
 // alone, escala máxima, half a second of pause before it lands (per VO note).
@@ -40,13 +39,8 @@ export const G07_Dirigir: React.FC = () => {
         El trabajo nuevo:
       </div>
 
-      <div style={{ opacity: diagramOpacity, display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <div style={{ position: "relative" }}>
-          <SilhouetteIcon color={COLORS.durazno} size={220} startFrame={6} />
-          <div style={{ position: "absolute", inset: 0 }}>
-            <RadiatingArrows color={COLORS.durazno} size={220} centerX={100} centerY={110} startFrame={20} staggerFrames={4} />
-          </div>
-        </div>
+      <div style={{ opacity: diagramOpacity }}>
+        <DirectorHub color={COLORS.durazno} size={420} startFrame={10} />
       </div>
 
       <div

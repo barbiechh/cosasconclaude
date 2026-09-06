@@ -23,7 +23,7 @@ export const G18_URL: React.FC = () => {
             opacity: detailsOpacity * 0.7,
           }}
         >
-          $19,900 MXN · CDMX · 25 SEP 2026
+          CDMX · 25 SEP 2026
         </div>
       </div>
     </AbsoluteFill>

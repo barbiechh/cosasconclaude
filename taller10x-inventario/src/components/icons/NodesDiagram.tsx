@@ -4,16 +4,18 @@ import { StrokePath } from "../StrokePath";
 
 const LABELS = ["REPORTES", "CORREOS", "PROPUESTAS", "PROSPECCIÓN", "MINUTAS", "COTIZACIONES"];
 
+// Full-frame coordinates (viewBox matches the 1920x1080 canvas 1:1) kept
+// well below the headline band so the diagram never sits on top of the text.
 const POSITIONS = [
-  { x: 300, y: 80 },
-  { x: 620, y: 60 },
-  { x: 860, y: 220 },
-  { x: 780, y: 460 },
-  { x: 460, y: 480 },
-  { x: 220, y: 300 },
+  { x: 260, y: 760 },
+  { x: 620, y: 700 },
+  { x: 1020, y: 700 },
+  { x: 1380, y: 760 },
+  { x: 1550, y: 950 },
+  { x: 370, y: 950 },
 ];
 
-const CENTER = { x: 540, y: 270 };
+const CENTER = { x: 960, y: 860 };
 
 /**
  * LA_nodos: six labeled nodes connecting to a center, drawn one at a time.
@@ -29,7 +31,7 @@ export const NodesDiagram: React.FC<{
   const frame = useCurrentFrame();
 
   return (
-    <svg width="100%" height="100%" viewBox="0 0 1080 540" style={{ position: "absolute", inset: 0 }} preserveAspectRatio="xMidYMid meet">
+    <svg width="100%" height="100%" viewBox="0 0 1920 1080" style={{ position: "absolute", inset: 0 }}>
       {POSITIONS.map((pos, i) => {
         const nodeStart = startFrame + i * staggerFrames;
         const unravelProgress =
@@ -50,17 +52,17 @@ export const NodesDiagram: React.FC<{
             <StrokePath
               d={`M ${CENTER.x} ${CENTER.y} L ${pos.x + dx} ${pos.y + dy}`}
               color={color}
-              strokeWidth={1.5}
+              strokeWidth={2}
               startFrame={nodeStart}
               durationInFrames={7}
             />
-            <circle cx={pos.x + dx} cy={pos.y + dy} r={5} fill={color} />
+            <circle cx={pos.x + dx} cy={pos.y + dy} r={7} fill={color} />
             <text
               x={pos.x + dx}
-              y={pos.y + dy - 16}
+              y={pos.y + dy - 20}
               fill={labelColor}
               fontFamily={fontFamily}
-              fontSize={16}
+              fontSize={22}
               fontWeight={500}
               letterSpacing={1.5}
               textAnchor="middle"
@@ -70,7 +72,7 @@ export const NodesDiagram: React.FC<{
           </g>
         );
       })}
-      <circle cx={CENTER.x} cy={CENTER.y} r={6} fill={color} opacity={0.6} />
+      <circle cx={CENTER.x} cy={CENTER.y} r={7} fill={color} opacity={0.6} />
     </svg>
   );
 };
