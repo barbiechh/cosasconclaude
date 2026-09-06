@@ -3,22 +3,30 @@ import { COLORS, fontFamily } from "../theme";
 import { RollDownNumber } from "../components/RollDownNumber";
 import { CollapseArrow } from "../components/icons/CollapseArrow";
 
-// T22 (0-78) + T23 (78-150) — petróleo. Two proof numbers, same mechanic:
-// the label changes and the whole block re-rolls.
+const SPLIT = 56;
+
+// T22 (0-56) + T23 (56-112) — petróleo. Two proof numbers, same mechanic:
+// the label changes and the whole block re-rolls. Tightened for pace.
 export const G12_FlujosNumero: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const labelOpacityT22 = interpolate(frame, [0, 8, 70, 78], [0, 1, 1, 0], {
+  const push = interpolate(frame, [0, 112], [1, 1.03], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    output: "perceptual-scale",
+  });
+
+  const labelOpacityT22 = interpolate(frame, [0, 8, SPLIT - 8, SPLIT], [0, 1, 1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const labelOpacityT23 = interpolate(frame, [78, 86], [0, 1], {
+  const labelOpacityT23 = interpolate(frame, [SPLIT, SPLIT + 8], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   return (
-    <AbsoluteFill style={{ backgroundColor: COLORS.petroleo, justifyContent: "center", alignItems: "center" }}>
+    <AbsoluteFill style={{ backgroundColor: COLORS.petroleo, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 28 }}>
         <div style={{ position: "relative", height: 34, width: 700, textAlign: "center" }}>
           <div
@@ -52,12 +60,17 @@ export const G12_FlujosNumero: React.FC = () => {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
-          {frame < 78 ? (
-            <RollDownNumber from="4 h" to="15 min" rollFrame={14} fontSize={140} color={COLORS.durazno} />
+          {frame < SPLIT ? (
+            <RollDownNumber from="4 h" to="15 min" rollFrame={10} fontSize={140} color={COLORS.durazno} />
           ) : (
-            <RollDownNumber from="6 h" to="20 min" rollFrame={92} fontSize={140} color={COLORS.durazno} />
+            <RollDownNumber from="6 h" to="20 min" rollFrame={SPLIT + 10} fontSize={140} color={COLORS.durazno} />
           )}
-          <CollapseArrow color={COLORS.durazno} width={frame < 78 ? 220 : 150} drawFrame={frame < 78 ? 2 : 80} collapseFrame={frame < 78 ? 14 : 92} />
+          <CollapseArrow
+            color={COLORS.durazno}
+            width={frame < SPLIT ? 220 : 150}
+            drawFrame={frame < SPLIT ? 2 : SPLIT}
+            collapseFrame={frame < SPLIT ? 10 : SPLIT + 10}
+          />
         </div>
       </div>
     </AbsoluteFill>

@@ -9,29 +9,35 @@ import { Line } from "../components/Line";
 export const G03_Total: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const shrink = interpolate(frame, [46, 58], [1, 0.34], {
+  const push = interpolate(frame, [0, 95], [1, 1.03], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    output: "perceptual-scale",
+  });
+
+  const shrink = interpolate(frame, [36, 46], [1, 0.34], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
     output: "perceptual-scale",
   });
-  const riseY = interpolate(frame, [46, 58], [0, -420], {
+  const riseY = interpolate(frame, [36, 46], [0, -420], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
   });
-  const clockOpacity = interpolate(frame, [46, 58], [0.9, 0], {
+  const clockOpacity = interpolate(frame, [36, 46], [0.9, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  const blocksOpacity = interpolate(frame, [64, 72], [0, 1], {
+  const blocksOpacity = interpolate(frame, [50, 58], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   return (
-    <AbsoluteFill style={{ backgroundColor: COLORS.petroleo, justifyContent: "center", alignItems: "center" }}>
+    <AbsoluteFill style={{ backgroundColor: COLORS.petroleo, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
       <div style={{ position: "absolute", opacity: clockOpacity }}>
         <ClockIcon color={COLORS.durazno} size={620} startFrame={0} turns={7} spinDurationInFrames={44} />
       </div>
@@ -45,7 +51,7 @@ export const G03_Total: React.FC = () => {
 
       <div style={{ position: "absolute", translate: "0px 60px", display: "flex", flexDirection: "column", alignItems: "center", gap: 40 }}>
         <Line
-          enterFrame={64}
+          enterFrame={50}
           fontSize={72}
           color={COLORS.marfil}
           weight={400}
@@ -55,7 +61,7 @@ export const G03_Total: React.FC = () => {
           ]}
         />
         <div style={{ opacity: blocksOpacity }}>
-          <DayBlocks color={COLORS.durazno} width={110} startFrame={66} />
+          <DayBlocks color={COLORS.durazno} width={110} startFrame={52} />
         </div>
       </div>
     </AbsoluteFill>

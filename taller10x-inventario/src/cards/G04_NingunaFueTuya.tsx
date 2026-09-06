@@ -1,13 +1,20 @@
-import { AbsoluteFill } from "remotion";
+import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { COLORS } from "../theme";
 import { Line } from "../components/Line";
 import { ColorWipe } from "../components/ColorWipe";
 
-// T08 (0-66) + T09 (66-120) — carbón. Both lines stay on screen together;
+// T08 (0-46) + T09 (46-96) — carbón. Both lines stay on screen together;
 // the wipe (vertical, bottom to top) closes into marfil.
 export const G04_NingunaFueTuya: React.FC = () => {
+  const frame = useCurrentFrame();
+  const push = interpolate(frame, [0, 90], [1, 1.025], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    output: "perceptual-scale",
+  });
+
   return (
-    <AbsoluteFill style={{ backgroundColor: COLORS.carbon, justifyContent: "center", alignItems: "center" }}>
+    <AbsoluteFill style={{ backgroundColor: COLORS.carbon, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 18 }}>
         <Line
           enterFrame={0}
@@ -20,7 +27,7 @@ export const G04_NingunaFueTuya: React.FC = () => {
           ]}
         />
         <Line
-          enterFrame={70}
+          enterFrame={46}
           fontSize={64}
           color={COLORS.marfil}
           weight={400}
@@ -28,7 +35,7 @@ export const G04_NingunaFueTuya: React.FC = () => {
         />
       </div>
 
-      <ColorWipe toColor={COLORS.marfil} axis="y" fromEdge="end" startFrame={114} />
+      <ColorWipe toColor={COLORS.marfil} axis="y" fromEdge="end" startFrame={90} />
     </AbsoluteFill>
   );
 };

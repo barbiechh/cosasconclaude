@@ -41,6 +41,14 @@ export const Line: React.FC<{
         extrapolateRight: "clamp",
         easing: Easing.out(Easing.cubic),
       });
+  const scale = instant
+    ? 1
+    : interpolate(frame, [enterFrame, enterFrame + 9], [0.94, 1], {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+        easing: Easing.out(Easing.cubic),
+        output: "perceptual-scale",
+      });
 
   return (
     <div
@@ -51,6 +59,7 @@ export const Line: React.FC<{
         color,
         opacity,
         translate: `0px ${translateY}px`,
+        scale: `${scale}`,
         letterSpacing,
         textAlign,
         lineHeight: 1.15,

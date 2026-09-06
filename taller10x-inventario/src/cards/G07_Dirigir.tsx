@@ -8,23 +8,29 @@ import { DirectorHub } from "../components/icons/DirectorHub";
 export const G07_Dirigir: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const diagramOpacity = interpolate(frame, [72, 84], [1, 0.3], {
+  const push = interpolate(frame, [0, 95], [1, 1.03], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    output: "perceptual-scale",
+  });
+
+  const diagramOpacity = interpolate(frame, [52, 60], [1, 0.3], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  const wordOpacity = interpolate(frame, [90, 96], [0, 1], {
+  const wordOpacity = interpolate(frame, [64, 70], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const wordScale = interpolate(frame, [90, 100], [0.8, 1], {
+  const wordScale = interpolate(frame, [64, 74], [0.8, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     output: "perceptual-scale",
   });
 
   return (
-    <AbsoluteFill style={{ backgroundColor: COLORS.carbon, justifyContent: "center", alignItems: "center" }}>
+    <AbsoluteFill style={{ backgroundColor: COLORS.carbon, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
       <div
         style={{
           position: "absolute",

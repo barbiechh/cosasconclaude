@@ -8,31 +8,37 @@ import { EspacioSymbol } from "../components/icons/EspacioSymbol";
 export const G05_NoEresLento: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const shrink = interpolate(frame, [42, 54], [1, 0.4], {
+  const push = interpolate(frame, [0, 105], [1, 1.02], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    output: "perceptual-scale",
+  });
+
+  const shrink = interpolate(frame, [34, 44], [1, 0.4], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
     output: "perceptual-scale",
   });
-  const riseY = interpolate(frame, [42, 54], [0, -300], {
+  const riseY = interpolate(frame, [34, 44], [0, -300], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
   });
-  const t10Opacity = interpolate(frame, [54, 90], [1, 0], {
+  const t10Opacity = interpolate(frame, [44, 76], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  const symbolOpacity = interpolate(frame, [56, 70], [0, 0.5], {
+  const symbolOpacity = interpolate(frame, [46, 60], [0, 0.5], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   return (
-    <AbsoluteFill style={{ backgroundColor: COLORS.marfil, justifyContent: "center", alignItems: "center" }}>
+    <AbsoluteFill style={{ backgroundColor: COLORS.marfil, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
       <div style={{ opacity: symbolOpacity }}>
-        <EspacioSymbol color={COLORS.petroleo} startFrame={56} />
+        <EspacioSymbol color={COLORS.petroleo} startFrame={46} />
       </div>
 
       <div style={{ scale: `${shrink}`, translate: `0px ${riseY}px`, opacity: t10Opacity, position: "absolute" }}>
@@ -49,7 +55,7 @@ export const G05_NoEresLento: React.FC = () => {
 
       <div style={{ position: "absolute" }}>
         <Line
-          enterFrame={58}
+          enterFrame={48}
           fontSize={68}
           color={COLORS.carbon}
           weight={400}

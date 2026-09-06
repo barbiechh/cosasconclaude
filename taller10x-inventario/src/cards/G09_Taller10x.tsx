@@ -6,23 +6,28 @@ import { Line } from "../components/Line";
 export const G09_Taller10x: React.FC = () => {
   const frame = useCurrentFrame();
 
+  const push = interpolate(frame, [0, 90], [1, 1.03], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    output: "perceptual-scale",
+  });
   const labelOpacity = interpolate(frame, [0, 8], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
-  const shrink = interpolate(frame, [52, 64], [1, 0.42], {
+  const shrink = interpolate(frame, [36, 46], [1, 0.42], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
     output: "perceptual-scale",
   });
-  const riseY = interpolate(frame, [52, 64], [0, -300], {
+  const riseY = interpolate(frame, [36, 46], [0, -300], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
   });
-  const labelFade = interpolate(frame, [52, 64], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const labelFade = interpolate(frame, [36, 46], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
   return (
-    <AbsoluteFill style={{ backgroundColor: COLORS.petroleo, justifyContent: "center", alignItems: "center" }}>
+    <AbsoluteFill style={{ backgroundColor: COLORS.petroleo, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
         <div
           style={{
@@ -45,7 +50,7 @@ export const G09_Taller10x: React.FC = () => {
 
       <div style={{ position: "absolute" }}>
         <Line
-          enterFrame={68}
+          enterFrame={50}
           fontSize={76}
           color={COLORS.marfil}
           weight={400}
