@@ -3,16 +3,16 @@ import { COLORS } from "../theme";
 import { Line } from "../components/Line";
 import { LoopIcon } from "../components/icons/LoopIcon";
 
-// T12 (0-46) + T13 (46-96) — petróleo. A spinning loop reads instantly as
+// T12 (0-56) + T13 (56-116) — petróleo. A spinning loop reads instantly as
 // "repetition" — replaces the earlier node-web, which read as noise.
 export const G06_TareasRepetitivas: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const loopOpacity = interpolate(frame, [46, 58], [0.55, 0.2], {
+  const loopOpacity = interpolate(frame, [56, 68], [0.55, 0.2], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const push = interpolate(frame, [0, 96], [1, 1.03], {
+  const push = interpolate(frame, [0, 116], [1, 1.03], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     output: "perceptual-scale",
@@ -27,13 +27,13 @@ export const G06_TareasRepetitivas: React.FC = () => {
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
         <Line enterFrame={0} fontSize={68} color={COLORS.marfil} weight={400} segments={[{ text: "Las tareas repetitivas" }]} />
         <Line
-          enterFrame={46}
+          enterFrame={56}
           fontSize={68}
           color={COLORS.marfil}
           weight={400}
           segments={[
             { text: "ya no son de " },
-            { text: "personas.", color: COLORS.durazno, decoration: "underline", decorationFrame: 58 },
+            { text: "personas.", color: COLORS.durazno, decoration: "underline", decorationFrame: 68 },
           ]}
         />
       </div>

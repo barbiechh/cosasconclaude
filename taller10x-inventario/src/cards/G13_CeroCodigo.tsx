@@ -8,7 +8,7 @@ import { EspacioSymbol } from "../components/icons/EspacioSymbol";
 export const G13_CeroCodigo: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const push = interpolate(frame, [0, 92], [1, 1.02], {
+  const push = interpolate(frame, [0, 108], [1, 1.02], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     output: "perceptual-scale",
