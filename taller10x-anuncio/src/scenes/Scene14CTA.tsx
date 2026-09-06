@@ -96,11 +96,11 @@ export const Scene14CTA: React.FC = () => {
     extrapolateRight: "clamp",
     easing: Easing.bezier(0.16, 1, 0.3, 1),
   });
-  const priceOpacity = interpolate(frame, [38, 48], [0, 1], {
+  const dateOpacity = interpolate(frame, [38, 48], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const priceY = interpolate(frame, [38, 52], [26, 0], {
+  const dateY = interpolate(frame, [38, 52], [26, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.bezier(0.16, 1, 0.3, 1),
@@ -179,11 +179,11 @@ export const Scene14CTA: React.FC = () => {
               fontSize: 24,
               fontWeight: 400,
               color: COLORS.textSecondary,
-              opacity: priceOpacity,
-              translate: `0px ${priceY}px`,
+              opacity: dateOpacity,
+              translate: `0px ${dateY}px`,
             }}
           >
-            $19,900 MXN por persona · 25 de septiembre · CDMX
+            25 de septiembre · CDMX
           </div>
         </div>
       </div>
