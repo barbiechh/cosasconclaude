@@ -2,9 +2,10 @@
 
 Composición Remotion (16:9, 1920x1080, 30fps) descrito en el documento de
 dirección creativa. 100% tipografía y line art vectorial — sin fotos de stock,
-sin video, sin UI de producto. Duración actual: **50.1 s** (1502 frames),
-después de dos rondas de feedback que cortaron contenido y aceleraron el ritmo
-— el guion original describía un master de 70.4 s.
+sin video, sin UI de producto. Duración actual: **55.4 s** (1661 frames),
+después de tres rondas de feedback (dos que cortaron contenido y aceleraron
+el ritmo, y una tercera que le devolvió aire a las escenas más densas de
+texto) — el guion original describía un master de 70.4 s.
 
 ## Estructura
 
@@ -36,7 +37,7 @@ cerrado.
   está en pantalla.
 - `src/Composition.tsx` — registra la composición `ElInventario`.
 
-## Cambios sobre el guion original (dos rondas de feedback)
+## Cambios sobre el guion original (tres rondas de feedback)
 
 1. **"Ninguna fue tuya. Fue formato."** se reescribió como "Ninguna hora fue
    una decisión tuya." / "Fue el formato. No tú." — la versión corta dependía
@@ -59,6 +60,31 @@ cerrado.
 9. **Ritmo general:** se retimó cada escena para un pase más rápido (duración
    total bajó de 70.4 s a 50.1 s) y se agregó el pop de entrada + el empuje de
    cámara continuo mencionados arriba para que se sienta menos estático.
+
+### Tercera ronda: más aire donde hace falta, más motion en fundadores
+
+La segunda ronda se pasó de rápida — el feedback fue "tampoco hagamos todo tan
+rápido que no se lea". En vez de revertir los cortes o el ritmo general, se le
+devolvió tiempo de lectura puntualmente a las escenas más densas de texto,
+sin tocar las que ya se sentían bien (el tramo "trailer" de G09-G12 sigue
+deliberadamente rápido, como pide el guion):
+
+1. **G02 (acumulación de tareas), G04 ("Ninguna fue tuya"), G06 (tareas
+   repetitivas) y G07 (dirigir)** — se espació el stagger de palabras/líneas y
+   se corrió el wipe de salida más tarde, dándole más aire a cada frase antes
+   del corte. Duraciones: G02 130→155f, G04 96→116f, G06 96→116f, G07 95→130f.
+2. **G05 y G13 (las dos escenas "respiro" con el símbolo de Espacio
+   dibujándose)** — se extendió el hold antes del wipe (105→120f y 92→108f)
+   para que el respiro se sienta como tal.
+3. **G07 ("dirigir")** ahora dice "dirigir" seguido de "agentes de IA." en una
+   línea más chica debajo — la palabra sola no comunicaba a qué se refería.
+4. **G14 (fundadores)** ganó motion real: las fotos entran deslizándose desde
+   lados opuestos con una leve rotación que se asienta (Lalo desde la
+   izquierda, Abraham desde la derecha), más un balanceo continuo en fase
+   opuesta durante el hold, además del empuje de cámara que ya tenían las
+   demás escenas. Antes la escena solo tenía fade-in. Duración 112→140f.
+
+Duración total: 50.1 s → **55.4 s** (1502 → 1661 frames).
 
 ## Comandos
 
