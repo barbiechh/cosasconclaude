@@ -1,5 +1,6 @@
 import { Composition, Folder } from "remotion";
 import { Ad } from "./Ad";
+import { Ad35 } from "./Ad35";
 import { Scene01Hook } from "./scenes/Scene01Hook";
 import { Scene02Columna } from "./scenes/Scene02Columna";
 import { Scene03Total } from "./scenes/Scene03Total";
@@ -26,6 +27,14 @@ export const MyComposition = () => {
         id="Taller10x-Master-60s"
         component={Ad}
         durationInFrames={1800}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+      />
+      <Composition
+        id="Taller10x-35s"
+        component={Ad35}
+        durationInFrames={1050}
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
