@@ -26,20 +26,18 @@ export const Scene11Fundadores: React.FC = () => {
         <div style={{ display: "flex", gap: 100 }}>
           <div style={{ translate: `0px ${leftBob}px` }}>
             <PortraitCard
-              initials="LG"
+              photoFile="images/lalo-garcia.png"
               role="Cofundador · Espacio"
               name="Lalo García"
-              background="petroleo"
               enterFrame={0}
               fromLeft
             />
           </div>
           <div style={{ translate: `0px ${rightBob}px` }}>
             <PortraitCard
-              initials="AC"
+              photoFile="images/abraham-cobos.png"
               role="Cofundador · Espacio"
               name="Abraham Cobos"
-              background="white"
               enterFrame={0}
               fromLeft={false}
             />

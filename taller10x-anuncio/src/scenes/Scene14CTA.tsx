@@ -1,4 +1,4 @@
-import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
+import { AbsoluteFill, CanvasImage, Easing, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { fontFamily, COLORS } from "../theme";
 import { GeometryLines } from "../components/GeometryLines";
 import { Pill } from "../components/Pill";
@@ -123,18 +123,14 @@ export const Scene14CTA: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 64,
+          top: 56,
           left: 80,
-          fontFamily,
-          fontSize: 26,
-          fontWeight: 700,
-          color: COLORS.textPrimary,
           opacity: brandOpacity,
           translate: `0px ${brandY}px`,
           scale: `${sceneScale}`,
         }}
       >
-        Espacio
+        <CanvasImage src={staticFile("images/espacio-logo.png")} width={40} height={48} fit="contain" />
       </div>
 
       <div

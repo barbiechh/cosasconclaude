@@ -1,20 +1,13 @@
-import { Easing, interpolate, useCurrentFrame } from "remotion";
+import { CanvasImage, Easing, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { fontFamily, COLORS } from "../theme";
 
-/**
- * Placeholder portrait block: a monogram on a solid block, standing in for
- * the real founder photography the brief asks production to source
- * (section 17, "Assets que hay que pedir antes de arrancar"). Swap the
- * monogram circle for a real <CanvasImage> once the photos exist.
- */
 export const PortraitCard: React.FC<{
-  initials: string;
+  photoFile: string;
   role: string;
   name: string;
-  background: "petroleo" | "white";
   enterFrame: number;
   fromLeft: boolean;
-}> = ({ initials, role, name, background, enterFrame, fromLeft }) => {
+}> = ({ photoFile, role, name, enterFrame, fromLeft }) => {
   const frame = useCurrentFrame();
 
   const opacity = interpolate(frame, [enterFrame, enterFrame + 10], [0, 1], {
@@ -33,8 +26,6 @@ export const PortraitCard: React.FC<{
     output: "perceptual-scale",
   });
 
-  const isDark = background === "petroleo";
-
   return (
     <div
       style={{
@@ -46,37 +37,13 @@ export const PortraitCard: React.FC<{
         scale: `${scale}`,
       }}
     >
-      <div
-        style={{
-          width: 420,
-          height: 520,
-          borderRadius: 24,
-          backgroundColor: isDark ? COLORS.petroleo : COLORS.white,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          boxShadow: isDark ? "none" : "0 12px 40px rgba(17,17,17,0.06)",
-        }}
-      >
-        <div
-          style={{
-            width: 160,
-            height: 160,
-            borderRadius: "50%",
-            backgroundColor: isDark ? "rgba(245,244,240,0.12)" : COLORS.pillBg,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontFamily,
-            fontWeight: 700,
-            fontSize: 56,
-            color: isDark ? COLORS.marfil : COLORS.textPrimary,
-            letterSpacing: 2,
-          }}
-        >
-          {initials}
-        </div>
-      </div>
+      <CanvasImage
+        src={staticFile(photoFile)}
+        width={420}
+        height={520}
+        fit="cover"
+        style={{ borderRadius: 24 }}
+      />
       <div
         style={{
           marginTop: 28,

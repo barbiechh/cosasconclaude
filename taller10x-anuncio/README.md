@@ -1,7 +1,8 @@
 # Taller 10x · "La columna derecha" — anuncio en video
 
 Composición Remotion del master de 60 s (16:9, 1920x1080, 30fps) descrito en el
-documento de dirección creativa. Motion graphics 100%, sin video ni fotografía real.
+documento de dirección creativa. Motion graphics, con las fotos reales de los
+fundadores y el logo de Espacio integrados; sin video de cámara.
 
 ## Estructura
 
@@ -40,15 +41,19 @@ npx remotion render Taller10x-Master-60s out/taller10x-anuncio-master-60s.mp4
 2. **Tipografía real de la landing.** Se usó Space Grotesk (Google Fonts) como
    sustituto de la grotesca real. Sustituir en `src/theme.ts` en cuanto el equipo
    de web entregue el archivo.
-3. **Retratos de Lalo y Abraham.** La escena 11 usa un monograma placeholder sobre
-   bloque de color. Reemplazar en `src/components/PortraitCard.tsx` por
-   `<CanvasImage>` con las fotos reales.
-4. **Sellos de Claude y ChatGPT.** La escena 10 usa wordmarks de texto plano en vez
+3. **Sellos de Claude y ChatGPT.** La escena 10 usa wordmarks de texto plano en vez
    de los logos reales (no se generaron ni descargaron marcas de terceros).
-5. **SVG real de la geometría de marca.** `GeometryLines.tsx` es una aproximación
-   (arco + horizontales) hecha a mano; sustituir por el SVG real de marca cuando
-   esté disponible.
-6. **Cortes de 30 s y 15 s, y adaptaciones 4:5 / 9:16.** Este proyecto entrega el
+4. **SVG real de la geometría de marca.** `GeometryLines.tsx` (usado como fondo
+   animado en varias escenas) es una aproximación hecha a mano; sustituir por el
+   SVG real de marca cuando esté disponible. Las fotos de los fundadores y el
+   logo de Espacio ya usan los assets reales (`public/images/`).
+5. **Cortes de 30 s y 15 s, y adaptaciones 4:5 / 9:16.** Este proyecto entrega el
    master de 60 s en 16:9 pedido. Las variantes de duración y de aspect ratio
    (sección 17 del brief) se arman a partir de las mismas escenas, pero no están
    incluidas todavía.
+
+## Assets reales ya integrados
+
+- `public/images/lalo-garcia.png`, `public/images/abraham-cobos.png` — fotos de
+  los cofundadores (ya vienen con su bloque de marca y geometría incluidos).
+- `public/images/espacio-logo.png` — el ícono de marca, usado en el CTA final.
