@@ -1,30 +1,31 @@
 import { AbsoluteFill, Sequence } from "remotion";
 import { COLORS } from "./theme";
-import { G01_Hook } from "./cards/G01_Hook";
-import { G09_Taller10x } from "./cards/G09_Taller10x";
-import { G13_CeroCodigo } from "./cards/G13_CeroCodigo";
+import { G10_Pendientes } from "./cards/G10_Pendientes";
+import { G11_SalesConSistemas } from "./cards/G11_SalesConSistemas";
+import { G17_CTAPill } from "./cards/G17_CTAPill";
 import { ColorWipe } from "./components/ColorWipe";
 
-// A short highlight reel for the GIF export: hook → "Taller 10x" reveal →
-// "Cero código", joined with color wipes (carbón → petróleo → marfil)
-// instead of hard cuts, so the very different backgrounds blend.
+// A short highlight reel for the GIF export, built to show the actual
+// transformation of taking the workshop: "Llegas con pendientes." (before)
+// → "Sales con sistemas." (after, its own built-in wipe to petróleo) → the
+// CTA. Color wipes join every cut instead of hard cuts.
 export const GifIntro: React.FC = () => {
   return (
     <AbsoluteFill>
-      <Sequence name="Hook" durationInFrames={88} layout="none">
+      <Sequence name="Pendientes" durationInFrames={70} layout="none">
         <AbsoluteFill>
-          <G01_Hook />
-          <ColorWipe toColor={COLORS.petroleo} axis="x" fromEdge="end" startFrame={76} durationInFrames={12} />
+          <G10_Pendientes />
+          <ColorWipe toColor={COLORS.carbon} axis="x" fromEdge="end" startFrame={58} durationInFrames={12} />
         </AbsoluteFill>
       </Sequence>
-      <Sequence name="Taller10x" from={88} durationInFrames={90} layout="none">
+      <Sequence name="Sistemas" from={70} durationInFrames={68} layout="none">
         <AbsoluteFill>
-          <G09_Taller10x />
-          <ColorWipe toColor={COLORS.marfil} axis="x" fromEdge="end" startFrame={78} durationInFrames={12} />
+          <G11_SalesConSistemas />
+          <ColorWipe toColor={COLORS.marfil} axis="x" fromEdge="end" startFrame={56} durationInFrames={12} />
         </AbsoluteFill>
       </Sequence>
-      <Sequence name="CeroCodigo" from={178} durationInFrames={108} layout="none">
-        <G13_CeroCodigo />
+      <Sequence name="CTAPill" from={138} durationInFrames={80} layout="none">
+        <G17_CTAPill />
       </Sequence>
     </AbsoluteFill>
   );
