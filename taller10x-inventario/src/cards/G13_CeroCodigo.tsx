@@ -1,10 +1,19 @@
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import { COLORS, fontFamily } from "../theme";
 import { Line } from "../components/Line";
-import { EspacioSymbol } from "../components/icons/EspacioSymbol";
+import { DocumentIcon } from "../components/icons/DocumentIcon";
+import { CodeSlashIcon } from "../components/icons/CodeSlashIcon";
 
-// T24 (0-46) + T25 (46-92) — marfil. Second breather: the symbol draws
-// again behind "Cero código."
+const DOCS = [
+  { start: 2, x: -190, y: -6, rotate: -7 },
+  { start: 8, x: 0, y: -34, rotate: 0 },
+  { start: 14, x: 190, y: -6, rotate: 7 },
+];
+
+// T24 (0-46) + T25 (46-108) — marfil. Second breather, now more literal:
+// three files fly in and stack for "tus archivos", then the group rises
+// away as a `</>` mark draws in and gets struck through for "cero código",
+// paying off with the Claude/ChatGPT chips landing right after the strike.
 export const G13_CeroCodigo: React.FC = () => {
   const frame = useCurrentFrame();
 
@@ -27,34 +36,104 @@ export const G13_CeroCodigo: React.FC = () => {
   });
   const t24Opacity = interpolate(frame, [46, 72], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
-  const symbolOpacity = interpolate(frame, [48, 62], [0, 0.45], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const sellosOpacity = interpolate(frame, [72, 80], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const codeIconOpacity = interpolate(frame, [46, 56], [0, 0.32], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+
+  const chip1Scale = interpolate(frame, [78, 84, 90], [0.4, 1.15, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+    output: "perceptual-scale",
+  });
+  const chip1Opacity = interpolate(frame, [78, 84], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const chip2Scale = interpolate(frame, [84, 90, 96], [0.4, 1.15, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+    output: "perceptual-scale",
+  });
+  const chip2Opacity = interpolate(frame, [84, 90], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.marfil, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
-      <div style={{ opacity: symbolOpacity }}>
-        <EspacioSymbol color={COLORS.petroleo} startFrame={48} flip />
+      <div style={{ opacity: codeIconOpacity, position: "absolute", translate: "0px -170px" }}>
+        <CodeSlashIcon color={COLORS.petroleo} strikeColor={COLORS.carbon} size={280} startFrame={48} />
       </div>
 
-      <div style={{ scale: `${shrink}`, translate: `0px ${riseY}px`, opacity: t24Opacity, position: "absolute" }}>
+      <div
+        style={{
+          scale: `${shrink}`,
+          translate: `0px ${riseY}px`,
+          opacity: t24Opacity,
+          position: "absolute",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <div style={{ position: "relative", width: 700, height: 150 }}>
+          {DOCS.map(({ start, x, y, rotate }, i) => {
+            const slideY = interpolate(frame, [start, start + 16], [130, 0], {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+              easing: Easing.out(Easing.cubic),
+            });
+            const opacity = interpolate(frame, [start, start + 6], [0, 1], {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            });
+            return (
+              <div
+                key={i}
+                style={{
+                  position: "absolute",
+                  left: "50%",
+                  top: "50%",
+                  translate: `calc(-50% + ${x}px) calc(-50% + ${y + slideY}px)`,
+                  rotate: `${rotate}deg`,
+                  opacity,
+                }}
+              >
+                <DocumentIcon color={COLORS.petroleo} size={62} startFrame={start} />
+              </div>
+            );
+          })}
+        </div>
         <Line fontSize={72} color={COLORS.carbon} weight={400} segments={[{ text: "Con " }, { text: "tus", color: COLORS.petroleo }, { text: " archivos." }]} />
       </div>
 
       <div style={{ position: "absolute", display: "flex", flexDirection: "column", alignItems: "center", gap: 42 }}>
         <Line enterFrame={50} fontSize={78} color={COLORS.carbon} weight={400} segments={[{ text: "Cero", color: COLORS.petroleo, bold: true }, { text: " código." }]} />
-        <div
-          style={{
-            display: "flex",
-            gap: 28,
-            fontFamily,
-            fontSize: 22,
-            fontWeight: 500,
-            color: COLORS.carbon,
-            opacity: sellosOpacity,
-          }}
-        >
-          <span>Claude</span>
-          <span>ChatGPT</span>
+        <div style={{ display: "flex", gap: 22 }}>
+          <div
+            style={{
+              scale: `${chip1Scale}`,
+              opacity: chip1Opacity,
+              border: `2px solid ${COLORS.carbon}`,
+              borderRadius: 999,
+              padding: "10px 26px",
+              fontFamily,
+              fontSize: 20,
+              fontWeight: 600,
+              color: COLORS.carbon,
+            }}
+          >
+            Claude
+          </div>
+          <div
+            style={{
+              scale: `${chip2Scale}`,
+              opacity: chip2Opacity,
+              border: `2px solid ${COLORS.carbon}`,
+              borderRadius: 999,
+              padding: "10px 26px",
+              fontFamily,
+              fontSize: 20,
+              fontWeight: 600,
+              color: COLORS.carbon,
+            }}
+          >
+            ChatGPT
+          </div>
         </div>
       </div>
     </AbsoluteFill>
