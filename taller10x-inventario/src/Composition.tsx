@@ -6,7 +6,7 @@ export const MyComposition = () => {
     <Composition
       id="ElInventario"
       component={Ad70}
-      durationInFrames={1661}
+      durationInFrames={1701}
       fps={30}
       width={1920}
       height={1080}

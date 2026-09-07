@@ -1,11 +1,14 @@
 # El Inventario — anuncio de tipografía cinética
 
 Composición Remotion (16:9, 1920x1080, 30fps) descrito en el documento de
-dirección creativa. 100% tipografía y line art vectorial — sin fotos de stock,
-sin video, sin UI de producto. Duración actual: **55.4 s** (1661 frames),
-después de tres rondas de feedback (dos que cortaron contenido y aceleraron
-el ritmo, y una tercera que le devolvió aire a las escenas más densas de
-texto) — el guion original describía un master de 70.4 s.
+dirección creativa. Tipografía y line art vectorial, con las fotos de los
+fundadores, el isotipo de Espacio y los logos reales de Claude/ChatGPT
+integrados donde el guion los pide — sin video ni UI de producto. Duración
+actual: **56.7 s** (1701 frames), después de cuatro rondas de feedback (dos
+que cortaron contenido y aceleraron el ritmo, una tercera que le devolvió
+aire a las escenas más densas de texto, y una cuarta con más motion
+representativo y copy real de la landing) — el guion original describía un
+master de 70.4 s.
 
 ## Estructura
 
@@ -86,6 +89,31 @@ deliberadamente rápido, como pide el guion):
 
 Duración total: 50.1 s → **55.4 s** (1502 → 1661 frames).
 
+### Cuarta ronda: motion más representativo y copy real del sitio
+
+Feedback: más motion graphics en "Cero código" que representen mejor el
+concepto, más punch en el CTA del taller (con la landing real
+(`ai.espacio.cool`) como referencia — bloqueada por la política de red del
+sandbox, así que el motion se diseñó a partir del lenguaje visual ya
+establecido en el resto del video), y los logos reales de Claude y ChatGPT
+(el usuario los subió en un zip: el asterisco de Claude y la marca de
+OpenAI).
+
+1. **G13 ("Cero código")** ahora es literal: tres íconos de archivo
+   (`DocumentIcon`) entran volando y se apilan para "tus archivos", un nuevo
+   ícono `CodeSlashIcon` (`</>`) se dibuja y se tacha para "cero código", y
+   los sellos de Claude/ChatGPT — ahora con sus logos reales
+   (`claude-symbol.png`, `chatgpt-logo.svg`, en negro para respetar la regla
+   de que durazno no va sobre marfil) en vez de solo texto — aterrizan justo
+   después con un pop de rebote.
+2. **G17 (CTA del taller)** suma la promesa real de la landing,
+   "Multiplícate ×10 en un solo día.", antes de que aterricen el isotipo y
+   el pill; el pill ahora aterriza con un rebote (overshoot) y un
+   `BurstRays` (destello de 8 rayos tipo impacto) sincronizado con su
+   llegada — antes solo tenía un fade/scale-in liso. Duración 60→100f.
+
+Duración total: 55.4 s → **56.7 s** (1661 → 1701 frames).
+
 ## Comandos
 
 ```console
@@ -107,7 +135,6 @@ npx remotion render ElInventario out/el-inventario.mp4
    aproximaciones geométricas simples (círculos, rects, paths) hechas en
    código. Sirven para timing y composición; la calidad final de trazo
    necesita un ilustrador o SVGs reales con Trim Paths desde AE/Illustrator.
-4. **Sellos de Claude y ChatGPT.** En T25 son wordmarks de texto plano.
-5. **SVG real del símbolo de Espacio** (las curvas, no el isotipo — ese ya es
+4. **SVG real del símbolo de Espacio** (las curvas, no el isotipo — ese ya es
    real). `EspacioSymbol.tsx` sigue siendo una aproximación hecha a mano.
 6. **Cortes de 30 s y 15 s.** No están armados todavía como composiciones.

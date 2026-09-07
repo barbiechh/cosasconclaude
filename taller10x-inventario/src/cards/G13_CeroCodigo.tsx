@@ -1,4 +1,4 @@
-import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
+import { AbsoluteFill, CanvasImage, Easing, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { COLORS, fontFamily } from "../theme";
 import { Line } from "../components/Line";
 import { DocumentIcon } from "../components/icons/DocumentIcon";
@@ -108,30 +108,38 @@ export const G13_CeroCodigo: React.FC = () => {
             style={{
               scale: `${chip1Scale}`,
               opacity: chip1Opacity,
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
               border: `2px solid ${COLORS.carbon}`,
               borderRadius: 999,
-              padding: "10px 26px",
+              padding: "10px 26px 10px 18px",
               fontFamily,
               fontSize: 20,
               fontWeight: 600,
               color: COLORS.carbon,
             }}
           >
+            <CanvasImage src={staticFile("images/claude-symbol.png")} width={22} height={22} fit="contain" style={{ filter: "brightness(0)" }} />
             Claude
           </div>
           <div
             style={{
               scale: `${chip2Scale}`,
               opacity: chip2Opacity,
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
               border: `2px solid ${COLORS.carbon}`,
               borderRadius: 999,
-              padding: "10px 26px",
+              padding: "10px 26px 10px 18px",
               fontFamily,
               fontSize: 20,
               fontWeight: 600,
               color: COLORS.carbon,
             }}
           >
+            <CanvasImage src={staticFile("images/chatgpt-logo.svg")} width={20} height={20} fit="contain" />
             ChatGPT
           </div>
         </div>

@@ -71,10 +71,10 @@ export const Ad70: React.FC = () => {
       <Sequence name="G16 DoceLugares" from={1481} durationInFrames={60} layout="none">
         <G16_DoceLugares />
       </Sequence>
-      <Sequence name="G17 CTAPill" from={1541} durationInFrames={60} layout="none">
+      <Sequence name="G17 CTAPill" from={1541} durationInFrames={100} layout="none">
         <G17_CTAPill />
       </Sequence>
-      <Sequence name="G18 URL" from={1601} durationInFrames={60} layout="none">
+      <Sequence name="G18 URL" from={1641} durationInFrames={60} layout="none">
         <G18_URL />
       </Sequence>
     </AbsoluteFill>
