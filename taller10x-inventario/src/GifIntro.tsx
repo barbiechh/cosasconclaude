@@ -65,8 +65,8 @@ const CTA: React.FC = () => {
   const pillOpacity = interpolate(frame, [14, 20], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
   return (
-    <AbsoluteFill style={{ backgroundColor: COLORS.marfil, justifyContent: "center", alignItems: "center", scale: `${push(frame, 80)}` }}>
-      <EMotionBackdrop durationInFrames={80} />
+    <AbsoluteFill style={{ backgroundColor: COLORS.marfil, justifyContent: "center", alignItems: "center", scale: `${push(frame, 120)}` }}>
+      <EMotionBackdrop durationInFrames={120} />
       <div style={{ position: "absolute", top: 64, left: 64 }}>
         <CanvasImage src={staticFile("images/espacio-logo.png")} width={32} height={38} fit="contain" />
       </div>
@@ -89,7 +89,7 @@ export const GifIntro: React.FC = () => {
       <Sequence name="Despues" from={70} durationInFrames={64} layout="none">
         <Despues />
       </Sequence>
-      <Sequence name="CTA" from={134} durationInFrames={80} layout="none">
+      <Sequence name="CTA" from={134} durationInFrames={120} layout="none">
         <CTA />
       </Sequence>
     </AbsoluteFill>
