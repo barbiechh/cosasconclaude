@@ -2,8 +2,7 @@ import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import { COLORS } from "../theme";
 import { Line } from "../components/Line";
 import { Pill } from "../components/Pill";
-import { SignalRings } from "../components/icons/SignalRings";
-import { EWatermark } from "../components/EWatermark";
+import { EMotionBackdrop } from "../components/EMotionBackdrop";
 
 // T32 (0-80) — marfil. Just the real landing-page promise ("Multiplícate
 // ×10 en un solo día.") staying on screen while the pill lands right
@@ -27,8 +26,7 @@ export const G17_CTAPill: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.marfil, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
-      <EWatermark />
-      <SignalRings color={COLORS.petroleo} startFrame={4} opacity={0.5} />
+      <EMotionBackdrop durationInFrames={80} />
 
       <div style={{ position: "absolute", translate: "0px -80px" }}>
         <Line

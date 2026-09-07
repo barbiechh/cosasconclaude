@@ -1,11 +1,10 @@
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import { COLORS } from "../theme";
 import { Line } from "../components/Line";
-import { SignalRings } from "../components/icons/SignalRings";
-import { EWatermark } from "../components/EWatermark";
+import { EMotionBackdrop } from "../components/EMotionBackdrop";
 
-// T10 (0-54) + T11 (54-126) — marfil. A breather: the brand symbol draws
-// slowly behind the tesis's opening line.
+// T10 (0-54) + T11 (54-126) — marfil. A breather: the Espacio "E" drifts
+// behind the tesis's opening line.
 export const G05_NoEresLento: React.FC = () => {
   const frame = useCurrentFrame();
 
@@ -31,17 +30,9 @@ export const G05_NoEresLento: React.FC = () => {
     extrapolateRight: "clamp",
   });
 
-  const symbolOpacity = interpolate(frame, [46, 60], [0, 0.5], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.marfil, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
-      <EWatermark />
-      <div style={{ opacity: symbolOpacity }}>
-        <SignalRings color={COLORS.petroleo} startFrame={46} />
-      </div>
+      <EMotionBackdrop durationInFrames={120} />
 
       <div style={{ scale: `${shrink}`, translate: `0px ${riseY}px`, opacity: t10Opacity, position: "absolute" }}>
         <Line
