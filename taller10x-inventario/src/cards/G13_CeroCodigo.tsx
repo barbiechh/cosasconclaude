@@ -3,6 +3,7 @@ import { COLORS, fontFamily } from "../theme";
 import { Line } from "../components/Line";
 import { DocumentIcon } from "../components/icons/DocumentIcon";
 import { CodeSlashIcon } from "../components/icons/CodeSlashIcon";
+import { EWatermark } from "../components/EWatermark";
 
 const DOCS = [
   { start: 2, x: -190, y: -6, rotate: -7 },
@@ -55,6 +56,7 @@ export const G13_CeroCodigo: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.marfil, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
+      <EWatermark />
       <div style={{ opacity: codeIconOpacity, position: "absolute", translate: "0px -170px" }}>
         <CodeSlashIcon color={COLORS.petroleo} strikeColor={COLORS.carbon} size={280} startFrame={48} />
       </div>
@@ -139,7 +141,7 @@ export const G13_CeroCodigo: React.FC = () => {
               color: COLORS.carbon,
             }}
           >
-            <CanvasImage src={staticFile("images/chatgpt-logo.svg")} width={20} height={20} fit="contain" />
+            <CanvasImage src={staticFile("images/chatgpt-logo.png")} width={20} height={20} fit="contain" />
             ChatGPT
           </div>
         </div>

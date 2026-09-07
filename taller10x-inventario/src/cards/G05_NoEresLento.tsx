@@ -2,6 +2,7 @@ import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import { COLORS } from "../theme";
 import { Line } from "../components/Line";
 import { EspacioSymbol } from "../components/icons/EspacioSymbol";
+import { EWatermark } from "../components/EWatermark";
 
 // T10 (0-54) + T11 (54-126) — marfil. A breather: the brand symbol draws
 // slowly behind the tesis's opening line.
@@ -37,6 +38,7 @@ export const G05_NoEresLento: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.marfil, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
+      <EWatermark />
       <div style={{ opacity: symbolOpacity }}>
         <EspacioSymbol color={COLORS.petroleo} startFrame={46} />
       </div>

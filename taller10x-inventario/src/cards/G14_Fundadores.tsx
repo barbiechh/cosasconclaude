@@ -72,8 +72,13 @@ export const G14_Fundadores: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.carbon, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
       <div style={{ scale: `${shrink * punch}`, translate: `0px ${riseY}px`, opacity: namesFadeOut, position: "absolute" }}>
-        <div style={{ fontFamily, fontSize: 28, fontWeight: 500, letterSpacing: 3, color: COLORS.durazno, opacity: labelOpacity, textAlign: "center", marginBottom: 28 }}>
-          COFUNDADORES · ESPACIO
+        <div style={{ opacity: labelOpacity, textAlign: "center", marginBottom: 28 }}>
+          <div style={{ fontFamily, fontSize: 22, fontWeight: 400, letterSpacing: 3, color: COLORS.marfil, opacity: 0.7 }}>
+            IMPARTIDO POR
+          </div>
+          <div style={{ fontFamily, fontSize: 28, fontWeight: 500, letterSpacing: 3, color: COLORS.durazno, marginTop: 6 }}>
+            COFUNDADORES · ESPACIO
+          </div>
         </div>
         <div style={{ display: "flex", gap: 150, position: "relative" }}>
           <div
