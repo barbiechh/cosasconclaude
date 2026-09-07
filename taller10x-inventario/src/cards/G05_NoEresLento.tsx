@@ -1,7 +1,7 @@
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import { COLORS } from "../theme";
 import { Line } from "../components/Line";
-import { EspacioSymbol } from "../components/icons/EspacioSymbol";
+import { SignalRings } from "../components/icons/SignalRings";
 import { EWatermark } from "../components/EWatermark";
 
 // T10 (0-54) + T11 (54-126) — marfil. A breather: the brand symbol draws
@@ -40,7 +40,7 @@ export const G05_NoEresLento: React.FC = () => {
     <AbsoluteFill style={{ backgroundColor: COLORS.marfil, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
       <EWatermark />
       <div style={{ opacity: symbolOpacity }}>
-        <EspacioSymbol color={COLORS.petroleo} startFrame={46} />
+        <SignalRings color={COLORS.petroleo} startFrame={46} />
       </div>
 
       <div style={{ scale: `${shrink}`, translate: `0px ${riseY}px`, opacity: t10Opacity, position: "absolute" }}>

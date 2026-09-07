@@ -2,13 +2,12 @@ import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import { COLORS } from "../theme";
 import { Line } from "../components/Line";
 import { Pill } from "../components/Pill";
-import { EspacioSymbol } from "../components/icons/EspacioSymbol";
-import { BurstRays } from "../components/icons/BurstRays";
+import { SignalRings } from "../components/icons/SignalRings";
 import { EWatermark } from "../components/EWatermark";
 
 // T32 (0-80) — marfil. Just the real landing-page promise ("Multiplícate
 // ×10 en un solo día.") staying on screen while the pill lands right
-// underneath it with an overshoot bounce and an impact burst.
+// underneath it with an overshoot bounce.
 export const G17_CTAPill: React.FC = () => {
   const frame = useCurrentFrame();
 
@@ -29,7 +28,7 @@ export const G17_CTAPill: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.marfil, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
       <EWatermark />
-      <EspacioSymbol color={COLORS.petroleo} startFrame={4} opacity={0.5} />
+      <SignalRings color={COLORS.petroleo} startFrame={4} opacity={0.5} />
 
       <div style={{ position: "absolute", translate: "0px -80px" }}>
         <Line
@@ -41,8 +40,7 @@ export const G17_CTAPill: React.FC = () => {
         />
       </div>
 
-      <div style={{ position: "relative", opacity: pillOpacity, scale: `${pillScale}`, translate: "0px 40px" }}>
-        <BurstRays color={COLORS.petroleo} size={620} startFrame={24} />
+      <div style={{ opacity: pillOpacity, scale: `${pillScale}`, translate: "0px 40px" }}>
         <Pill fontSize={34}>
           Inscríbete al Taller 10x
         </Pill>
