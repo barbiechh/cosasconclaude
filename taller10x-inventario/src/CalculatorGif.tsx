@@ -1,5 +1,6 @@
-import { AbsoluteFill, Easing, interpolate, Sequence, useCurrentFrame } from "remotion";
-import { COLORS, fontFamily } from "./theme";
+import { loadFont } from "@remotion/fonts";
+import { AbsoluteFill, Easing, interpolate, Sequence, staticFile, useCurrentFrame } from "remotion";
+import { COLORS } from "./theme";
 import { Line } from "./components/Line";
 import { StrokePath } from "./components/StrokePath";
 
@@ -9,6 +10,18 @@ import { StrokePath } from "./components/StrokePath";
 // and a quiet close. Faster cuts, no bounce/overshoot on the CTA — reads
 // informational rather than salesy. Ends by fading back into the empty
 // calculator so the loop has no hard jump.
+//
+// Uses Google Sans (not the project's shared Space Grotesk theme font) —
+// self-hosted the same way, loaded per-weight from static TTFs.
+const GOOGLE_SANS_FILES: Record<string, string> = {
+  "400": "GoogleSans-400.ttf",
+  "500": "GoogleSans-500.ttf",
+  "700": "GoogleSans-700.ttf",
+};
+for (const [weight, file] of Object.entries(GOOGLE_SANS_FILES)) {
+  loadFont({ family: "Google Sans", url: staticFile(`fonts/${file}`), weight });
+}
+const fontFamily = "Google Sans";
 
 const CARD_WIDTH = 880;
 const CARD_LEFT = (1280 - CARD_WIDTH) / 2;
@@ -269,6 +282,7 @@ const PhaseClosing: React.FC = () => {
             fontSize={52}
             color={COLORS.carbon}
             weight={500}
+            fontFamily={fontFamily}
             segments={[{ text: "¿Qué harías con esas " }, { text: "10 horas", color: COLORS.petroleo, bold: true }, { text: " de vuelta?" }]}
           />
         </div>

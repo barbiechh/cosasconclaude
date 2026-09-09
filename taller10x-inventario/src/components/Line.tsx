@@ -1,5 +1,5 @@
 import { Easing, interpolate, useCurrentFrame } from "remotion";
-import { fontFamily } from "../theme";
+import { fontFamily as themeFontFamily } from "../theme";
 
 export type Segment = {
   text: string;
@@ -25,7 +25,8 @@ export const Line: React.FC<{
   instant?: boolean;
   letterSpacing?: number;
   textAlign?: "center" | "left";
-}> = ({ segments, fontSize, color, weight = 400, enterFrame = 0, instant = false, letterSpacing, textAlign = "center" }) => {
+  fontFamily?: string;
+}> = ({ segments, fontSize, color, weight = 400, enterFrame = 0, instant = false, letterSpacing, textAlign = "center", fontFamily = themeFontFamily }) => {
   const frame = useCurrentFrame();
 
   const opacity = instant
