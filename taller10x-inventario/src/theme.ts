@@ -1,13 +1,17 @@
 import { loadFont } from "@remotion/fonts";
 import { staticFile } from "remotion";
 
-const FONT_URL = staticFile("fonts/SpaceGrotesk-Variable.woff2");
+const GOOGLE_SANS_FILES: Record<string, string> = {
+  "400": "GoogleSans-400.ttf",
+  "500": "GoogleSans-500.ttf",
+  "700": "GoogleSans-700.ttf",
+};
 
-for (const weight of ["400", "500", "700"]) {
-  loadFont({ family: "Space Grotesk", url: FONT_URL, weight });
+for (const [weight, file] of Object.entries(GOOGLE_SANS_FILES)) {
+  loadFont({ family: "Google Sans", url: staticFile(`fonts/${file}`), weight });
 }
 
-export const fontFamily = "Space Grotesk";
+export const fontFamily = "Google Sans";
 
 export const COLORS = {
   petroleo: "#003146",
