@@ -25,7 +25,7 @@ export const MyComposition = () => {
       <Composition
         id="CalculatorGif"
         component={CalculatorGif}
-        durationInFrames={280}
+        durationInFrames={262}
         fps={30}
         width={1280}
         height={720}

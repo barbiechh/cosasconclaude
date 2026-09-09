@@ -1,7 +1,6 @@
 import { AbsoluteFill, Easing, interpolate, Sequence, useCurrentFrame } from "remotion";
 import { COLORS, fontFamily } from "./theme";
 import { Line } from "./components/Line";
-import { Pill } from "./components/Pill";
 import { StrokePath } from "./components/StrokePath";
 
 // "¿Cuánto vale tu tiempo?" — a standalone ad GIF built around the
@@ -252,36 +251,29 @@ const PhaseTransform: React.FC = () => {
   );
 };
 
-// Phase D+E: 172-280 — a quiet close (no bounce), fine print, fade back to the empty calculator to loop.
+// Phase D+E: 172-262 — ends on a question, not a pitch. No button, just a
+// quiet brand mention, then fades back to the empty calculator to loop.
 const PhaseClosing: React.FC = () => {
   const frame = useCurrentFrame();
-  const headlineOpacity = interpolate(frame, [0, 8], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const subOpacity = interpolate(frame, [10, 18], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const pillOpacity = interpolate(frame, [20, 28], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const pillScale = interpolate(frame, [20, 28], [0.97, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.out(Easing.cubic),
-    output: "perceptual-scale",
-  });
-  const fineOpacity = interpolate(frame, [46, 54], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const closingFade = interpolate(frame, [86, 108], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const loopInOpacity = interpolate(frame, [86, 108], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const headlineOpacity = interpolate(frame, [0, 10], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const fineOpacity = interpolate(frame, [36, 46], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const closingFade = interpolate(frame, [68, 90], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const loopInOpacity = interpolate(frame, [68, 90], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.marfil, justifyContent: "center", alignItems: "center" }}>
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 28, opacity: closingFade }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, opacity: closingFade }}>
         <div style={{ opacity: headlineOpacity }}>
-          <Line instant fontSize={54} color={COLORS.carbon} weight={500} segments={[{ text: "¿Cuánto vale tu tiempo?" }]} />
+          <Line
+            instant
+            fontSize={52}
+            color={COLORS.carbon}
+            weight={500}
+            segments={[{ text: "¿Qué harías con esas " }, { text: "10 horas", color: COLORS.petroleo, bold: true }, { text: " de vuelta?" }]}
+          />
         </div>
-        <div style={{ opacity: subOpacity, fontFamily, fontSize: 26, fontWeight: 400, color: COLORS.petroleo }}>Con IA, lo recuperas.</div>
-        <div style={{ opacity: pillOpacity, scale: `${pillScale}` }}>
-          <Pill fontSize={28}>Inscríbete al Taller 10x</Pill>
-        </div>
-        <div style={{ opacity: fineOpacity, fontFamily, fontSize: 18, fontWeight: 500, color: "#8A8680", textAlign: "center" }}>
-          CDMX · 25 de septiembre
-          <br />
-          ai.espacio.cool
+        <div style={{ opacity: fineOpacity, fontFamily, fontSize: 20, fontWeight: 500, color: "#8A8680", textAlign: "center", letterSpacing: 1 }}>
+          TALLER 10X · AI.ESPACIO.COOL
         </div>
       </div>
 
@@ -307,7 +299,7 @@ export const CalculatorGif: React.FC = () => {
       <Sequence name="Transform" from={130} durationInFrames={42} layout="none">
         <PhaseTransform />
       </Sequence>
-      <Sequence name="Closing" from={172} durationInFrames={108} layout="none">
+      <Sequence name="Closing" from={172} durationInFrames={90} layout="none">
         <PhaseClosing />
       </Sequence>
     </AbsoluteFill>
