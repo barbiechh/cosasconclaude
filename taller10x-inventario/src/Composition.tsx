@@ -1,6 +1,7 @@
 import { Composition } from "remotion";
 import { Ad70 } from "./Ad70";
 import { GifIntro } from "./GifIntro";
+import { CalculatorGif } from "./CalculatorGif";
 
 export const MyComposition = () => {
   return (
@@ -20,6 +21,14 @@ export const MyComposition = () => {
         fps={30}
         width={1920}
         height={1080}
+      />
+      <Composition
+        id="CalculatorGif"
+        component={CalculatorGif}
+        durationInFrames={450}
+        fps={30}
+        width={1280}
+        height={720}
       />
     </>
   );
