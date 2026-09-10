@@ -75,7 +75,14 @@ export const MyComposition = () => {
         fps={30}
         width={1920}
         height={1080}
-        defaultProps={{ bg: COLORS.marfil, labelColor: COLORS.petroleo, textColor: COLORS.carbon, label: "CDMX · 25 SEP 2026", text: "Taller 10x" }}
+        defaultProps={{
+          bg: COLORS.marfil,
+          labelColor: COLORS.petroleo,
+          textColor: COLORS.carbon,
+          label: "CDMX · 25 SEP 2026",
+          text: "Taller 10x",
+          withBackdrop: true,
+        }}
       />
     </>
   );

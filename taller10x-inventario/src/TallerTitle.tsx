@@ -1,16 +1,18 @@
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import { fontFamily } from "./theme";
+import { EMotionBackdrop } from "./components/EMotionBackdrop";
 
 // A punchier "Taller 10x" title card — bigger overshoot bounce than the
 // original scene, in two color variants (petróleo, matching the video;
 // marfil, matching the recent standalone assets).
-export const TallerTitle: React.FC<{ bg: string; labelColor: string; textColor: string; label: string; text: string }> = ({
-  bg,
-  labelColor,
-  textColor,
-  label,
-  text,
-}) => {
+export const TallerTitle: React.FC<{
+  bg: string;
+  labelColor: string;
+  textColor: string;
+  label: string;
+  text: string;
+  withBackdrop?: boolean;
+}> = ({ bg, labelColor, textColor, label, text, withBackdrop = false }) => {
   const frame = useCurrentFrame();
 
   const push = interpolate(frame, [0, 70], [1, 1.025], {
@@ -36,6 +38,7 @@ export const TallerTitle: React.FC<{ bg: string; labelColor: string; textColor: 
 
   return (
     <AbsoluteFill style={{ backgroundColor: bg, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
+      {withBackdrop && <EMotionBackdrop durationInFrames={70} opacity={0.16} />}
       <div
         style={{
           position: "absolute",
