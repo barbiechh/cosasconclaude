@@ -82,6 +82,7 @@ export const MyComposition = () => {
           label: "CDMX · 25 SEP 2026",
           text: "Taller 10x",
           withBackdrop: true,
+          titleFontSize: 190,
         }}
       />
     </>

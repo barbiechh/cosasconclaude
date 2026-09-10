@@ -1,5 +1,5 @@
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
-import { fontFamily } from "./theme";
+import { COLORS, fontFamily } from "./theme";
 import { EMotionBackdrop } from "./components/EMotionBackdrop";
 
 // A punchier "Taller 10x" title card — bigger overshoot bounce than the
@@ -12,7 +12,8 @@ export const TallerTitle: React.FC<{
   label: string;
   text: string;
   withBackdrop?: boolean;
-}> = ({ bg, labelColor, textColor, label, text, withBackdrop = false }) => {
+  titleFontSize?: number;
+}> = ({ bg, labelColor, textColor, label, text, withBackdrop = false, titleFontSize = 130 }) => {
   const frame = useCurrentFrame();
 
   const push = interpolate(frame, [0, 70], [1, 1.025], {
@@ -38,7 +39,35 @@ export const TallerTitle: React.FC<{
 
   return (
     <AbsoluteFill style={{ backgroundColor: bg, justifyContent: "center", alignItems: "center", scale: `${push}` }}>
-      {withBackdrop && <EMotionBackdrop durationInFrames={70} opacity={0.16} />}
+      {withBackdrop && (
+        <div
+          style={{
+            position: "absolute",
+            right: -260,
+            bottom: -320,
+            width: 900,
+            height: 900,
+            borderRadius: "50%",
+            backgroundColor: labelColor,
+            opacity: 0.08,
+          }}
+        />
+      )}
+      {withBackdrop && (
+        <div
+          style={{
+            position: "absolute",
+            right: 60,
+            top: -260,
+            width: 520,
+            height: 520,
+            borderRadius: "50%",
+            backgroundColor: COLORS.durazno,
+            opacity: 0.5,
+          }}
+        />
+      )}
+      {withBackdrop && <EMotionBackdrop durationInFrames={70} opacity={0.9} />}
       <div
         style={{
           position: "absolute",
@@ -53,7 +82,9 @@ export const TallerTitle: React.FC<{
       >
         {label}
       </div>
-      <div style={{ opacity: titleOpacity, scale: `${titleScale}`, fontFamily, fontSize: 130, fontWeight: 700, color: textColor }}>{text}</div>
+      <div style={{ opacity: titleOpacity, scale: `${titleScale}`, fontFamily, fontSize: titleFontSize, fontWeight: 700, color: textColor }}>
+        {text}
+      </div>
     </AbsoluteFill>
   );
 };
