@@ -66,6 +66,34 @@ export const TallerTitle: React.FC<{
           }}
         />
       )}
+      {withBackdrop && (
+        <div
+          style={{
+            position: "absolute",
+            left: -300,
+            bottom: -360,
+            width: 700,
+            height: 700,
+            borderRadius: "50%",
+            backgroundColor: COLORS.durazno,
+            opacity: 0.4,
+          }}
+        />
+      )}
+      {withBackdrop && (
+        <div
+          style={{
+            position: "absolute",
+            left: -180,
+            top: -220,
+            width: 460,
+            height: 460,
+            borderRadius: "50%",
+            backgroundColor: labelColor,
+            opacity: 0.45,
+          }}
+        />
+      )}
       <div
         style={{
           position: "absolute",
