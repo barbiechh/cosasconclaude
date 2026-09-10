@@ -4,6 +4,7 @@ import { GifIntro } from "./GifIntro";
 import { CalculatorGif } from "./CalculatorGif";
 import { EjemplosGif } from "./EjemplosGif";
 import { FlowLoop } from "./FlowLoop";
+import { FoundersStill } from "./FoundersStill";
 
 export const MyComposition = () => {
   return (
@@ -47,6 +48,14 @@ export const MyComposition = () => {
         fps={30}
         width={480}
         height={160}
+      />
+      <Composition
+        id="FoundersStill"
+        component={FoundersStill}
+        durationInFrames={40}
+        fps={30}
+        width={1920}
+        height={1080}
       />
     </>
   );
