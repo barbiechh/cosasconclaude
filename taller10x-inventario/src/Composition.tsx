@@ -3,6 +3,7 @@ import { Ad70 } from "./Ad70";
 import { GifIntro } from "./GifIntro";
 import { CalculatorGif } from "./CalculatorGif";
 import { EjemplosGif } from "./EjemplosGif";
+import { FlowLoop } from "./FlowLoop";
 
 export const MyComposition = () => {
   return (
@@ -38,6 +39,14 @@ export const MyComposition = () => {
         fps={30}
         width={1280}
         height={720}
+      />
+      <Composition
+        id="FlowLoop"
+        component={FlowLoop}
+        durationInFrames={80}
+        fps={30}
+        width={480}
+        height={160}
       />
     </>
   );
