@@ -7,14 +7,14 @@ import { ArcBehind } from "./components/icons/ArcBehind";
 export const FoundersStill: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.marfil, justifyContent: "center", alignItems: "center" }}>
-      <div style={{ display: "flex", gap: 140 }}>
+      <div style={{ display: "flex", gap: 110 }}>
         <div style={{ position: "relative" }}>
-          <ArcBehind color={COLORS.petroleo} size={560} startFrame={0} />
-          <CanvasImage src={staticFile("images/lalo-garcia.png")} width={460} height={567} fit="cover" style={{ borderRadius: 28, position: "relative" }} />
+          <ArcBehind color={COLORS.petroleo} size={750} startFrame={0} />
+          <CanvasImage src={staticFile("images/lalo-garcia.png")} width={620} height={764} fit="cover" style={{ borderRadius: 32, position: "relative" }} />
         </div>
         <div style={{ position: "relative" }}>
-          <ArcBehind color={COLORS.petroleo} size={560} startFrame={0} flip />
-          <CanvasImage src={staticFile("images/abraham-cobos.png")} width={460} height={567} fit="cover" style={{ borderRadius: 28, position: "relative" }} />
+          <ArcBehind color={COLORS.petroleo} size={750} startFrame={0} flip />
+          <CanvasImage src={staticFile("images/abraham-cobos.png")} width={620} height={764} fit="cover" style={{ borderRadius: 32, position: "relative" }} />
         </div>
       </div>
     </AbsoluteFill>
