@@ -69,7 +69,7 @@ export const EndCard: React.FC<EndCardProps> = ({usePlaceholder: p}) => {
         </div>
       )}
 
-      <TimedText text={END_CARD_TEXTS.guarantee} highlight="30-DAY" enterAtFrame={e('guaranteeWord')} top={LAYOUT.topText} fontSize={74} maxWidth={960} />
+      <TimedText text={END_CARD_TEXTS.guarantee} highlight="30-DAY" enterAtFrame={e('guarantee')} top={LAYOUT.topText} fontSize={74} maxWidth={960} />
 
       {sign > 0 && (
         <div style={{position: 'absolute', left: 90, width: 900, top: 1140, textAlign: 'center', ...font, fontSize: 66, color: COLORS.ink, transform: `translateY(${(1 - sign) * 30}px)`, opacity: Math.min(1, sign * 2)}}>

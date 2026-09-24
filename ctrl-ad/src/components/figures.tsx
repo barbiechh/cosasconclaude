@@ -160,3 +160,45 @@ export const LeaderRing: React.FC<{cx: number; cy: number; rx: number; ry: numbe
     </svg>
   );
 };
+
+/** Cría de orca (recortes de public/images/body/orca-calf-*.png). */
+export type CalfKind = 'a' | 'b' | 'c';
+const CALF: Record<CalfKind, {id: string; aspect: number; facesRight: boolean}> = {
+  a: {id: 'body.orcaCalfA', aspect: 924 / 434, facesRight: true},
+  b: {id: 'body.orcaCalfB', aspect: 698 / 526, facesRight: true},
+  c: {id: 'body.orcaCalfC', aspect: 1002 / 464, facesRight: false},
+};
+
+/** Cría centrada en (x, y); siempre mira hacia donde nada el grupo (derecha) salvo `facingLeft`. */
+export const Calf: React.FC<{p: boolean; kind: CalfKind; x: number; y: number; w: number; rot?: number; scale?: number; opacity?: number; facingLeft?: boolean}> = ({
+  p, kind, x, y, w, rot = 0, scale = 1, opacity = 1, facingLeft = false,
+}) => {
+  const c = CALF[kind];
+  return <Pic id={c.id} p={p} x={x} y={y} w={w} aspect={c.aspect} rot={rot} scale={scale} opacity={opacity} flip={c.facesRight === facingLeft} />;
+};
+
+/** Aleta dorsal que corta el agua: el grupo visto de lejos. Base en (x, y). */
+export const Fin: React.FC<{x: number; y: number; h: number; opacity?: number; tilt?: number}> = ({x, y, h, opacity = 1, tilt = 0}) => {
+  const w = h * 0.72;
+  return (
+    <svg width={1080} height={1920} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible', opacity}}>
+      <g transform={`translate(${x}, ${y}) rotate(${tilt})`}>
+        <path d={`M ${-w / 2} 0 C ${-w * 0.2} ${-h * 0.3} ${-w * 0.05} ${-h * 0.8} ${w * 0.14} ${-h} C ${w * 0.04} ${-h * 0.62} ${w * 0.2} ${-h * 0.24} ${w * 0.5} 0 Z`}
+          fill={COLORS.ink} stroke="#fffdf8" strokeWidth={5} strokeLinejoin="round" />
+        <path d={`M ${-w * 1.1} 4 q ${w * 0.275} -12 ${w * 0.55} 0 t ${w * 0.55} 0 t ${w * 0.55} 0 t ${w * 0.55} 0`} fill="none" stroke={COLORS.ink} strokeWidth={6} strokeLinecap="round" />
+      </g>
+    </svg>
+  );
+};
+
+/** Líneas de oleaje que se desplazan (superficie del mar). */
+export const Waves: React.FC<{ys: number[]; t: number; opacity?: number; amp?: number}> = ({ys, t, opacity = 1, amp = 12}) => (
+  <svg width={1080} height={1920} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible', opacity}}>
+    {ys.map((y, i) => {
+      const off = ((t * (1.5 + i * 0.4)) % 120) - 120;
+      let d = `M ${off} ${y}`;
+      for (let x = off; x < 1200; x += 60) d += ` q 30 ${i % 2 ? amp : -amp} 60 0`;
+      return <path key={i} d={d} fill="none" stroke={COLORS.inkSoft} strokeWidth={5} strokeLinecap="round" opacity={0.35 + 0.15 * (i % 2)} />;
+    })}
+  </svg>
+);

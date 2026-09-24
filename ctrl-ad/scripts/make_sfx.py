@@ -174,3 +174,94 @@ tense = (np.sin(2 * np.pi * 110 * x) + np.sin(2 * np.pi * 116.5 * x) + 0.4 * np.
 save("pad_tense", lowpass(tense, 700) * np.minimum(1, np.minimum(x, d - x) / 0.5), 0.3)
 warm = sum(np.sin(2 * np.pi * f * x) for f in (130.8, 164.8, 196.0, 246.9)) * lfo
 save("pad_warm", lowpass(warm, 1200) * np.minimum(1, np.minimum(x, d - x) / 0.5), 0.3)
+
+# ---------------------------------------------------------------------------
+# Revisión: sonidos nuevos para no repetir siempre el mismo "check".
+
+# Chapoteo: la orca entra al cuadro.
+d = 0.7
+x = t(d)
+spl = lowpass(noise(d), 900 + 2500 * np.exp(-x / 0.12)) * env(len(x), 0.004, 0.22)
+spl += lowpass(noise(d), 500) * env(len(x), 0.08, 0.3) * 0.5
+save("splash", spl, 0.4)
+
+# Burbuja suave (una cría que aparece).
+x = t(0.14)
+save("bubble", np.sin(2 * np.pi * (380 + 900 * x / 0.14) * x) * env(len(x), 0.004, 0.05), 0.3)
+
+# Golpe sordo de fieltro (algo que se detiene).
+x = t(0.3)
+save("thud", (np.sin(2 * np.pi * 70 * x) + 0.4 * np.sin(2 * np.pi * 140 * x)) * env(len(x), 0.003, 0.07), 0.45)
+
+# Dos golpes de nudillo sobre madera (≠).
+parts = []
+for s in (0, 0.11):
+    xx = t(0.08)
+    parts.append((s, (np.sin(2 * np.pi * 420 * xx) + 0.6 * np.sin(2 * np.pi * 950 * xx)) * env(len(xx), 0.0008, 0.018)))
+save("knock", place(0.25, *parts), 0.4)
+
+# Teclas de máquina de escribir (letras que se escriben).
+parts = []
+for i in range(4):
+    xx = t(0.03)
+    parts.append((i * 0.1 + rng.random() * 0.02, highpass(noise(0.03), 2000) * env(len(xx), 0.0003, 0.006) + np.sin(2 * np.pi * 900 * xx) * env(len(xx), 0.0005, 0.004) * 0.5))
+save("type", place(0.45, *parts), 0.35)
+
+# Trinquete que acelera (el engranaje arranca).
+parts, s = [], 0.0
+for i in range(8):
+    xx = t(0.025)
+    parts.append((s, np.sin(2 * np.pi * (1100 + i * 60) * xx) * env(len(xx), 0.0004, 0.005)))
+    s += max(0.03, 0.09 - i * 0.01)
+save("gear_spin", place(s + 0.1, *parts), 0.35)
+
+# Encaje mecánico: golpe metálico corto + trinquete rápido (el empuje vuelve).
+xx = t(0.12)
+clunk = (np.sin(2 * np.pi * 180 * xx) + 0.5 * np.sin(2 * np.pi * 520 * xx)) * env(len(xx), 0.001, 0.03)
+parts = [(0, clunk)] + [(0.1 + i * 0.035, np.sin(2 * np.pi * 1400 * t(0.02)) * env(int(SR * 0.02), 0.0003, 0.004)) for i in range(6)]
+save("gear_engage", place(0.4, *parts), 0.4)
+
+# Campanita única, grave y suave (algo que se completa).
+d = 0.9
+x = t(d)
+save("chime", (np.sin(2 * np.pi * 880 * x) + 0.25 * np.sin(2 * np.pi * 1760 * x)) * env(len(x), 0.004, 0.25), 0.28)
+
+# Segundo clic de interruptor, más grave, para alternar en el parpadeo.
+x = t(0.06)
+cl2 = highpass(noise(0.06), 1800) * env(len(x), 0.0003, 0.005) + np.sin(2 * np.pi * 120 * x) * env(len(x), 0.001, 0.02) * 0.8
+save("click2", cl2, 0.45)
+
+# Presión que se escapa y se apaga (el estimulante deja de funcionar).
+d = 0.8
+x = t(d)
+save("deflate", lowpass(noise(d), 2400 * (1 - x / d) + 200) * (1 - x / d) ** 2 * np.minimum(1, x / 0.02), 0.3)
+
+# Marcador que tacha rápido.
+d = 0.35
+x = t(d)
+save("marker", highpass(lowpass(noise(d), 4500), 1200) * np.sin(np.pi * x / d) * (0.6 + 0.4 * np.sin(2 * np.pi * 18 * x)), 0.3)
+
+# Granos que caen (tirosina, materia prima).
+parts = []
+for i in range(28):
+    xx = t(0.012)
+    parts.append((rng.random() * 0.45, highpass(noise(0.012), 3000) * env(len(xx), 0.0002, 0.003) * (0.4 + rng.random() * 0.6)))
+save("pour", place(0.5, *parts), 0.28)
+
+# Hojas (las plantas calmantes).
+d = 0.6
+x = t(d)
+save("rustle", highpass(lowpass(noise(d), 6000), 2500) * (0.3 + 0.7 * np.abs(np.sin(2 * np.pi * 6 * x))) * np.sin(np.pi * x / d), 0.22)
+
+# Brillo: notas altas que suben (algo se aclara / el producto de nuevo).
+d = 1.2
+x = t(d)
+sh = sum(np.sin(2 * np.pi * f * x) * env(len(x), 0.02 + k * 0.08, 0.35) * (x >= k * 0.08) for k, f in enumerate((1318.5, 1568, 1975.5, 2637)))
+save("shimmer", sh, 0.2)
+
+# Hojas de calendario que pasan rápido.
+parts = []
+for i in range(9):
+    xx = t(0.05)
+    parts.append((i * 0.055, highpass(noise(0.05), 1600) * env(len(xx), 0.002, 0.012) * (0.6 + 0.4 * (i % 2))))
+save("riffle", place(0.6, *parts), 0.3)

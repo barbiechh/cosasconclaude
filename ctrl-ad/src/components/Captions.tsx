@@ -20,7 +20,7 @@ const MAX_WORDS = 4;
 const MAX_CHARS = 20;
 
 // Frases cortas: se corta en puntuación, a las 4 palabras o a los ~20 caracteres.
-const CHUNKS: Chunk[] = (() => {
+export const CHUNKS: Chunk[] = (() => {
   const out: Chunk[] = [];
   let cur: Chunk | null = null;
   let chars = 0;
@@ -40,8 +40,8 @@ const CHUNKS: Chunk[] = (() => {
 })();
 
 // ---------------------------------------------------------------------------
-// No repetir abajo lo que ya dice arriba: si al menos la mitad de las palabras
-// con contenido de una frase están en el titular visible, esa frase se oculta.
+// No repetir abajo lo que ya dice arriba: una frase se oculta solo si TODAS sus
+// palabras con contenido están en el titular visible. Si dice algo más, se muestra.
 
 const STOP = new Set(['the', 'a', 'an', 'and', 'of', 'to', 'it', 'is', 'at', 'in', 'on', 'for', 'she', 'her', 'its', 'so', 'as', 'with', 'that', 'this', 'be']);
 const NUM: Record<string, string> = {'40': 'forty', '90': 'ninety', '30': 'thirty', '20': 'twenty', '2nd': 'second'};
@@ -64,21 +64,23 @@ const TOP_TEXTS: {words: Set<string>; from: number; to: number}[] = [
     const to = k.to ? cueFrame(k.to) : sceneEnd(from);
     return {words: new Set(content(k.text)), from: bodyToTimeline(from), to: bodyToTimeline(to)};
   }),
-  {words: new Set(content(END_CARD_TEXTS.guarantee)), from: bodyToTimeline(bodyCueFrame('guaranteeWord')), to: TOTAL_FRAMES},
+  {words: new Set(content(END_CARD_TEXTS.guarantee)), from: bodyToTimeline(bodyCueFrame('guarantee')), to: TOTAL_FRAMES},
   {words: new Set(content(END_CARD_TEXTS.stock)), from: bodyToTimeline(bodyCueFrame('inStock', -3)), to: TOTAL_FRAMES},
   {words: new Set(content(END_CARD_TEXTS.tap)), from: bodyToTimeline(bodyCueFrame('tapBelow')), to: TOTAL_FRAMES},
   {words: new Set(content(END_CARD_TEXTS.sign)), from: bodyToTimeline(bodyCueFrame('yourSign')), to: TOTAL_FRAMES},
 ];
 
-const HIDDEN: boolean[] = CHUNKS.map((chunk, i) => {
+export const HIDDEN: boolean[] = CHUNKS.map((chunk, i) => {
   const from = chunk.from;
   const to = CHUNKS[i + 1]?.from ?? TOTAL_FRAMES;
   const words = chunk.words.flatMap((w) => content(w.text));
   if (!words.length) return false;
   return TOP_TEXTS.some((t) => {
-    if (t.to <= from || t.from >= to) return false;
+    // el titular tiene que estar ya en pantalla cuando empieza la frase
+    const probe = Math.min(from + 2, to - 1);
+    if (t.from > probe || t.to <= probe) return false;
     const shared = words.filter((w) => t.words.has(w)).length;
-    return shared / words.length >= 0.5;
+    return shared === words.length;
   });
 });
 

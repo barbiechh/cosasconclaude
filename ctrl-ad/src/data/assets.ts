@@ -31,6 +31,10 @@ export const ASSET_MANIFEST: AssetSlot[] = [
 
   {id: 'body.orcaLeaderPod', kind: 'photo', file: 'images/body/orca-leader-pod.png',
     description: 'Orca mayor al frente y su grupo detrás.'},
+  // Las crías (orquitas bebé), tres recortes de la misma ilustración.
+  {id: 'body.orcaCalfA', kind: 'cutout', file: 'images/body/orca-calf-a.png', description: 'Cría de orca nadando a la derecha.'},
+  {id: 'body.orcaCalfB', kind: 'cutout', file: 'images/body/orca-calf-b.png', description: 'Cría de orca de frente.'},
+  {id: 'body.orcaCalfC', kind: 'cutout', file: 'images/body/orca-calf-c.png', description: 'Cría de orca nadando a la izquierda.'},
   {id: 'body.fishSchool', kind: 'cutout', file: 'images/body/fish-school.png',
     description: 'Cardumen de salmones.'},
 

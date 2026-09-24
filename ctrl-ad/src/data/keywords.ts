@@ -38,9 +38,9 @@ export const BODY_KEYWORDS: BodyKeyword[] = [
   {text: '20 YEARS AGO', hi: '20', from: ['twentyYearsAgo']},
   // Puente
   {text: 'AT ITS BEST', hi: 'BEST', from: ['atItsBest'], to: ['whyDoSoMany']},
-  {text: 'THE WORST VERSION', hi: 'WORST', from: ['worstVersion'], size: L},
+  {text: 'THE WORST VERSION', hi: 'WORST', from: ['worstVersion', -3], size: L},
   // Slow fade
-  {text: 'A SLOW FADE', hi: 'FADE', from: ['slowFade'], to: ['firstTheFocus']},
+  {text: 'A SLOW FADE', hi: 'FADE', from: ['slowFade', -5], to: ['firstTheFocus']},
   {text: 'FOCUS', from: ['focusGoes'], to: ['wordsGo', -8], size: H},
   {text: 'DRIVE', from: ['driveGoes'], size: H},
   // Familia e identidad
@@ -64,7 +64,7 @@ export const BODY_KEYWORDS: BodyKeyword[] = [
   // Las respuestas de siempre
   {text: 'THE USUAL ANSWERS', hi: 'USUAL', from: ['usualAnswers'], to: ['hrtSorts'], size: L},
   {text: 'HRT', from: ['hrtSorts'], to: ['leavesTheFog'], size: H},
-  {text: 'LEAVES THE FOG', hi: 'FOG', from: ['leavesTheFog'], to: ['stimulants']},
+  {text: 'LEAVES THE FOG', hi: 'FOG', from: ['leavesTheFog', -4], to: ['stimulants']},
   {text: 'STIMULANTS', from: ['stimulants'], to: ['quietlyStop']},
   {text: 'THEY STOP WORKING', hi: 'STOP', from: ['quietlyStop'], size: L},
   // El fix -> CTRL
