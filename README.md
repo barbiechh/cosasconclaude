@@ -1,7 +1,8 @@
 # Cosas con Claude
 
-Proyectos que he hecho con Claude, cada uno en su carpeta.
+Índice de los proyectos que he hecho con Claude. Cada proyecto tiene su propio repo.
 
-| Proyecto | Qué hace |
+| Proyecto | Qué es |
 |---|---|
-| [dashboard-metricas](dashboard-metricas/) | Reporte de métricas de redes sociales (Instagram, TikTok, LinkedIn, YouTube). Claude lo llena a partir de un PDF y se puede descargar en PDF. |
+| [taller10x](https://github.com/barbiechh/taller10x) | Anuncios en video del Taller 10x de Espacio (Remotion): "La columna derecha" y "El Inventario". |
+| [espacio-landing-gif](https://github.com/barbiechh/espacio-landing-gif) | GIF resumen de la landing de ai.espacio.cool (Remotion). |
