@@ -33,7 +33,7 @@ export const TimedText: React.FC<TimedTextProps> = ({
 }) => {
   const frame = useCurrentFrame();
   if (frame < enterAtFrame) return null;
-  if (exitAtFrame !== undefined && frame > exitAtFrame + EXIT_FRAMES) return null;
+  if (exitAtFrame !== undefined && frame >= exitAtFrame) return null;
 
   const enter = interpolate(frame, [enterAtFrame, enterAtFrame + 6], [0, 1], {
     extrapolateLeft: 'clamp',
@@ -42,7 +42,7 @@ export const TimedText: React.FC<TimedTextProps> = ({
   const exit =
     exitAtFrame === undefined
       ? 0
-      : interpolate(frame, [exitAtFrame, exitAtFrame + EXIT_FRAMES], [0, 1], {
+      : interpolate(frame, [exitAtFrame - EXIT_FRAMES, exitAtFrame], [0, 1], {
           extrapolateLeft: 'clamp',
           extrapolateRight: 'clamp',
         });

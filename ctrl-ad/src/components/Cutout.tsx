@@ -46,13 +46,13 @@ export const Cutout: React.FC<CutoutProps> = ({
   const {fps} = useVideoConfig();
   const local = frame - enterAtFrame;
   if (local < 0) return null;
-  if (exitAtFrame !== undefined && frame > exitAtFrame + EXIT_FRAMES) return null;
+  if (exitAtFrame !== undefined && frame >= exitAtFrame) return null;
 
   const enter = spring({frame: local, fps, config: {damping: 15, stiffness: 190, mass: 0.6}});
   const exit =
     exitAtFrame === undefined
       ? 0
-      : interpolate(frame, [exitAtFrame, exitAtFrame + EXIT_FRAMES], [0, 1], {
+      : interpolate(frame, [exitAtFrame - EXIT_FRAMES, exitAtFrame], [0, 1], {
           extrapolateLeft: 'clamp',
           extrapolateRight: 'clamp',
         });
