@@ -51,27 +51,20 @@ export const ASSET_MANIFEST: AssetSlot[] = [
   {id: 'body.calmingPlants', kind: 'cutout', file: 'images/body/calming-plants.png',
     description: 'Las dos plantas calmantes.'},
 
-  // Fotos nuevas por frase (4:5 vertical). Mientras no existan, usan su respaldo.
-  {id: 'fade.focus', kind: 'photo', file: 'images/body/fade-focus.png', fallback: 'body.womanMidlifeDaily',
-    description: 'Ella frente a la laptop, mirada perdida: el foco se va.'},
-  {id: 'fade.words', kind: 'photo', file: 'images/body/fade-words.png', fallback: 'body.womanMidlifeDaily',
-    description: 'Ella a media conversación, buscando una palabra que no llega.'},
-  {id: 'fade.drive', kind: 'photo', file: 'images/body/fade-drive.png', fallback: 'body.womanMidlifeDaily',
-    description: 'Ella en el sofá, sin energía, pendientes sin hacer.'},
-  {id: 'fade.snaps', kind: 'photo', file: 'images/body/fade-snaps.png', fallback: 'body.womanMidlifeDaily',
-    description: 'Ella levantando la voz en la cocina, arrepentida al instante.'},
-  {id: 'fade.mirror', kind: 'photo', file: 'images/body/fade-mirror.png', fallback: 'body.womanMidlifeDaily',
-    description: 'Ella mirándose al espejo del baño, sin reconocerse.'},
-  {id: 'brain.doctor', kind: 'photo', file: 'images/body/doctor-visit.png', fallback: 'body.womanMidlifeDaily',
-    description: 'Consulta médica: el doctor mira el expediente, no a ella.'},
-  {id: 'brain.foggy', kind: 'photo', file: 'images/body/woman-foggy.png', fallback: 'body.womanMidlifeDaily',
-    description: 'Ella tras una ventana empañada, luz gris.'},
-  {id: 'recovery.clear', kind: 'photo', file: 'images/body/recovery-clear.png', fallback: 'hook.woman',
-    description: 'Ella junto a una ventana luminosa, mirada clara.'},
-  {id: 'recovery.drive', kind: 'photo', file: 'images/body/recovery-drive.png', fallback: 'hook.woman',
-    description: 'Ella activa y enfocada (trabajando o caminando rápido).'},
-  {id: 'recovery.patience', kind: 'photo', file: 'images/body/recovery-patience.png', fallback: 'hook.woman',
-    description: 'Ella riendo con su pareja o su hija en la cocina.'},
+  // Fotos por frase (4:5 vertical, personas distintas). Opcionales: si faltan,
+  // el plano se sostiene con su gráfico animado.
+  {id: 'lost.focus', kind: 'photo', file: 'images/body/focus-lost.png', description: 'Pierde el foco.'},
+  {id: 'lost.words', kind: 'photo', file: 'images/body/words-lost.png', description: 'Se le van las palabras.'},
+  {id: 'lost.drive', kind: 'photo', file: 'images/body/drive-lost.png', description: 'Sin empuje.'},
+  {id: 'lost.patience', kind: 'photo', file: 'images/body/patience-lost.png', description: 'Pierde la paciencia con los suyos.'},
+  {id: 'lost.mirror', kind: 'photo', file: 'images/body/mirror.png', description: 'No se reconoce en el espejo.'},
+  {id: 'brain.doctor', kind: 'photo', file: 'images/body/doctor-visit.png', description: 'El médico mira el expediente, no a ella.'},
+  {id: 'brain.foggy', kind: 'photo', file: 'images/body/woman-foggy.png', description: 'Tras un vidrio empañado.'},
+  {id: 'back.focus', kind: 'photo', file: 'images/body/focus-back.png', description: 'Recupera el foco.'},
+  {id: 'back.words', kind: 'photo', file: 'images/body/words-back.png', description: 'Recupera las palabras.'},
+  {id: 'back.drive', kind: 'photo', file: 'images/body/drive-back.png', description: 'Recupera el empuje.'},
+  {id: 'back.patience', kind: 'photo', file: 'images/body/patience-back.png', description: 'Recupera la paciencia.'},
+  {id: 'back.herself', kind: 'photo', file: 'images/body/herself-again.png', description: 'Vuelve a ser ella.'},
 
   {id: 'product.ctrlBottle', kind: 'cutout', file: 'images/endcard/ctrl-bottle.png', brand: true,
     description: 'FOTO REAL del frasco de CTRL, fondo transparente. Nunca se inventa.'},
@@ -86,6 +79,9 @@ export const getAssetSlot = (id: string): AssetSlot => {
 };
 
 const exists = (file: string) => getStaticFiles().some((f) => f.name === file);
+
+/** ¿Se mostrará algo en este slot? (en Preview siempre: placeholder). */
+export const hasAsset = (id: string, usePlaceholder: boolean) => usePlaceholder || resolveAsset(id, false) !== null;
 
 /** Imagen a mostrar para un slot, o null si toca placeholder. */
 export const resolveAsset = (

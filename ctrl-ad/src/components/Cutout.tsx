@@ -81,6 +81,9 @@ export const Cutout: React.FC<CutoutProps> = ({
   const kb = zoom * (1 + 0.07 * Math.min(1, local / (fps * 5)));
 
   const asset = resolveAsset(assetId, usePlaceholder);
+  // En el render final, un slot opcional sin archivo no deja recuadro vacío;
+  // el frasco y el logo sí muestran su placeholder explícito.
+  if (!asset && !usePlaceholder && !getAssetSlot(assetId).brand) return null;
 
   return (
     <div

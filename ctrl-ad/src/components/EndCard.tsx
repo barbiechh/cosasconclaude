@@ -5,6 +5,7 @@ import {TimedText} from './TimedText';
 import {COLORS, FONT_FAMILY, FONT_WEIGHT, LAYOUT} from '../styles/tokens';
 import {WIDTH} from '../data/timing';
 import {resolveAsset} from '../data/assets';
+import {END_CARD_TEXTS} from '../data/keywords';
 
 export interface EndCardProps {
   usePlaceholder: boolean;
@@ -64,8 +65,8 @@ export const EndCard: React.FC<EndCardProps> = ({usePlaceholder, guaranteeAtFram
           transform: `scale(${0.94 + box * 0.06})`,
         }}
       />
-      <TimedText text="30-DAY GUARANTEE" highlight="30-DAY" enterAtFrame={guaranteeAtFrame} top={1095} fontSize={64} />
-      <TimedText text="that's your sign." enterAtFrame={yourSignAtFrame} top={1200} fontSize={52} />
+      <TimedText text={END_CARD_TEXTS.guarantee} highlight="30-DAY" enterAtFrame={guaranteeAtFrame} top={1095} fontSize={64} />
+      <TimedText text={END_CARD_TEXTS.sign} enterAtFrame={yourSignAtFrame} top={1200} fontSize={52} />
     </AbsoluteFill>
   );
 };

@@ -1,48 +1,46 @@
-# Imágenes nuevas para más acción
+# Imágenes para "lo pierde / lo recupera"
 
-Mientras no existan, el video usa una foto de respaldo (ya se ve completo).
-Al dejarlas en `public/images/body/` con estos nombres exactos, `npm run build`
-las usa sin tocar código.
+Déjalas en `public/images/body/` con estos nombres exactos y vuelve a
+renderizar (`npm run build`); no hay que tocar código. Mientras falte una, ese
+plano se sostiene solo con su gráfico animado (ficha, batería, letras, etc.).
 
-**Formato de todas:** PNG o JPG, **vertical 4:5 (1080×1350)**, foto documental
-natural, luz real, sin texto ni logos. **Misma mujer en todas**: usa
-`public/images/hook/woman-cutout.png` como referencia de personaje (unos 50 años,
-cabello castaño claro recogido). Así el video se lee como una sola historia.
+**Formato:** PNG o JPG, **vertical 4:5 (1080×1350)**, foto documental natural,
+luz real, sin texto ni logos. **Cada foto con una persona distinta** (mujeres de
+45 a 55 años, variedad de rasgos y contextos): no es un solo personaje.
 
-## Slow fade ("First the focus goes, then the words, then the drive…")
+## Lo pierde (tramo "slow fade")
 
-| Archivo | Se ve en | Prompt |
+| Archivo | Frase | Prompt |
 | --- | --- | --- |
-| `fade-focus.png` | "First the focus goes" | Mujer de ~50 años sentada frente a una laptop en una mesa de cocina, mirada perdida más allá de la pantalla, mano en la sien, luz de tarde gris, foto documental, vertical 4:5 |
-| `fade-words.png` | "then the words" | La misma mujer a media conversación con una amiga en un café, boca entreabierta buscando una palabra, gesto frustrado con la mano, foto documental natural, vertical 4:5 |
-| `fade-drive.png` | "then the drive" | La misma mujer hundida en el sofá con ropa deportiva, bolsa del gimnasio sin abrir a sus pies, lista de pendientes en la mesa, luz apagada, vertical 4:5 |
-| `fade-snaps.png` | "until she snaps at the people she loves most" | La misma mujer en la cocina levantando la voz a su hija adolescente, gesto tenso, la hija se aleja, foto documental, emoción real, vertical 4:5 |
-| `fade-mirror.png` | "she starts to believe this is just who she is now" | La misma mujer frente al espejo del baño, mirándose con cansancio, reflejo en primer plano, luz fría, vertical 4:5 |
+| `focus-lost.png` | "First the focus goes" | Mujer de unos 50 años frente a su laptop en la oficina, mirada perdida más allá de la pantalla, varias pestañas abiertas y notas adhesivas por todas partes, luz fría de tarde, foto documental, vertical 4:5 |
+| `words-lost.png` | "then the words" | Mujer de unos 50 años en una reunión, a media frase, mano en el aire buscando una palabra que no llega, colegas esperando desenfocados, foto documental, vertical 4:5 |
+| `drive-lost.png` | "then the drive" | Mujer de unos 50 años hundida en el sofá con ropa deportiva, tenis sin amarrar y bolsa del gimnasio sin abrir, luz apagada de tarde, vertical 4:5 |
+| `patience-lost.png` | "until she snaps at the people she loves most" | Mujer de unos 50 años en la cocina levantando la voz a su hija adolescente, gesto tenso, la hija se da la vuelta, emoción real, foto documental, vertical 4:5 |
+| `mirror.png` | "she starts to believe this is just who she is now" | Mujer de unos 50 años frente al espejo del baño, mirándose con cansancio, el reflejo en primer plano, luz fría, vertical 4:5 |
 
-## Estrógeno y dopamina ("Nobody tells her otherwise…")
+## Lo recupera (tramo de recuperación)
 
-| Archivo | Se ve en | Prompt |
+| Archivo | Frase | Prompt |
 | --- | --- | --- |
-| `doctor-visit.png` | "Nobody tells her otherwise" | La misma mujer sentada en un consultorio; el médico mira un expediente/tablet en vez de mirarla a ella, ella con expresión de no ser escuchada, foto documental, vertical 4:5 |
-| `woman-foggy.png` | "That's the fog" | La misma mujer detrás de una ventana empañada por la lluvia, rostro difuso y pensativo, tonos grises fríos, vertical 4:5 |
+| `focus-back.png` | "the fog lifts" | Mujer de unos 50 años escribiendo en su cuaderno junto a una ventana muy luminosa, concentrada y serena, escritorio ordenado, luz cálida de mañana, vertical 4:5 |
+| `drive-back.png` | "The drive comes back" | Mujer de unos 50 años corriendo al amanecer por un parque, paso decidido, sonrisa leve, foto documental con leve movimiento, vertical 4:5 |
+| `patience-back.png` | "and so does the patience" | Mujer de unos 50 años riendo con su hija adolescente mientras cocinan juntas, momento cálido y relajado, vertical 4:5 |
+| `words-back.png` | "She feels like herself again" (miniatura con palomita) | Mujer de unos 50 años presentando con seguridad frente a su equipo, hablando con las manos, colegas atentos, vertical 4:5 |
+| `herself-again.png` | "She feels like herself again" (foto central) | Retrato de mujer de unos 50 años en exterior a contraluz, sonrisa franca, mirada a cámara, luz dorada de tarde, vertical 4:5 |
 
-(El resto de ese tramo —análisis hormonal con lupa, molécula de estrógeno,
-partículas de dopamina, foco que parpadea, gráfica que cae— ya está animado en
-código y no necesita imágenes.)
+En "She feels like herself again", la foto central va acompañada de
+`focus-back`, `words-back` y `drive-back` en miniatura con palomita verde: lo
+que se perdió en el "slow fade" vuelve.
 
-## Recuperación ("And once the brain is building dopamine again…")
+## Opcionales del tramo de estrógeno
 
-| Archivo | Se ve en | Prompt |
+| Archivo | Frase | Prompt |
 | --- | --- | --- |
-| `recovery-clear.png` | "the fog lifts" | La misma mujer junto a una ventana muy luminosa, abriendo la cortina, mirada clara y serena, luz cálida de mañana, vertical 4:5 |
-| `recovery-drive.png` | "The drive comes back" | La misma mujer caminando rápido por la calle con ropa deportiva y audífonos, decidida, sonrisa leve, luz de mañana, foto documental con leve movimiento, vertical 4:5 |
-| `recovery-patience.png` | "and so does the patience" | La misma mujer riendo con su hija adolescente en la cocina mientras preparan comida, momento cálido y relajado, vertical 4:5 |
+| `doctor-visit.png` | "Nobody tells her otherwise" | Mujer de unos 50 años en un consultorio; el médico mira su tablet en vez de mirarla a ella, ella con expresión de no ser escuchada, vertical 4:5 |
+| `woman-foggy.png` | "That's the fog" | Mujer de unos 50 años detrás de una ventana empañada por la lluvia, rostro difuso y pensativo, tonos grises fríos, vertical 4:5 |
 
-## Opcional
-
-| Archivo | Se ve en | Prompt |
-| --- | --- | --- |
-| `woman-focus-fade.png` | "this stage arrives as a slow fade" | La misma mujer en su día a día, plano medio, cansada, vertical 4:5 |
+Sin estas dos, el análisis hormonal entra desde "Nobody tells her" y la niebla
+cubre la gráfica en "That's the fog".
 
 ## Siguen pendientes (marca real, no se generan)
 

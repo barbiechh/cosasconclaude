@@ -71,6 +71,7 @@ export const HOOK = {
     perimenopause: hookCue('perimenopause'),
     toAWhale: hookCue('to a whale', 2),
     completeOpposite: hookCue('complete opposite'),
+    opposite: hookCue('complete opposite', 1),
     toAWoman: hookCue('to a woman', 2),
   },
 };
