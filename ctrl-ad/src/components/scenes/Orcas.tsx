@@ -25,11 +25,11 @@ export const Orcas: React.FC<SceneProps> = ({plan, p}) => {
   const end = plan.durationInFrames;
   return (
     <Scene plan={plan} punches={[at('ninety'), at('leaderWord'), at('disappearWord')]}>
-      <Beat from={0} to={at('scientists')} exit="up">
+      <Beat from={0} to={at('nobodyCould')} exit="up">
         <Lifeline p={p} at={at} />
       </Beat>
-      <Beat from={at('scientists')} to={at('afterMenopause')} enter="right" exit="left">
-        <Observation p={p} at={at} />
+      <Beat from={at('nobodyCould')} to={at('afterMenopause')} enter="up" exit="left">
+        <ResearchBoard p={p} at={at} />
       </Beat>
       <Beat from={at('afterMenopause')} to={at('sheRemembers')} enter="fade" exit="fade">
         <PodFormation p={p} at={at} />
@@ -51,7 +51,6 @@ const Lifeline: React.FC<{p: boolean; at: At}> = ({p, at}) => {
   const second = ramp(frame, at('livesToNinety'), at('ninety', 8)); // 40 -> 90
   const age = second > 0 ? mix(40, 90, second) : 40 * first;
   const cap = springAt(frame, fps, at('babies'), 9);
-  const bracket = ramp(frame, at('nobodyCould'), at('nobodyCould', 14));
   const tipX = ageX(age);
   // las crías que ya tuvo la acompañan; después de los 40 no llega ninguna nueva
   const follow = ramp(frame, at('livesToNinety', -4), at('livesToNinety', 16));
@@ -67,10 +66,6 @@ const Lifeline: React.FC<{p: boolean; at: At}> = ({p, at}) => {
           <g transform={`translate(${ageX(40)}, ${LINE_Y}) scale(${cap})`}>
             <rect x={-10} y={-70} width={20} height={140} rx={8} fill={COLORS.red} stroke={COLORS.ink} strokeWidth={5} />
           </g>
-        )}
-        {bracket > 0 && (
-          <path d={`M ${ageX(41)} ${LINE_Y - 60} Q ${ageX(41)} ${LINE_Y - 110} ${ageX(50)} ${LINE_Y - 110} L ${ageX(81)} ${LINE_Y - 110} Q ${ageX(89)} ${LINE_Y - 110} ${ageX(89)} ${LINE_Y - 60}`}
-            fill="none" stroke={COLORS.yellow} strokeWidth={14} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - bracket} />
         )}
       </Layer>
       {/* edades grandes bajo la línea */}
@@ -97,49 +92,95 @@ const Lifeline: React.FC<{p: boolean; at: At}> = ({p, at}) => {
   );
 };
 
-// [desplazamiento x, desplazamiento y, zoom] de cada foto
-const CROPS: [number, number, number][] = [[0, 0, 1.05], [-150, 60, 1.7], [120, -20, 1.5], [-60, 90, 2.1], [200, 30, 1.8], [0, 20, 1.25]];
-
 // ---------------------------------------------------------------------------
-const Observation: React.FC<{p: boolean; at: At}> = ({p, at}) => {
+// Lámina de investigación: tres familias con las mismas ilustraciones, hilos
+// que unen a los miembros de cada una, fichas de observación que se llenan y
+// una regla de 30 años. Las crías crecen: son las mismas familias con el tiempo.
+type FamilyMember = {kind: 'adult' | CalfKind; x: number; y: number; w: number; left?: boolean};
+type Family = {color: string; cx: number; cy: number; rx: number; ry: number; members: FamilyMember[]; card: {x: number; y: number}};
+const FAMILIES: Family[] = [
+  {color: COLORS.red, cx: 300, cy: 700, rx: 190, ry: 130, card: {x: 190, y: 540},
+    members: [{kind: 'adult', x: 300, y: 670, w: 210}, {kind: 'a', x: 230, y: 780, w: 125}, {kind: 'b', x: 390, y: 790, w: 85}]},
+  {color: COLORS.blue, cx: 770, cy: 700, rx: 180, ry: 125, card: {x: 900, y: 540},
+    members: [{kind: 'adult', x: 790, y: 670, w: 200, left: true}, {kind: 'c', x: 720, y: 785, w: 125, left: true}]},
+  {color: COLORS.green, cx: 520, cy: 1010, rx: 210, ry: 125, card: {x: 860, y: 1100},
+    members: [{kind: 'adult', x: 500, y: 980, w: 210}, {kind: 'a', x: 640, y: 1070, w: 115}, {kind: 'c', x: 380, y: 1075, w: 115}]},
+];
+
+const ResearchBoard: React.FC<{p: boolean; at: At}> = ({p, at}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const start = at('scientists');
   const stop = at('thirtyYears', 6);
-  const cards = CROPS.length;
-  const years = Math.floor(mix(1, 30, ramp(frame, start, stop, (t) => t)));
+  const years = ramp(frame, start, stop, (t) => t); // 0..1 = año 1..30
+  const q = springAt(frame, fps, at('why'), 10) * (1 - ramp(frame, start, start + 8));
+  const cards = springAt(frame, fps, at('families', -6), 12);
+  const grow = 0.8 + 0.4 * years;
   return (
     <>
-      {Array.from({length: cards}, (_, i) => {
-        const t0 = start + Math.round(((stop - start) * i) / cards);
-        const k = springAt(frame, fps, t0, 15);
-        if (k <= 0) return null;
-        const x = 540 + (i - 2.5) * 18;
-        const y = 800 - i * 14;
+      <Card x={540} y={880} w={980} h={820} rot={-0.8} style={{background: '#f7f5ee'}} />
+      {[[80, 490], [1000, 490], [80, 1270], [1000, 1270]].map(([x, y], i) => (
+        <div key={i} style={{position: 'absolute', left: x - 13, top: y - 13, width: 26, height: 26, borderRadius: 13, background: COLORS.red, border: `4px solid ${COLORS.ink}`}} />
+      ))}
+      {FAMILIES.map((fam, fi) => {
+        const loop = ramp(frame, start + fi * 4, start + 16 + fi * 4, (t) => t);
+        const lines = ramp(frame, start + 14 + fi * 4, start + 28 + fi * 4, (t) => t);
+        const adult = fam.members[0];
         return (
-          <div key={i} style={{position: 'absolute', inset: 0, transform: `translate(${(1 - k) * 700}px, ${(1 - k) * -80}px)`, opacity: Math.min(1, k * 2)}}>
-            <Card x={x} y={y} w={560} h={380} rot={(i % 2 ? 1 : -1) * (2 + i * 0.6)}>
-              {/* la misma familia en cada ficha, con otro encuadre */}
-              <div style={{position: 'absolute', left: 18, top: 18, width: 514, height: 300, overflow: 'hidden', borderRadius: 6}}>
-                <Pic id="body.orcaLeaderPod" p={p} x={257 + CROPS[i][0]} y={150 + CROPS[i][1]} w={514 * CROPS[i][2]} aspect={1672 / 941} shadow={false} />
-              </div>
-            </Card>
-          </div>
+          <React.Fragment key={fi}>
+            <Layer>
+              <ellipse cx={fam.cx} cy={fam.cy} rx={fam.rx} ry={fam.ry} fill="none" stroke={fam.color} strokeWidth={8} strokeDasharray="1" pathLength={1}
+                strokeDashoffset={1 - loop} transform={`rotate(-4, ${fam.cx}, ${fam.cy})`} />
+              {fam.members.slice(1).map((m, mi) => (
+                <line key={mi} x1={adult.x} y1={adult.y + 30} x2={mix(adult.x, m.x, lines)} y2={mix(adult.y + 30, m.y, lines)}
+                  stroke={fam.color} strokeWidth={7} strokeLinecap="round" />
+              ))}
+            </Layer>
+            {fam.members.map((m, mi) =>
+              m.kind === 'adult' ? (
+                <Orca key={mi} p={p} x={m.x} y={m.y + Math.sin(frame / 12 + fi) * 4} w={m.w} flip={m.left} />
+              ) : (
+                <Calf key={mi} p={p} kind={m.kind} x={m.x} y={m.y + Math.sin(frame / 10 + mi) * 4} w={m.w} scale={grow} facingLeft={m.left} />
+              )
+            )}
+            {q > 0 && (
+              <div style={{position: 'absolute', left: fam.cx - 40, top: fam.cy - fam.ry - 70, width: 80, textAlign: 'center', ...font, fontSize: 90, color: COLORS.red,
+                transform: `scale(${q}) rotate(${(fi - 1) * 8}deg)`}}>?</div>
+            )}
+            {cards > 0 && <ObsCard x={fam.card.x} y={fam.card.y} color={fam.color} k={cards} marks={Math.floor(years * 10)} rot={(fi - 1) * 4} />}
+          </React.Fragment>
         );
       })}
-      {/* regla de años: una marca por año */}
+      {/* regla de 30 años */}
       <Layer>
-        {Array.from({length: 30}, (_, i) => {
-          if (i >= years) return null;
-          const x = 150 + (i / 29) * 780;
-          const tall = (i + 1) % 10 === 0;
-          return <line key={i} x1={x} x2={x} y1={1180} y2={tall ? 1090 : 1130} stroke={tall ? COLORS.red : COLORS.ink} strokeWidth={tall ? 12 : 8} strokeLinecap="round" />;
-        })}
-        <line x1={140} x2={140 + ramp(frame, start, stop, (t) => t) * 800} y1={1184} y2={1184} stroke={COLORS.ink} strokeWidth={10} strokeLinecap="round" />
+        <line x1={150} x2={930} y1={1225} y2={1225} stroke={COLORS.ink} strokeWidth={8} strokeLinecap="round" />
+        {Array.from({length: 7}, (_, i) => (
+          <line key={i} x1={150 + i * 130} x2={150 + i * 130} y1={1225} y2={i % 2 ? 1205 : 1190} stroke={COLORS.ink} strokeWidth={6} strokeLinecap="round" />
+        ))}
+        <line x1={150} x2={150 + years * 780} y1={1225} y2={1225} stroke={COLORS.yellow} strokeWidth={14} strokeLinecap="round" opacity={years > 0 ? 1 : 0} />
+        {years > 0 && <circle cx={150 + years * 780} cy={1225} r={20} fill={COLORS.yellow} stroke={COLORS.ink} strokeWidth={6} />}
       </Layer>
     </>
   );
 };
+
+/** Ficha de observación clavada a la lámina: marcas de conteo que se acumulan. */
+const ObsCard: React.FC<{x: number; y: number; color: string; k: number; marks: number; rot: number}> = ({x, y, color, k, marks, rot}) => (
+  <div style={{position: 'absolute', left: x - 80, top: y - 48, width: 160, height: 96, background: COLORS.card, border: `4px solid ${COLORS.ink}`, borderTop: `14px solid ${color}`,
+    borderRadius: 8, boxShadow: '0 8px 16px rgba(0,0,0,0.18)', transform: `scale(${k}) rotate(${rot}deg)`, boxSizing: 'border-box'}}>
+    <svg width={152} height={78} style={{position: 'absolute', left: 0, top: 0}}>
+      {Array.from({length: Math.min(10, marks)}, (_, i) => {
+        const g = Math.floor(i / 5);
+        const j = i % 5;
+        return j < 4 ? (
+          <line key={i} x1={18 + g * 64 + j * 11} x2={18 + g * 64 + j * 11} y1={18} y2={58} stroke={COLORS.ink} strokeWidth={5} strokeLinecap="round" />
+        ) : (
+          <line key={i} x1={12 + g * 64} x2={60 + g * 64} y1={52} y2={24} stroke={COLORS.ink} strokeWidth={5} strokeLinecap="round" />
+        );
+      })}
+    </svg>
+  </div>
+);
 
 // ---------------------------------------------------------------------------
 // El grupo en la superficie: olas, aletas lejanas, dos adultas y las tres crías.

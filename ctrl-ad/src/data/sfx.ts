@@ -33,7 +33,9 @@ export const SFX: SfxCue[] = [
   ...PUSH_FRAMES.map((f) => ({sfx: 'whoosh' as const, at: f - 2, volume: 0.16})),
 
   // Hook
+  {sfx: 'card', at: H('women', 2), volume: 0.2},
   {sfx: 'splash', at: H('killerWhales', -1), volume: 0.45},
+  {sfx: 'flip', at: H('but', 2), volume: 0.2},
   {sfx: 'draw', at: H('only'), volume: 0.26},
   {sfx: 'erase', at: H('opposite', 5), volume: 0.32},
   {sfx: 'buzz', at: H('opposite', 10), volume: 0.28},
@@ -42,8 +44,8 @@ export const SFX: SfxCue[] = [
   {sfx: 'bubble', at: B('stopsHaving'), volume: 0.35},
   {sfx: 'bubble', at: B('stopsHaving', 12), volume: 0.28},
   {sfx: 'thud', at: B('babies'), volume: 0.4},
-  {sfx: 'card', at: B('scientists'), volume: 0.28},
-  {sfx: 'riffle', at: B('families'), volume: 0.26},
+  {sfx: 'draw', at: B('scientists'), volume: 0.26},
+  {sfx: 'card', at: B('families', -6), volume: 0.28},
   {sfx: 'fish', at: B('disappearWord', 2), volume: 0.45},
   {sfx: 'splash', at: B('everyWhaleFollows'), volume: 0.22},
   {sfx: 'draw', at: B('sheRemembers', 12), volume: 0.32},

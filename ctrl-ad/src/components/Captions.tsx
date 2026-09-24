@@ -1,7 +1,7 @@
 import React from 'react';
 import {interpolate, useCurrentFrame} from 'remotion';
 import rawWords from '../data/voiceover-words.json';
-import {BODY_AUDIO_START_SECONDS, HOOK, HOOK_FRAMES, TOTAL_FRAMES, WIDTH, bodyCueFrame, secToFrame} from '../data/timing';
+import {BODY_AUDIO_START_SECONDS, HOOK, HOOK_FRAMES, TOTAL_FRAMES, WIDTH, bodyCueFrame, hookCueFrame, secToFrame} from '../data/timing';
 import {BODY_KEYWORDS, END_CARD_TEXTS, HOOK_TEXT_WINDOWS, cueFrame} from '../data/keywords';
 import {OVERLAP, SCENES} from '../data/scenes';
 import {COLORS, FONT_FAMILY, FONT_WEIGHT} from '../styles/tokens';
@@ -84,6 +84,11 @@ export const HIDDEN: boolean[] = CHUNKS.map((chunk, i) => {
   });
 });
 
+// Mientras el hook muestra la raya divisoria, el caption lleva una placa de
+// papel para leerse por encima de la raya.
+const PLATE_FROM = hookCueFrame('but');
+const PLATE_TO = HOOK_FRAMES + OVERLAP;
+
 /** Caption abajo en el área segura, con la palabra hablada resaltada (salvo si repite el titular). */
 export const Captions: React.FC = () => {
   const frame = useCurrentFrame();
@@ -94,6 +99,8 @@ export const Captions: React.FC = () => {
   const local = frame - chunk.from;
   const pop = interpolate(local, [0, 4], [0.9, 1], {extrapolateRight: 'clamp'});
   const fade = interpolate(local, [0, 3], [0, 1], {extrapolateRight: 'clamp'});
+
+  const plate = frame >= PLATE_FROM && frame < PLATE_TO;
 
   let active = -1;
   chunk.words.forEach((w, i) => {
@@ -117,6 +124,7 @@ export const Captions: React.FC = () => {
         opacity: fade,
       }}
     >
+      <span style={plate ? {display: 'inline-block', padding: '6px 8px', borderRadius: 22, backgroundColor: 'rgba(243,242,237,0.97)', boxShadow: '0 6px 16px rgba(0,0,0,0.14)'} : undefined}>
       {chunk.words.map((w, i) => {
         const on = i === active;
         const k = on ? interpolate(frame - w.from, [0, 3], [0, 1], {extrapolateRight: 'clamp'}) : 0;
@@ -137,6 +145,7 @@ export const Captions: React.FC = () => {
           </span>
         );
       })}
+      </span>
     </div>
   );
 };
