@@ -6,3 +6,4 @@
 |---|---|
 | [taller10x](https://github.com/barbiechh/taller10x) | Anuncios en video del Taller 10x de Espacio (Remotion): "La columna derecha" y "El Inventario". |
 | [espacio-landing-gif](https://github.com/barbiechh/espacio-landing-gif) | GIF resumen de la landing de ai.espacio.cool (Remotion). |
+| [ctrl-ad](ctrl-ad/) | Anuncio vertical de CTRL (Remotion). Vive aquí mientras se mueve a su propio repo. |

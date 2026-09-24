@@ -29,6 +29,20 @@ export const ASSET_MANIFEST: AssetSlot[] = [
   {id: 'hook.orca', kind: 'cutout', file: 'images/hook/orca-cutout.png',
     description: 'Orca, recorte naturalista.'},
 
+  // Detalles recortados de la misma orca (aleta dorsal y cola), para planos cerrados.
+  {id: 'hook.orcaFin', kind: 'cutout', file: 'images/hook/details/orca-fin.png',
+    description: 'Aleta dorsal de la orca (detalle).'},
+  {id: 'hook.orcaTail', kind: 'cutout', file: 'images/hook/details/orca-tail.png',
+    description: 'Cola de la orca (detalle).'},
+
+  // Las tres crías ilustradas, separadas de una sola imagen (fondo transparente).
+  {id: 'body.calfRight', kind: 'cutout', file: 'images/body/calves/calf-swim-right.png',
+    description: 'Cría de orca nadando a la derecha.'},
+  {id: 'body.calfFront', kind: 'cutout', file: 'images/body/calves/calf-front.png',
+    description: 'Cría de orca de frente.'},
+  {id: 'body.calfLeft', kind: 'cutout', file: 'images/body/calves/calf-swim-left.png',
+    description: 'Cría de orca nadando a la izquierda.'},
+
   {id: 'body.orcaLeaderPod', kind: 'photo', file: 'images/body/orca-leader-pod.png',
     description: 'Orca mayor al frente y su grupo detrás.'},
   {id: 'body.fishSchool', kind: 'cutout', file: 'images/body/fish-school.png',

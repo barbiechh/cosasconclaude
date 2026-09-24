@@ -174,3 +174,56 @@ tense = (np.sin(2 * np.pi * 110 * x) + np.sin(2 * np.pi * 116.5 * x) + 0.4 * np.
 save("pad_tense", lowpass(tense, 700) * np.minimum(1, np.minimum(x, d - x) / 0.5), 0.3)
 warm = sum(np.sin(2 * np.pi * f * x) for f in (130.8, 164.8, 196.0, 246.9)) * lfo
 save("pad_warm", lowpass(warm, 1200) * np.minimum(1, np.minimum(x, d - x) / 0.5), 0.3)
+
+# ---------------------------------------------------------------------------
+# V3: más variedad de timbres (para no repetir "lock"/"pop"/"card" en cadena).
+# Se añaden al final para no alterar la secuencia aleatoria de los de arriba.
+
+# Toque suave de fieltro (una pieza de papel que se apoya), más grave que "pop".
+x = t(0.12)
+tap = np.sin(2 * np.pi * (330 - 600 * x) * x) * env(len(x), 0.003, 0.035) + lowpass(noise(0.12), 900) * env(len(x), 0.001, 0.01) * 0.35
+save("tap_soft", tap, 0.4)
+
+# Papel que se desliza sobre papel.
+d = 0.32
+x = t(d)
+sl = highpass(lowpass(noise(d), 3200), 700) * np.sin(np.pi * x / d) ** 1.5 * (0.7 + 0.3 * np.sin(2 * np.pi * 23 * x))
+save("paper_slide", sl, 0.3)
+
+# Chapuzón: golpe grave de agua + espuma que se deshace.
+d = 0.9
+x = t(d)
+body = lowpass(noise(d), 700 + 1800 * np.exp(-x / 0.08)) * env(len(x), 0.004, 0.18)
+low = np.sin(2 * np.pi * (140 - 60 * x) * x) * env(len(x), 0.004, 0.09) * 0.6
+fizz = highpass(noise(d), 3500) * env(len(x), 0.05, 0.25) * 0.12
+save("water_splash", body + low + fizz, 0.4)
+
+# Agua que se mueve (oleaje suave, sin golpe).
+d = 1.4
+x = t(d)
+swell = lowpass(noise(d), 500 + 500 * np.sin(np.pi * x / d)) * np.sin(np.pi * x / d) ** 2
+save("water_swell", swell, 0.3)
+
+# Burbujas sueltas (una por cría), tres alturas distintas.
+for i, f0 in enumerate((420, 560, 700)):
+    xx = t(0.16)
+    b = np.sin(2 * np.pi * (f0 + 1600 * xx) * xx) * env(len(xx), 0.004, 0.04)
+    save(f"bubble{i + 1}", b, 0.3)
+
+# Marimba grave y cálida (en lugar de la campanita aguda de "lock").
+d = 0.8
+x = t(d)
+mar = (np.sin(2 * np.pi * 392 * x) + 0.25 * np.sin(2 * np.pi * 392 * 4 * x) * np.exp(-x / 0.05)) * env(len(x), 0.002, 0.22)
+save("chime_soft", mar, 0.35)
+
+# Pestillo de madera: dos clics graves, sin campana.
+parts = []
+for i, f0 in enumerate((620, 480)):
+    xx = t(0.05)
+    parts.append((i * 0.07, np.sin(2 * np.pi * f0 * xx) * env(len(xx), 0.0005, 0.012) + lowpass(noise(0.05), 2000) * env(len(xx), 0.0005, 0.004) * 0.4))
+save("latch", place(0.2, *parts), 0.4)
+
+# Paso de escena alternativo: más corto y más grave que "whoosh".
+d = 0.3
+x = t(d)
+save("whoosh_soft", lowpass(noise(d), 200 + 1300 * np.sin(np.pi * x / d)) * np.sin(np.pi * x / d) ** 2, 0.35)

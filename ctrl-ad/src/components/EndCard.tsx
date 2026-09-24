@@ -6,7 +6,9 @@ import {LeaderRing} from './figures';
 import {Calendar30, Flow, Rays} from './mechanisms';
 import {CTRL_ASPECT} from './scenes/Fix';
 import {COLORS, LAYOUT} from '../styles/tokens';
-import {BodyCueKey, bodyCueFrame} from '../data/timing';
+import {BODY_AUDIO_START_SECONDS, BodyCueKey, bodyCueFrame, secToFrame} from '../data/timing';
+import rawWords from '../data/voiceover-words.json';
+import {CAPTION_HOLD_FRAMES} from './Captions';
 import {END_CARD_CUE} from '../data/scenes';
 import {END_CARD_TEXTS} from '../data/keywords';
 
@@ -43,7 +45,11 @@ export const EndCard: React.FC<EndCardProps> = ({usePlaceholder: p}) => {
   const stockOut = toFinal;
   const tap = springAt(frame, fps, e('tapBelow'), 11);
   const bob = Math.abs(Math.sin(frame / 7)) * 16;
-  const sign = springAt(frame, fps, e('yourSign'), 12);
+  // El texto grande "that's your sign." entra cuando se va el caption de esas
+  // mismas palabras (fin de la última palabra + su salida), para que no compitan.
+  const lastWordEnd = (rawWords as {end: number}[])[rawWords.length - 1].end;
+  const signAt = secToFrame(lastWordEnd - BODY_AUDIO_START_SECONDS) - bodyCueFrame(END_CARD_CUE) + CAPTION_HOLD_FRAMES;
+  const sign = springAt(frame, fps, signAt, 12);
 
   return (
     <AbsoluteFill>

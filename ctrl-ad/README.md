@@ -73,7 +73,8 @@ línea de tiempo según la duración del nuevo hook.
   recuperación, cierre). Dentro, cada momento es un `<Beat>` que entra y sale
   antes del siguiente: una protagonista por momento, nada se acumula.
 - `src/components/figures.tsx`: figuras ilustradas en papel recortado (la
-  protagonista siempre con abrigo azul), la orca y el anillo amarillo del líder.
+  protagonista siempre con abrigo azul), la orca adulta y sus variantes (aleta,
+  cola, orca vista desde arriba, las tres crías) y el anillo amarillo del líder.
 - `src/components/mechanisms.tsx`: diana del foco, letras que se escriben y
   borran, engranaje, barra, foco, niebla, calendario de 30 días, etc.
 - `src/components/EndCard.tsx`: frasco real, garantía y CTA.
@@ -83,12 +84,44 @@ línea de tiempo según la duración del nuevo hook.
 **No hay fotografías de personas.** Todas las mujeres son figuras ilustradas
 dibujadas en código.
 
+## Variedad de orcas (V3)
+
+Del primer fotograma a "twenty years ago" nunca sale el mismo recorte como
+protagonista dos momentos seguidos:
+
+| Momento | Visual |
+|---|---|
+| Women and killer whales … perimenopause | orca adulta (recorte completo) |
+| But what it does to a whale … to a woman | dos trayectorias desde el mismo punto: verde que sube (orca y grupo vistos desde arriba) y roja que cae (ella) |
+| Around forty … lives to ninety | aleta dorsal recorriendo la línea de vida; las tres crías en "stops having babies" |
+| until scientists followed … thirty years | fichas con fotos de la manada (recortes de `orca-leader-pod.png`) |
+| After menopause, she becomes the leader | orca adulta en primer plano, enorme |
+| of the whole pod … every whale follows her | el grupo visto desde arriba formando la V |
+| because she remembers … twenty years ago | orca adulta en la ruta, el grupo como sombras |
+| Obviously a woman isn't a whale | cola saliendo del agua |
+
+Recortes: `public/images/body/calves/` (las tres crías, separadas de una sola
+imagen con fondo transparente) y `public/images/hook/details/` (aleta y cola,
+recortadas de `orca-cutout.png`).
+
+## Captions
+
+`src/components/Captions.tsx` subtitula TODAS las palabras del voiceover (ya
+no se ocultan cuando hay un titular arriba). Cada cláusula se reparte en trozos
+de ≤4 palabras y ≤18 caracteres (una sola línea, sin palabras sueltas); cada
+trozo entra con su primera palabra y sale 1/3 s después de la última. Posición
+fija: y = 1405, x = 130–950 (fuera de la franja inferior y de los iconos de
+Reels/TikTok). Los titulares viven arriba (y = 290), así que nunca se tapan.
+
 ## Sonido
 
 `scripts/make_sfx.py` sintetiza los efectos en `public/sfx/` (pop, whoosh,
-tick, card, draw, fish, erase, click, buzz, gear_stop, lock, reveal, flip,
-stamp, snap, rise y dos fondos). `src/data/sfx.ts` ata cada uno a un cue del
-guion con su volumen; la voz siempre queda por encima.
+whoosh_soft, tick, card, paper_slide, tap_soft, draw, fish, bubble1-3,
+water_splash, water_swell, erase, click, buzz, gear_stop, latch, lock,
+chime_soft, reveal, flip, stamp, snap, rise y dos fondos). `src/data/sfx.ts`
+ata cada uno a un cue del guion con su volumen; la voz siempre queda por
+encima. El "lock" (clics + campanita tipo check-in) suena solo dos veces:
+"she feels like herself again" y la garantía.
 
 ## Recursos
 

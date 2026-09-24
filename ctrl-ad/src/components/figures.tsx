@@ -160,3 +160,78 @@ export const LeaderRing: React.FC<{cx: number; cy: number; rx: number; ry: numbe
     </svg>
   );
 };
+
+// ---------------------------------------------------------------------------
+// Variantes de orca para no repetir el mismo recorte en escenas seguidas.
+
+/** Proporciones (ancho / alto) de los recortes de detalle y de las crías. */
+export const FIN_ASPECT = 250 / 305;
+export const TAIL_ASPECT = 360 / 205;
+export const CALVES = {
+  right: {id: 'body.calfRight', aspect: 927 / 437},
+  front: {id: 'body.calfFront', aspect: 701 / 529},
+  left: {id: 'body.calfLeft', aspect: 1005 / 467},
+} as const;
+export type CalfPose = keyof typeof CALVES;
+
+export const Calf: React.FC<{p: boolean; pose: CalfPose; x: number; y: number; w: number; rot?: number; scale?: number; opacity?: number; filter?: string}> = ({
+  p, pose, x, y, w, rot = 0, scale = 1, opacity = 1, filter,
+}) => <Pic id={CALVES[pose].id} p={p} x={x} y={y} w={w} aspect={CALVES[pose].aspect} rot={rot} scale={scale} opacity={opacity} filter={filter} />;
+
+/** Aleta dorsal (detalle). (x, y) = centro del recorte. */
+export const OrcaFin: React.FC<{p: boolean; x: number; y: number; w: number; rot?: number; opacity?: number; scale?: number}> = ({p, x, y, w, rot = 0, opacity = 1, scale = 1}) => (
+  <Pic id="hook.orcaFin" p={p} x={x} y={y} w={w} aspect={FIN_ASPECT} rot={rot} opacity={opacity} scale={scale} />
+);
+
+/** Cola (detalle) saliendo del agua, aletas hacia arriba; el corte queda abajo a la izquierda. */
+export const OrcaTail: React.FC<{p: boolean; x: number; y: number; w: number; rot?: number; opacity?: number; scale?: number}> = ({p, x, y, w, rot = 0, opacity = 1, scale = 1}) => (
+  <Pic id="hook.orcaTail" p={p} x={x} y={y} w={w} aspect={TAIL_ASPECT} rot={rot} opacity={opacity} scale={scale} />
+);
+
+/**
+ * Orca vista desde arriba, en papel recortado (silueta negra con borde blanco
+ * y sombra, como las figuras). Centrada en (x, y); `heading` en grados
+ * (0 = hacia arriba, 90 = hacia la derecha). `sway` mueve la cola.
+ */
+export const OrcaTop: React.FC<{x: number; y: number; w: number; heading?: number; sway?: number; opacity?: number; scale?: number; tone?: string}> = ({
+  x, y, w, heading = 0, sway = 0, opacity = 1, scale = 1, tone = COLORS.ink,
+}) => {
+  const h = w * 2.5;
+  const tail = Math.sin(sway) * 9;
+  return (
+    <svg width={w} height={h} viewBox="0 0 120 300"
+      style={{position: 'absolute', left: x - w / 2, top: y - h / 2, overflow: 'visible', opacity,
+        transform: `rotate(${heading}deg) scale(${scale})`, transformOrigin: '50% 50%'}}>
+      <defs>
+        <filter id="paperCutTop" x="-40%" y="-20%" width="180%" height="140%">
+          <feMorphology in="SourceAlpha" operator="dilate" radius={4} result="thick" />
+          <feFlood floodColor="#fffdf8" result="white" />
+          <feComposite in="white" in2="thick" operator="in" result="outline" />
+          <feDropShadow in="outline" dx={0} dy={6} stdDeviation={5} floodColor="#000" floodOpacity={0.22} result="shadowed" />
+          <feMerge>
+            <feMergeNode in="shadowed" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#paperCutTop)">
+        {/* aletas pectorales */}
+        <path d="M34 92 C 14 104 4 128 6 142 C 18 134 30 120 38 108 Z" fill={tone} />
+        <path d="M86 92 C 106 104 116 128 114 142 C 102 134 90 120 82 108 Z" fill={tone} />
+        {/* cola, con vaivén */}
+        <g transform={`rotate(${tail}, 60, 232)`}>
+          <path d="M52 200 L 68 200 L 64 246 L 56 246 Z" fill={tone} />
+          <path d="M60 236 C 70 250 96 260 114 260 C 102 276 76 282 60 268 C 44 282 18 276 6 260 C 24 260 50 250 60 236 Z" fill={tone} />
+        </g>
+        {/* cuerpo */}
+        <path d="M60 6 C 84 6 93 42 93 82 C 93 132 80 176 68 214 L 52 214 C 40 176 27 132 27 82 C 27 42 36 6 60 6 Z" fill={tone} />
+        {/* manchas blancas de los ojos, que asoman por los lados */}
+        <ellipse cx={33} cy={54} rx={4} ry={13} fill="#fbfaf6" />
+        <ellipse cx={87} cy={54} rx={4} ry={13} fill="#fbfaf6" />
+        {/* montura gris y aleta dorsal vista desde arriba */}
+        <ellipse cx={60} cy={150} rx={13} ry={24} fill="#8f897e" opacity={0.85} />
+        <ellipse cx={60} cy={116} rx={5} ry={28} fill="#000" opacity={0.55} />
+      </g>
+    </svg>
+  );
+};

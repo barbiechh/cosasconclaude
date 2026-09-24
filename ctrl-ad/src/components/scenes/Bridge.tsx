@@ -6,7 +6,7 @@ import React from 'react';
 import {useCurrentFrame, useVideoConfig} from 'remotion';
 import {COLORS} from '../../styles/tokens';
 import {Beat, Layer, Pic, font, mix, ramp, springAt} from '../kit';
-import {Figure, Hair, Orca} from '../figures';
+import {Figure, Hair, OrcaTail, TAIL_ASPECT} from '../figures';
 import {Rays} from '../mechanisms';
 import {Scene, SceneProps} from './SceneFrame';
 
@@ -29,14 +29,25 @@ export const Bridge: React.FC<SceneProps> = ({plan, p}) => {
   );
 };
 
+const WATER_Y = 1040;
+
 const NotAWhale: React.FC<{p: boolean; at: At}> = ({p, at}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const neq = springAt(frame, fps, at('isntAWhale'), 9, 260);
+  // la cola sube del agua al entrar y se hunde un poco después del "≠"
+  const tailY = (1 - springAt(frame, fps, 2, 14)) * (420 / TAIL_ASPECT + 80) + ramp(frame, at('isntAWhale', 10), at('butIfABrain'), (t) => t) * 60;
   return (
     <>
       <Figure x={290} y={1240} h={640} />
-      <Orca p={p} x={790} y={900 + Math.sin(frame / 10) * 6} w={430} />
+      {/* cola que sale del agua (detalle; la orca completa ya se vio en la escena anterior) */}
+      <div style={{position: 'absolute', left: 560, top: 560, width: 480, height: WATER_Y - 560, overflow: 'hidden'}}>
+        <OrcaTail p={p} x={250} y={WATER_Y - 560 - 150 + tailY} w={400} rot={-14 + Math.sin(frame / 12) * 2} />
+      </div>
+      <Layer>
+        <path d={`M 560 ${WATER_Y} q 30 -14 60 0 t 60 0 t 60 0 t 60 0 t 60 0 t 60 0 t 60 0 t 60 0`} fill="none" stroke={COLORS.ink} strokeWidth={10} strokeLinecap="round" />
+        <path d={`M 600 ${WATER_Y + 26} q 30 -10 60 0 t 60 0 t 60 0 t 60 0 t 60 0 t 60 0`} fill="none" stroke="#9fb4c3" strokeWidth={7} strokeLinecap="round" opacity={0.8} />
+      </Layer>
       {neq > 0 && (
         <div style={{position: 'absolute', left: 540 - 150, top: 860 - 150, width: 300, height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center',
           ...font, fontSize: 300, lineHeight: 1, color: COLORS.red, transform: `scale(${mix(2.2, 1, neq)})`, opacity: Math.min(1, neq * 2),

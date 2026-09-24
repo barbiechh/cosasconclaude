@@ -1,10 +1,10 @@
 /**
  * Palabras clave de arriba, como datos. Solo palabras grandes, una a la vez.
- * Body las pinta dentro de su escena y Captions las consulta para no repetir
- * abajo lo que ya dice arriba. `from`/`to` son cues del guion ([cue, desfase
+ * Body las pinta dentro de su escena (arriba, y = 290); los captions van
+ * siempre abajo (y = 1405) con el texto completo, así que no se tapan. `from`/`to` son cues del guion ([cue, desfase
  * en frames]); sin `to`, la palabra se queda hasta que termina su escena.
  */
-import {BodyCueKey, HOOK_FRAMES, bodyCueFrame, hookCueFrame} from './timing';
+import {BodyCueKey, bodyCueFrame} from './timing';
 import {TYPE} from '../styles/tokens';
 
 type Cue = [BodyCueKey] | [BodyCueKey, number];
@@ -88,12 +88,6 @@ export const BODY_KEYWORDS: BodyKeyword[] = [
 
 /** Frame (relativo al <Body>) de un cue. */
 export const cueFrame = ([key, offset = 0]: Cue) => bodyCueFrame(key, offset);
-
-/** Textos de arriba fuera del Body (hook y EndCard), en frames de la línea de tiempo. */
-export const HOOK_TEXT_WINDOWS: {text: string; from: number; to: number}[] = [
-  {text: 'PERIMENOPAUSE', from: hookCueFrame('perimenopause'), to: hookCueFrame('but')},
-  {text: 'COMPLETE OPPOSITE', from: hookCueFrame('completeOpposite'), to: HOOK_FRAMES},
-];
 
 export const END_CARD_TEXTS = {
   guarantee: '30-DAY GUARANTEE',

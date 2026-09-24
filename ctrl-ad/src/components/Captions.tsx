@@ -1,9 +1,7 @@
 import React from 'react';
 import {interpolate, useCurrentFrame} from 'remotion';
 import rawWords from '../data/voiceover-words.json';
-import {BODY_AUDIO_START_SECONDS, HOOK, HOOK_FRAMES, TOTAL_FRAMES, WIDTH, bodyCueFrame, secToFrame} from '../data/timing';
-import {BODY_KEYWORDS, END_CARD_TEXTS, HOOK_TEXT_WINDOWS, cueFrame} from '../data/keywords';
-import {OVERLAP, SCENES} from '../data/scenes';
+import {BODY_AUDIO_START_SECONDS, HOOK, WIDTH, secToFrame} from '../data/timing';
 import {COLORS, FONT_FAMILY, FONT_WEIGHT} from '../styles/tokens';
 
 type VoWord = {word: string; section: 'hook' | 'body'; start: number; end: number};
@@ -14,84 +12,66 @@ const toFrame = (w: VoWord, t: number) =>
     ? secToFrame(t - HOOK.audioStartSeconds)
     : secToFrame(HOOK.durationSeconds + (t - BODY_AUDIO_START_SECONDS));
 
-type Chunk = {words: {text: string; from: number}[]; from: number};
+type Chunk = {words: {text: string; from: number}[]; from: number; to: number};
 
 const MAX_WORDS = 4;
-const MAX_CHARS = 20;
+// ~18 caracteres caben en una sola línea de 820 px: el caption nunca salta a dos líneas.
+const MAX_CHARS = 18;
+// Tras la última palabra, el caption se queda un poco y se va (no se queda colgado en las pausas).
+export const CAPTION_HOLD_FRAMES = 10;
+const HOLD_FRAMES = CAPTION_HOLD_FRAMES;
 
-// Frases cortas: se corta en puntuación, a las 4 palabras o a los ~20 caracteres.
-const CHUNKS: Chunk[] = (() => {
-  const out: Chunk[] = [];
-  let cur: Chunk | null = null;
-  let chars = 0;
-  for (const w of rawWords as VoWord[]) {
-    const text = w.word.replace(/[.,]+$/, '');
-    const from = toFrame(w, w.start);
-    if (!cur || cur.words.length >= MAX_WORDS || chars + text.length > MAX_CHARS) {
-      cur = {words: [], from};
-      chars = 0;
-      out.push(cur);
+// Frases cortas: cada cláusula (hasta la puntuación) se reparte en el menor
+// número de trozos de ≤4 palabras y ≤18 caracteres, con largos parecidos
+// (sin palabras huérfanas que aparecen un instante).
+// TODAS las palabras del voiceover se subtitulan (ya no se ocultan cuando hay titular arriba).
+type W = {text: string; from: number; end: number};
+const len = (ws: W[]) => ws.reduce((n, w) => n + w.text.length, 0) + ws.length - 1;
+const fits = (ws: W[]) => ws.length <= MAX_WORDS && len(ws) <= MAX_CHARS;
+
+const splitClause = (ws: W[]): W[][] => {
+  // DP: menos trozos primero; a igual número, el reparto más parejo.
+  const best: {n: number; cost: number; cut: number}[] = [{n: 0, cost: 0, cut: -1}];
+  for (let i = 1; i <= ws.length; i++) {
+    best[i] = {n: Infinity, cost: Infinity, cut: -1};
+    for (let j = Math.max(0, i - MAX_WORDS); j < i; j++) {
+      const piece = ws.slice(j, i);
+      if (!fits(piece) && i - j > 1) continue;
+      const n = best[j].n + 1;
+      const cost = best[j].cost + (MAX_CHARS - len(piece)) ** 2;
+      if (n < best[i].n || (n === best[i].n && cost < best[i].cost)) best[i] = {n, cost, cut: j};
     }
-    cur.words.push({text, from});
-    chars += text.length + 1;
-    if (/[.,?!]$/.test(w.word)) cur = null;
   }
+  const out: W[][] = [];
+  for (let i = ws.length; i > 0; i = best[i].cut) out.unshift(ws.slice(best[i].cut, i));
   return out;
+};
+
+const CHUNKS: Chunk[] = (() => {
+  const clauses: W[][] = [[]];
+  for (const w of rawWords as VoWord[]) {
+    clauses[clauses.length - 1].push({text: w.word.replace(/[.,]+$/, ''), from: toFrame(w, w.start), end: toFrame(w, w.end)});
+    if (/[.,?!]$/.test(w.word)) clauses.push([]);
+  }
+  const pieces = clauses.filter((c) => c.length).flatMap(splitClause);
+  return pieces.map((ws, i) => ({
+    words: ws.map(({text, from}) => ({text, from})),
+    from: ws[0].from,
+    to: Math.min(pieces[i + 1]?.[0].from ?? Infinity, ws[ws.length - 1].end + HOLD_FRAMES),
+  }));
 })();
 
-// ---------------------------------------------------------------------------
-// No repetir abajo lo que ya dice arriba: si al menos la mitad de las palabras
-// con contenido de una frase están en el titular visible, esa frase se oculta.
+/** Posición fija: centrado, dentro del área segura de Reels/TikTok (x 130-950, arriba de la franja inferior de la app). */
+const CAPTION = {top: 1405, width: 820, fontSize: 60};
 
-const STOP = new Set(['the', 'a', 'an', 'and', 'of', 'to', 'it', 'is', 'at', 'in', 'on', 'for', 'she', 'her', 'its', 'so', 'as', 'with', 'that', 'this', 'be']);
-const NUM: Record<string, string> = {'40': 'forty', '90': 'ninety', '30': 'thirty', '20': 'twenty', '2nd': 'second'};
-const norm = (w: string) => {
-  const c = w.toLowerCase().replace(/[^a-z0-9']/g, '').replace(/'s$/, '');
-  return NUM[c] ?? c;
-};
-const content = (text: string) => text.split(/[\s·-]+/).map(norm).filter((w) => w && !STOP.has(w));
-
-const bodyToTimeline = (f: number) => HOOK_FRAMES + f;
-const sceneEnd = (bodyFrame: number) => {
-  const s = Object.values(SCENES).find((sc) => bodyFrame >= sc.from && bodyFrame < sc.from + sc.durationInFrames - OVERLAP);
-  return s ? s.from + s.durationInFrames - OVERLAP : TOTAL_FRAMES - HOOK_FRAMES;
-};
-
-const TOP_TEXTS: {words: Set<string>; from: number; to: number}[] = [
-  ...HOOK_TEXT_WINDOWS.map((w) => ({words: new Set(content(w.text)), from: w.from, to: w.to})),
-  ...BODY_KEYWORDS.map((k) => {
-    const from = cueFrame(k.from);
-    const to = k.to ? cueFrame(k.to) : sceneEnd(from);
-    return {words: new Set(content(k.text)), from: bodyToTimeline(from), to: bodyToTimeline(to)};
-  }),
-  {words: new Set(content(END_CARD_TEXTS.guarantee)), from: bodyToTimeline(bodyCueFrame('guaranteeWord')), to: TOTAL_FRAMES},
-  {words: new Set(content(END_CARD_TEXTS.stock)), from: bodyToTimeline(bodyCueFrame('inStock', -3)), to: TOTAL_FRAMES},
-  {words: new Set(content(END_CARD_TEXTS.tap)), from: bodyToTimeline(bodyCueFrame('tapBelow')), to: TOTAL_FRAMES},
-  {words: new Set(content(END_CARD_TEXTS.sign)), from: bodyToTimeline(bodyCueFrame('yourSign')), to: TOTAL_FRAMES},
-];
-
-const HIDDEN: boolean[] = CHUNKS.map((chunk, i) => {
-  const from = chunk.from;
-  const to = CHUNKS[i + 1]?.from ?? TOTAL_FRAMES;
-  const words = chunk.words.flatMap((w) => content(w.text));
-  if (!words.length) return false;
-  return TOP_TEXTS.some((t) => {
-    if (t.to <= from || t.from >= to) return false;
-    const shared = words.filter((w) => t.words.has(w)).length;
-    return shared / words.length >= 0.5;
-  });
-});
-
-/** Caption abajo en el área segura, con la palabra hablada resaltada (salvo si repite el titular). */
+/** Caption abajo en el área segura, con la palabra hablada resaltada. */
 export const Captions: React.FC = () => {
   const frame = useCurrentFrame();
-  let idx = -1;
-  for (let i = 0; i < CHUNKS.length && CHUNKS[i].from <= frame; i++) idx = i;
-  if (idx < 0 || HIDDEN[idx]) return null;
-  const chunk = CHUNKS[idx];
+  const chunk = CHUNKS.find((c) => frame >= c.from && frame < c.to);
+  if (!chunk) return null;
   const local = frame - chunk.from;
   const pop = interpolate(local, [0, 4], [0.9, 1], {extrapolateRight: 'clamp'});
-  const fade = interpolate(local, [0, 3], [0, 1], {extrapolateRight: 'clamp'});
+  const fade = interpolate(local, [0, 3], [0, 1], {extrapolateRight: 'clamp'}) * interpolate(chunk.to - frame, [0, 3], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 
   let active = -1;
   chunk.words.forEach((w, i) => {
@@ -102,17 +82,20 @@ export const Captions: React.FC = () => {
     <div
       style={{
         position: 'absolute',
-        top: 1405,
-        left: (WIDTH - 920) / 2,
-        width: 920,
+        top: CAPTION.top,
+        left: (WIDTH - CAPTION.width) / 2,
+        width: CAPTION.width,
         textAlign: 'center',
+        whiteSpace: 'nowrap',
         fontFamily: FONT_FAMILY,
         fontWeight: FONT_WEIGHT,
-        fontSize: 60,
+        fontSize: CAPTION.fontSize,
         lineHeight: 1.25,
         color: COLORS.ink,
         transform: `scale(${pop})`,
         opacity: fade,
+        // halo de papel: se lee aunque pase una imagen por detrás
+        textShadow: `0 0 10px ${COLORS.paper}, 0 0 4px ${COLORS.paper}, 0 0 2px ${COLORS.paper}`,
       }}
     >
       {chunk.words.map((w, i) => {
@@ -123,11 +106,11 @@ export const Captions: React.FC = () => {
             key={i}
             style={{
               display: 'inline-block',
-              margin: '0 7px',
-              padding: '0 10px',
+              margin: '0 4px',
+              padding: '0 9px',
               borderRadius: 8,
               backgroundColor: on ? COLORS.yellow : 'transparent',
-              transform: `scale(${1 + 0.08 * k})`,
+              transform: `scale(${1 + 0.06 * k})`,
               opacity: i <= active ? 1 : 0.55,
             }}
           >
@@ -139,3 +122,5 @@ export const Captions: React.FC = () => {
   );
 };
 
+/** Para revisión: los captions con sus tiempos (frames de la línea de tiempo). */
+export const CAPTION_CHUNKS = CHUNKS;
