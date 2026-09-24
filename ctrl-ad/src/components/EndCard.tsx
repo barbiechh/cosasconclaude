@@ -26,32 +26,40 @@ export const EndCard: React.FC<EndCardProps> = ({usePlaceholder, guaranteeAtFram
 
   return (
     <AbsoluteFill>
-      <div style={{position: 'absolute', top: LAYOUT.topText, left: (WIDTH - 480) / 2, width: 480, height: 130}}>
-        {!logo ? (
-          <div
-            style={{
-              width: '100%',
-              height: '100%',
-              border: `3px dashed ${COLORS.placeholderBorder}`,
-              borderRadius: 12,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontFamily: FONT_FAMILY,
-              fontWeight: FONT_WEIGHT,
-              fontSize: 26,
-              color: COLORS.inkSoft,
-            }}
-          >
-            LOGO REAL DE CTRL — PENDIENTE
-          </div>
-        ) : (
-          <Img src={logo.src} style={{width: '100%', height: '100%', objectFit: 'contain'}} />
-        )}
-      </div>
+      {/* El logo solo aparece si existe su archivo; sin él, el frasco (que ya lleva la marca) va más grande. */}
+      {(logo || usePlaceholder) && (
+        <div style={{position: 'absolute', top: LAYOUT.topText, left: (WIDTH - 480) / 2, width: 480, height: 130}}>
+          {!logo ? (
+            <div
+              style={{
+                width: '100%',
+                height: '100%',
+                border: `3px dashed ${COLORS.placeholderBorder}`,
+                borderRadius: 12,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: FONT_FAMILY,
+                fontWeight: FONT_WEIGHT,
+                fontSize: 26,
+                color: COLORS.inkSoft,
+              }}
+            >
+              LOGO REAL DE CTRL — PENDIENTE
+            </div>
+          ) : (
+            <Img src={logo.src} style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+          )}
+        </div>
+      )}
 
-      <Cutout assetId="product.ctrlBottle" usePlaceholder={usePlaceholder} enterAtFrame={4}
-        width={380} height={570} top={450} left={(WIDTH - 380) / 2} label="FRASCO REAL DE CTRL — PENDIENTE DE FOTO" />
+      {logo || usePlaceholder ? (
+        <Cutout assetId="product.ctrlBottle" usePlaceholder={usePlaceholder} enterAtFrame={4}
+          width={380} height={570} top={450} left={(WIDTH - 380) / 2} label="FRASCO REAL DE CTRL — PENDIENTE DE FOTO" />
+      ) : (
+        <Cutout assetId="product.ctrlBottle" usePlaceholder={usePlaceholder} enterAtFrame={4}
+          width={360} height={740} top={280} left={(WIDTH - 360) / 2} rotationDeg={-2} fromY={200} label="Frasco de CTRL" />
+      )}
 
       <div
         style={{

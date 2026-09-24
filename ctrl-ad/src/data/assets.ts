@@ -66,6 +66,10 @@ export const ASSET_MANIFEST: AssetSlot[] = [
   {id: 'back.patience', kind: 'photo', file: 'images/body/patience-back.png', description: 'Recupera la paciencia.'},
   {id: 'back.herself', kind: 'photo', file: 'images/body/herself-again.png', description: 'Vuelve a ser ella.'},
 
+  // Tramo "the usual answers": frascos de HRT y de pastillas (recortes).
+  {id: 'body.hrtBottle', kind: 'cutout', file: 'images/body/hrt-bottle.png', description: 'Frasco de HRT.'},
+  {id: 'body.stimulantBottle', kind: 'cutout', file: 'images/body/stimulant-bottle.png', description: 'Frascos de pastillas.'},
+
   {id: 'product.ctrlBottle', kind: 'cutout', file: 'images/endcard/ctrl-bottle.png', brand: true,
     description: 'FOTO REAL del frasco de CTRL, fondo transparente. Nunca se inventa.'},
   {id: 'product.ctrlLogo', kind: 'cutout', file: 'images/endcard/ctrl-logo.png', brand: true,

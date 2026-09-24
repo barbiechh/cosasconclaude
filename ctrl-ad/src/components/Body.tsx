@@ -200,19 +200,23 @@ export const Body: React.FC<BodyProps> = ({usePlaceholder: p}) => {
       {(() => {
         const at = answers.at;
         return (
-          <Scene plan={answers} punches={[at('quietlyStop')]}>
-            <LabelCard title="HRT" enterAtFrame={at('hrtSorts')} left={90} top={560} rotationDeg={-3}
+          <Scene plan={answers} punches={[at('usualAnswers'), at('quietlyStop')]}>
+            <Cutout assetId="body.hrtBottle" usePlaceholder={p} enterAtFrame={at('usualAnswers')}
+              width={300} height={590} top={440} left={90} rotationDeg={-4} fromX={-400} fromY={0} label="Frasco de HRT" />
+            <Cutout assetId="body.stimulantBottle" usePlaceholder={p} enterAtFrame={at('usualAnswers', 6)}
+              width={520} height={324} top={600} left={480} rotationDeg={3} fromX={400} fromY={0} label="Frascos de pastillas" />
+            <LabelCard title="HRT" enterAtFrame={at('hrtSorts')} left={70} top={1050} rotationDeg={-3}
               lines={[
                 {text: 'sweats ✓', enterAtFrame: at('hrtSorts', 10)},
                 {text: 'fog ✗', enterAtFrame: at('leavesTheFog'), strike: true},
               ]} />
-            <LabelCard title="Stimulants" enterAtFrame={at('stimulants')} left={560} top={760} rotationDeg={3}
+            <LabelCard title="Stimulants" enterAtFrame={at('stimulants')} left={560} top={960} rotationDeg={3}
               lines={[
                 {text: 'push out dopamine', enterAtFrame: at('canOnlyPush')},
                 {text: 'already made', enterAtFrame: at('canOnlyPush', 20)},
                 {text: 'stop working ✗', enterAtFrame: at('quietlyStop'), strike: true},
               ]} />
-            <Stamp text="STOPS WORKING" x={130} y={1130} at={at('quietlyStop', 6)} />
+            <Stamp text="STOPS WORKING" x={500} y={500} at={at('quietlyStop', 6)} rotate={-8} />
           </Scene>
         );
       })()}
