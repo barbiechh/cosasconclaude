@@ -2,54 +2,6 @@ import React from 'react';
 import {interpolate, useCurrentFrame} from 'remotion';
 import {COLORS} from '../styles/tokens';
 
-export interface DrawnUnderlineProps {
-  enterAtFrame: number;
-  top: number;
-  left: number;
-  width: number;
-  color?: string;
-  thickness?: number;
-}
-
-/** Subrayado amarillo que se "dibuja" de izquierda a derecha, tipo marcador. */
-export const DrawnUnderline: React.FC<DrawnUnderlineProps> = ({
-  enterAtFrame,
-  top,
-  left,
-  width,
-  color = COLORS.yellow,
-  thickness = 14,
-}) => {
-  const frame = useCurrentFrame();
-  const localFrame = frame - enterAtFrame;
-  if (localFrame < 0) return null;
-
-  const progress = interpolate(localFrame, [0, 14], [0, 1], {extrapolateRight: 'clamp'});
-
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        top,
-        left,
-        width,
-        height: thickness,
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        style={{
-          width: `${progress * 100}%`,
-          height: '100%',
-          backgroundColor: color,
-          borderRadius: thickness / 2,
-          opacity: 0.85,
-        }}
-      />
-    </div>
-  );
-};
-
 export interface DrawnCircleProps {
   enterAtFrame: number;
   top: number;

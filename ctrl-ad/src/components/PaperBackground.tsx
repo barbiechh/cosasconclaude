@@ -1,29 +1,14 @@
 import React from 'react';
-import {staticFile} from 'remotion';
+import {AbsoluteFill, Img, staticFile} from 'remotion';
 import {COLORS} from '../styles/tokens';
 
 /**
- * Fondo de papel claro con textura muy sutil. Si existe la textura real
- * (public/images/paper-texture.jpg) la usa; si no, cae a un degradado +
- * ruido CSS que imita papel sin depender de ningún archivo.
+ * Papel cuadriculado claro (celda de 36px, como la referencia). La textura se
+ * genera con scripts/make_paper_texture.py; para cambiarla, reemplaza
+ * public/images/paper-grid.jpg por otra imagen de 1080x1920.
  */
-export const PaperBackground: React.FC<{useFinalTexture?: boolean}> = ({
-  useFinalTexture = false,
-}) => {
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-        backgroundColor: COLORS.paper,
-        backgroundImage: useFinalTexture
-          ? `url(${staticFile('images/paper-texture.jpg')})`
-          : `radial-gradient(circle at 20% 10%, ${COLORS.paperShadow} 0%, transparent 45%),
-             radial-gradient(circle at 80% 90%, ${COLORS.paperShadow} 0%, transparent 40%),
-             repeating-linear-gradient(0deg, rgba(0,0,0,0.015) 0px, rgba(0,0,0,0.015) 1px, transparent 1px, transparent 3px)`,
-        backgroundSize: useFinalTexture ? 'cover' : 'auto',
-        backgroundBlendMode: 'multiply',
-      }}
-    />
-  );
-};
+export const PaperBackground: React.FC = () => (
+  <AbsoluteFill style={{backgroundColor: COLORS.paper}}>
+    <Img src={staticFile('images/paper-grid.jpg')} style={{width: '100%', height: '100%'}} />
+  </AbsoluteFill>
+);

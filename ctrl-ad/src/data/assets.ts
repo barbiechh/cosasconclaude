@@ -35,12 +35,6 @@ export const ASSET_MANIFEST: AssetSlot[] = [
     final: 'images/hook/orca-cutout.png',
     required: true,
   },
-  {
-    id: 'hook.paperTexture',
-    description: 'Textura de papel claro, muy sutil, para el fondo (tileable).',
-    final: 'images/paper-texture.jpg',
-    required: false,
-  },
 
   // ---- BODY: orcas ----
   {
@@ -140,13 +134,6 @@ export const ASSET_MANIFEST: AssetSlot[] = [
     required: true,
   },
 
-  // ---- Texturas generales ----
-  {
-    id: 'global.paperBg',
-    description: 'Textura de papel/cuaderno claro para todo el fondo del video (muy sutil).',
-    final: 'images/paper-texture.jpg',
-    required: false,
-  },
 ];
 
 export const getAssetSlot = (id: string): AssetSlot => {

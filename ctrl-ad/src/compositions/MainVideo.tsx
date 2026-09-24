@@ -5,63 +5,52 @@ import {Body} from '../components/Body';
 import {EndCard} from '../components/EndCard';
 import {
   AUDIO_SRC,
-  HOOK_BODY_CUT_FRAME,
+  BODY_AUDIO_START_FRAME,
+  BODY_FRAMES,
+  HOOK,
+  HOOK_FRAMES,
   TOTAL_FRAMES,
   bodyCueFrame,
   secToFrame,
-  END_CARD_HOLD_SECONDS,
 } from '../data/timing';
 
-export interface MainVideoProps {
+export type MainVideoProps = {
   usePlaceholder: boolean;
-}
+};
 
 /**
- * Ensambla Hook1 + Body + EndCard + audio, todo posicionado desde
- * src/data/timing.ts. Para reemplazar el hook por Hook2 en el futuro:
- *   1. Crear src/components/Hook2.tsx (con sus propios HOOK2_CUES si hace falta).
- *   2. Cambiar el <Hook1 .../> de abajo por <Hook2 .../>.
- *   3. Cambiar HOOK_AUDIO_SRC por el nuevo archivo de audio del hook.
- * El <Body> y su audio (que arrancan en HOOK_BODY_CUT_FRAME leyendo el MISMO
- * archivo original vía startFrom) no se tocan.
+ * Hook (0 .. HOOK_FRAMES) + Body (desde HOOK_FRAMES) + EndCard.
+ *
+ * El audio del hook y el del body son pistas separadas: el hook toca su propio
+ * tramo (HOOK.audioSrc) y el body siempre toca el MP3 original desde
+ * BODY_AUDIO_START. Para Hook2 se cambia <Hook1> por <Hook2> y el bloque HOOK
+ * de timing.ts; el body queda igual y solo se desplaza en la línea de tiempo.
  */
-const HOOK_AUDIO_SRC = AUDIO_SRC; // hoy Hook1 y Body comparten el mismo MP3.
-
 export const MainVideo: React.FC<MainVideoProps> = ({usePlaceholder}) => {
-  // bodyCueFrame() da un frame RELATIVO al inicio del Body; para usarlo como
-  // `from` de una Sequence a nivel raíz hay que sumarle HOOK_BODY_CUT_FRAME.
-  const endCardStart = HOOK_BODY_CUT_FRAME + bodyCueFrame('ctrlGivesBrainWhatItNeeds');
-  const endCardDuration = TOTAL_FRAMES - endCardStart + secToFrame(END_CARD_HOLD_SECONDS);
+  const hookAudioStart = secToFrame(HOOK.audioStartSeconds);
+  const endCardFrom = HOOK_FRAMES + bodyCueFrame('ctrlJustGives');
 
   return (
-    <AbsoluteFill style={{backgroundColor: '#f4f1e9'}}>
-      {/* --- AUDIO --- */}
-      <Sequence from={0} durationInFrames={HOOK_BODY_CUT_FRAME} name="Hook audio">
-        <Audio src={staticFile(HOOK_AUDIO_SRC)} endAt={HOOK_BODY_CUT_FRAME} />
+    <AbsoluteFill>
+      <Sequence from={0} durationInFrames={HOOK_FRAMES} name="Hook audio">
+        <Audio src={staticFile(HOOK.audioSrc)} startFrom={hookAudioStart} endAt={hookAudioStart + HOOK_FRAMES} />
       </Sequence>
-      <Sequence
-        from={HOOK_BODY_CUT_FRAME}
-        durationInFrames={TOTAL_FRAMES - HOOK_BODY_CUT_FRAME}
-        name="Body audio"
-      >
-        <Audio src={staticFile(AUDIO_SRC)} startFrom={HOOK_BODY_CUT_FRAME} />
+      <Sequence from={HOOK_FRAMES} durationInFrames={BODY_FRAMES} name="Body audio">
+        <Audio src={staticFile(AUDIO_SRC)} startFrom={BODY_AUDIO_START_FRAME} />
       </Sequence>
 
-      {/* --- VISUAL --- */}
-      <Sequence from={0} durationInFrames={HOOK_BODY_CUT_FRAME} name="Hook1">
+      <Sequence from={0} durationInFrames={HOOK_FRAMES} name="Hook1">
         <Hook1 usePlaceholder={usePlaceholder} />
       </Sequence>
-
-      <Sequence
-        from={HOOK_BODY_CUT_FRAME}
-        durationInFrames={TOTAL_FRAMES - HOOK_BODY_CUT_FRAME}
-        name="Body"
-      >
+      <Sequence from={HOOK_FRAMES} durationInFrames={BODY_FRAMES} name="Body">
         <Body usePlaceholder={usePlaceholder} />
       </Sequence>
-
-      <Sequence from={endCardStart} durationInFrames={endCardDuration} name="EndCard">
-        <EndCard usePlaceholder={usePlaceholder} />
+      <Sequence from={endCardFrom} durationInFrames={TOTAL_FRAMES - endCardFrom} name="EndCard">
+        <EndCard
+          usePlaceholder={usePlaceholder}
+          guaranteeAtFrame={bodyCueFrame('guarantee') - bodyCueFrame('ctrlJustGives')}
+          yourSignAtFrame={bodyCueFrame('yourSign') - bodyCueFrame('ctrlJustGives')}
+        />
       </Sequence>
     </AbsoluteFill>
   );
