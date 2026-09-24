@@ -25,9 +25,9 @@ const WOMAN_PHOTO = {width: 860, height: 671}; // foto 4:3 + borde
 const PH = {width: 720, height: 900}; // fotos nuevas 4:5 + borde
 
 /** Palabra clave grande arriba (los captions de abajo llevan el texto completo). */
-const Key: React.FC<{text: string; hi?: string; from: number; to?: number; size?: number; top?: number}> = ({
-  text, hi, from, to, size = 78, top = TOP,
-}) => <TimedText text={text} highlight={hi ?? text} enterAtFrame={from} exitAtFrame={to} top={top} fontSize={size} />;
+const Key: React.FC<{text: string; hi?: string; from: number; to?: number; size?: number; top?: number; width?: number}> = ({
+  text, hi, from, to, size = 78, top = TOP, width,
+}) => <TimedText text={text} highlight={hi ?? text} enterAtFrame={from} exitAtFrame={to} top={top} fontSize={size} maxWidth={width} />;
 
 /** Escena: Sequence + transición de entrada/salida + deriva de cámara. */
 const Scene: React.FC<{plan: ScenePlan; punches?: number[]; children: React.ReactNode}> = ({plan, punches, children}) => (
@@ -165,7 +165,7 @@ export const Body: React.FC<BodyProps> = ({usePlaceholder: p}) => {
             <IconChip kind="focus" label="focus" x={60} y={980} enterAt={at('focusWord')} flyOutAt={at('inPerimenopause')} until={at('inPerimenopause', 16)} fromY={300} />
             <IconChip kind="drive" label="drive" x={420} y={980} enterAt={at('driveWord')} flyOutAt={at('inPerimenopause', 3)} until={at('inPerimenopause', 18)} fromY={300} />
             <IconChip kind="follow" label="follow-through" x={780} y={980} enterAt={at('followThrough')} flyOutAt={at('inPerimenopause', 6)} until={at('inPerimenopause', 22)} fromY={300} />
-            <Key text="FOCUS · DRIVE · FOLLOW-THROUGH" hi="FOCUS" from={at('focusWord')} to={at('inPerimenopause')} size={56} />
+            <Key text="FOCUS · DRIVE · FOLLOW-THROUGH" hi="FOCUS" from={at('focusWord')} to={at('inPerimenopause')} size={48} width={1000} />
 
             <HormoneChart x={100} y={880} appearAt={at('inPerimenopause')} dropAt={at('justDrop')} flickerAt={at('flickers')}
               estrogenDipAt={at('itDips')} dopamineAt={at('everyTimeItDips')} dopamineDipAt={at('dopamineDips')} until={at('thatsTheFog', 2)} />
@@ -204,7 +204,6 @@ export const Body: React.FC<BodyProps> = ({usePlaceholder: p}) => {
                 {text: 'stop working ✗', enterAtFrame: at('quietlyStop'), strike: true},
               ]} />
             <Key text="STIMULANTS" from={at('stimulants')} to={at('quietlyStop')} />
-            <DopamineParticles cx={775} cy={900} from={at('canOnlyPush')} until={at('quietlyStop')} count={12} spread={260} />
             <Key text="THEY STOP WORKING" hi="STOP" from={at('quietlyStop')} size={70} />
             <Stamp text="STOPS WORKING" x={130} y={1130} at={at('quietlyStop', 6)} />
           </Scene>
