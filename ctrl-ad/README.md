@@ -67,19 +67,18 @@ línea de tiempo según la duración del nuevo hook.
 ## Recursos
 
 `src/data/assets.ts` lista cada imagen. CTRL-Final usa el archivo si existe en
-`public/`; si falta, usa su respaldo (si tiene) o un placeholder visible.
+`public/`; si falta uno opcional, el plano se sostiene con su gráfico animado.
+El frasco y el logo de CTRL muestran un placeholder explícito hasta tener los reales.
 
-Ya integrados: `images/hook/woman-cutout.png`, `images/hook/orca-cutout.png`,
-`images/body/orca-leader-pod.png`, `fish-school.png`, `woman-midlife-daily.png`,
-`brain-diagram.png`, `light-switch.png`, `tyrosine.png`, `b6.png`,
-`calming-plants.png`.
+Integradas: recortes del hook (mujer, orca), orcas, peces, cerebro, interruptor,
+ingredientes, y las fotos por frase (`focus-lost`, `words-lost`, `drive-lost`,
+`patience-lost`, `mirror`, `doctor-visit`, `woman-foggy`, `focus-back`,
+`drive-back`, `patience-back`, `words-back`, `herself-again`). Prompts y
+formato en `IMAGES-TODO.md`.
 
-**Pendientes (obligatorios, no se inventan):**
+**Pendientes (marca real, no se inventan):**
 
 | Archivo | Qué es |
 | --- | --- |
 | `images/endcard/ctrl-bottle.png` | Foto real del frasco de CTRL, PNG con fondo transparente, vertical (~2:3) |
 | `images/endcard/ctrl-logo.png` | Logo real de CTRL, PNG con fondo transparente |
-
-Opcional: `images/body/woman-focus-fade.png` (la misma mujer, cansada o
-distraída, 4:3). Si no está, el tramo "slow fade" usa `woman-midlife-daily.png`.

@@ -1,5 +1,7 @@
 # Imágenes para "lo pierde / lo recupera"
 
+> Entregadas e integradas (12/12). Solo faltan el frasco y el logo reales.
+
 Déjalas en `public/images/body/` con estos nombres exactos y vuelve a
 renderizar (`npm run build`); no hay que tocar código. Mientras falte una, ese
 plano se sostiene solo con su gráfico animado (ficha, batería, letras, etc.).
