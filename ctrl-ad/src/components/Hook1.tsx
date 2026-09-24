@@ -3,7 +3,7 @@ import {AbsoluteFill, interpolate, random, useCurrentFrame, useVideoConfig} from
 import {TimedText} from './TimedText';
 import {Figure, Fin, LeaderRing, Orca, headPoint} from './figures';
 import {Arrow, Bar, Target} from './mechanisms';
-import {Layer, Pic, clamp, ease, easeOut, font, mix, ramp, springAt} from './kit';
+import {Layer, clamp, ease, easeOut, font, mix, ramp, springAt} from './kit';
 import {COLORS, LAYOUT, TYPE} from '../styles/tokens';
 import {HEIGHT, WIDTH, hookCueFrame} from '../data/timing';
 
@@ -36,19 +36,14 @@ export const Hook1: React.FC<HookProps> = ({usePlaceholder: p}) => {
     woman: hookCueFrame('toAWoman'),
   };
 
-  // Orca: primero un primer plano en un ojo de buey (cabeza y ojo), luego
-  // entra nadando de cuerpo entero a su lado del cuadro.
+  // Orca: entra nadando de cuerpo entero a su lado del cuadro.
   const oIn = ramp(frame, f.whales - 3, f.whales + 9, easeOut);
-  const port = springAt(frame, fps, f.whales - 1, 12);
-  const portOut = ramp(frame, f.whales + 20, f.whales + 28);
-  const swim = ramp(frame, f.whales + 18, f.whales + 36, easeOut);
-  const oSeen = frame >= f.whales + 18;
+  const swim = ramp(frame, f.whales - 2, f.whales + 16, easeOut);
+  const oSeen = frame >= f.whales - 2;
   const split = ramp(frame, f.but, f.but + 14);
-  // "what it does to a whale": el lado de la orca pasa a una foto de su grupo
-  const toPod = ramp(frame, f.but + 2, f.but + 14);
   const rise = ramp(frame, f.whale, f.whale + 26);
   const orca = {
-    x: mix(mix(-320, 290, swim), 250, split),
+    x: mix(mix(-320, 265, swim), 250, split),
     y: mix(mix(960, 880, swim), 880, split) - rise * 120,
     w: 440 * (1 + 0.06 * Math.sin(Math.PI * ramp(frame, f.whale, f.whale + 10))),
   };
@@ -84,14 +79,13 @@ export const Hook1: React.FC<HookProps> = ({usePlaceholder: p}) => {
     <AbsoluteFill>
       <AbsoluteFill style={{transform: `translate(${zx}px, ${zy}px) scale(${zs})`, transformOrigin: `${woman.x}px 860px`}}>
         {/* lado de la orca: guía, sube, el grupo la sigue */}
-        <LeaderRing cx={orca.x} cy={orca.y + 10} rx={255} ry={170} t={ramp(frame, f.whale, f.whale + 16)} pulse={frame / 8} />
+        <LeaderRing cx={orca.x} cy={orca.y + 20} rx={230} ry={130} t={ramp(frame, f.whale, f.whale + 16)} pulse={frame / 8} />
         {pod.map((o, i) => {
           const k = springAt(frame, fps, f.whale + o.d, 12);
           if (k <= 0) return null;
           return <Fin key={i} x={o.x + Math.sin(frame / 12 + i) * 6} y={o.y - rise * 80} h={o.h * k} tilt={Math.sin(frame / 9 + i) * 3} />;
         })}
-        {oSeen && toPod < 1 && <Orca p={p} x={orca.x} y={orca.y + Math.sin(frame / 10) * 6} w={orca.w} rot={-8 * (1 - swim)} opacity={1 - toPod} />}
-        {toPod > 0 && <PodPhoto p={p} x={orca.x} y={orca.y} k={toPod} frame={frame} />}
+        {oSeen && <Orca p={p} x={orca.x} y={orca.y + Math.sin(frame / 10) * 6} w={orca.w} rot={-8 * (1 - swim)} />}
         <Arrow a={[495, 1180]} b={[495, 620]} t={ramp(frame, f.whale + 4, f.whale + 22)} color={COLORS.green} width={16} />
 
         {/* lado de ella */}
@@ -103,7 +97,6 @@ export const Hook1: React.FC<HookProps> = ({usePlaceholder: p}) => {
         )}
         <Pads x={woman.x - 205} frame={frame} fps={fps} f={f} />
         <Unsteady head={head} from={f.opposite} frame={frame} fps={fps} />
-        {port > 0 && portOut < 1 && <Porthole p={p} frame={frame - f.whales} scale={port * (1 - 0.5 * portOut)} opacity={1 - portOut} x={255} flash={Math.max(0, 1 - (frame - f.whales) / 6)} />}
         <Arrow a={[600, 730]} b={[600, 1180]} t={ramp(frame, f.opposite + 8, f.opposite + 28)} color={COLORS.red} width={16} />
 
         {/* trazo de "only" y arco de "perimenopause" */}
@@ -194,19 +187,6 @@ const SplitWord: React.FC<{text: string; enterAt: number; centerX: number; strik
   );
 };
 
-/** Primer plano de la orca (cabeza y ojo) dentro de un ojo de buey. */
-const Porthole: React.FC<{p: boolean; frame: number; scale: number; opacity: number; x: number; flash: number}> = ({p, frame, scale, opacity, x, flash}) => {
-  const R = 235;
-  const drift = frame * 2.5;
-  return (
-    <div style={{position: 'absolute', left: x - R, top: 840 - R, width: R * 2, height: R * 2, borderRadius: '50%', overflow: 'hidden', opacity,
-      transform: `scale(${scale})`, border: `14px solid ${COLORS.ink}`, boxShadow: '0 0 0 12px #fffdf8, 0 20px 40px rgba(0,0,0,0.3)', background: '#dfe7ea', boxSizing: 'border-box'}}>
-      <Pic id="hook.orca" p={p} x={R - 30 - drift} y={R + 200} w={1150} aspect={1222 / 1287} shadow={false} />
-      {flash > 0 && <div style={{position: 'absolute', inset: 0, background: `rgba(255,255,255,${0.8 * flash})`}} />}
-    </div>
-  );
-};
-
 /**
  * Compresas junto a ella (solo del lado de la mujer): una con una mancha
  * pequeña, otra con menos y una limpia. Las dos primeras caen a ritmo sobre sus
@@ -259,17 +239,3 @@ const Pad: React.FC<{x: number; y: number; rot: number; spot: number; opacity: n
     </g>
   </svg>
 );
-
-/** "what it does to a whale": foto del grupo que entra girando en el lugar de la orca. */
-const PodPhoto: React.FC<{p: boolean; x: number; y: number; k: number; frame: number}> = ({p, x, y, k, frame}) => {
-  const W = 440;
-  const H = 280;
-  return (
-    <div style={{position: 'absolute', left: x - W / 2, top: y - H / 2 + Math.sin(frame / 12) * 4, width: W, height: H, padding: 12, boxSizing: 'border-box',
-      background: '#fbfaf6', boxShadow: '0 14px 28px rgba(0,0,0,0.25)', transform: `perspective(900px) rotateY(${(1 - k) * 80}deg) rotate(-3deg)`, opacity: Math.min(1, k * 2)}}>
-      <div style={{position: 'relative', width: '100%', height: '100%', overflow: 'hidden'}}>
-        <Pic id="body.orcaLeaderPod" p={p} x={(W - 24) / 2 + 40} y={(H - 24) / 2} w={(W - 24) * 1.35} aspect={1672 / 941} shadow={false} />
-      </div>
-    </div>
-  );
-};

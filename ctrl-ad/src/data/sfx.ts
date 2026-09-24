@@ -35,7 +35,6 @@ export const SFX: SfxCue[] = [
   // Hook
   {sfx: 'card', at: H('women', 2), volume: 0.2},
   {sfx: 'splash', at: H('killerWhales', -1), volume: 0.45},
-  {sfx: 'flip', at: H('but', 2), volume: 0.2},
   {sfx: 'draw', at: H('only'), volume: 0.26},
   {sfx: 'erase', at: H('opposite', 5), volume: 0.32},
   {sfx: 'buzz', at: H('opposite', 10), volume: 0.28},
