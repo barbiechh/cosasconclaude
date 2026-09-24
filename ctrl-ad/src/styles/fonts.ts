@@ -1,10 +1,15 @@
-import {loadFont} from '@remotion/fonts';
-import {staticFile} from 'remotion';
+import {cancelRender, continueRender, delayRender} from 'remotion';
+import {POPPINS_BOLD_WOFF2_BASE64} from './poppins-bold-woff2';
 
-// Poppins Bold empaquetada en /public para no depender de la red al renderizar.
-loadFont({
-  family: 'Poppins',
-  url: staticFile('fonts/poppins-latin-700-normal.woff2'),
-  weight: '700',
-  style: 'normal',
-});
+// La fuente va incrustada: pedirla por URL colgaba de vez en cuando alguna
+// pestaña del render (timeout de delayRender a los 28 s).
+const bytes = Uint8Array.from(atob(POPPINS_BOLD_WOFF2_BASE64), (c) => c.charCodeAt(0));
+const face = new FontFace('Poppins', bytes, {weight: '700', style: 'normal'});
+const handle = delayRender('Loading Poppins Bold');
+face
+  .load()
+  .then(() => {
+    document.fonts.add(face);
+    continueRender(handle);
+  })
+  .catch((err) => cancelRender(err));

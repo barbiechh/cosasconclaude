@@ -47,7 +47,7 @@ for y in range(0, H, CELL):
     d.line([(0, y), (W, y)], fill=255, width=2)
 grid = np.asarray(grid.filter(ImageFilter.GaussianBlur(0.7)), np.float32)[..., None] / 255.0
 line_color = np.array([206, 192, 168], np.float32)
-img = img * (1 - grid * 0.7) + line_color * grid * 0.7
+img = img * (1 - grid * 0.5) + line_color * grid * 0.5
 
 # Rayones claros y pliegues oscuros finos.
 marks = Image.new("RGBA", (W, H), (0, 0, 0, 0))
@@ -66,11 +66,11 @@ for i in range(55):
 marks = marks.filter(ImageFilter.GaussianBlur(0.6))
 
 # Manchas pequeñas de suciedad, más densas en los bordes.
-for _ in range(90):
+for _ in range(45):
     x, y = rng.random() * W, rng.random() * H
-    r = 1 + rng.random() * 3.5
+    r = 0.8 + rng.random() * 2.2
     dm2 = ImageDraw.Draw(marks)
-    dm2.ellipse([x - r, y - r, x + r, y + r], fill=(140, 125, 95, int(40 + rng.random() * 60)))
+    dm2.ellipse([x - r, y - r, x + r, y + r], fill=(140, 125, 95, int(25 + rng.random() * 40)))
 
 base = Image.fromarray(np.clip(img, 0, 255).astype(np.uint8), "RGB")
 base.paste(marks, (0, 0), marks)
