@@ -1,6 +1,5 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
-import {PaperBackground} from './PaperBackground';
 import {Cutout} from './Cutout';
 import {TimedText} from './TimedText';
 import {COLORS, LAYOUT} from '../styles/tokens';
@@ -37,8 +36,6 @@ export const Hook1: React.FC<HookProps> = ({usePlaceholder}) => {
 
   return (
     <AbsoluteFill>
-      <PaperBackground />
-
       <AbsoluteFill
         style={{
           transform: `scale(${womanZoom})`,
@@ -99,7 +96,7 @@ export const Hook1: React.FC<HookProps> = ({usePlaceholder}) => {
       </AbsoluteFill>
 
       <TimedText text="PERIMENOPAUSE" highlight="PERIMENOPAUSE" enterAtFrame={f.peri} top={LAYOUT.topText} fontSize={84} />
-      <TimedText text="the complete opposite" enterAtFrame={f.opposite} top={LAYOUT.bottomText} fontSize={60} />
+      <TimedText text="COMPLETE OPPOSITE" highlight="OPPOSITE" enterAtFrame={f.opposite} top={1230} fontSize={72} />
     </AbsoluteFill>
   );
 };

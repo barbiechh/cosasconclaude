@@ -1,14 +1,30 @@
 import React from 'react';
-import {AbsoluteFill, Img, staticFile} from 'remotion';
+import {AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame} from 'remotion';
 import {COLORS} from '../styles/tokens';
+import {HEIGHT, WIDTH} from '../data/timing';
+import {OVERLAP, PUSH_FRAMES} from '../data/scenes';
+
+const ease = Easing.inOut(Easing.cubic);
+const SRC = staticFile('images/paper-grid.jpg');
 
 /**
- * Papel cuadriculado claro (celda de 36px, como la referencia). La textura se
- * genera con scripts/make_paper_texture.py; para cambiarla, reemplaza
- * public/images/paper-grid.jpg por otra imagen de 1080x1920.
+ * Papel cuadriculado único para todo el video (celda de 36 px, repetible en
+ * horizontal). En cada barrido entre escenas se desplaza un ancho completo,
+ * junto con el contenido, como una cámara que recorre un collage largo.
+ * Textura: scripts/make_paper_texture.py -> public/images/paper-grid.jpg.
  */
-export const PaperBackground: React.FC = () => (
-  <AbsoluteFill style={{backgroundColor: COLORS.paper}}>
-    <Img src={staticFile('images/paper-grid.jpg')} style={{width: '100%', height: '100%'}} />
-  </AbsoluteFill>
-);
+export const PaperBackground: React.FC = () => {
+  const frame = useCurrentFrame();
+  const offset = PUSH_FRAMES.reduce(
+    (acc, t) => acc + ease(interpolate(frame, [t, t + OVERLAP], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})) * WIDTH,
+    0
+  );
+  const x = -(offset % WIDTH);
+  const tile = {position: 'absolute' as const, top: 0, width: WIDTH, height: HEIGHT};
+  return (
+    <AbsoluteFill style={{backgroundColor: COLORS.paper}}>
+      <Img src={SRC} style={{...tile, left: x}} />
+      <Img src={SRC} style={{...tile, left: x + WIDTH}} />
+    </AbsoluteFill>
+  );
+};

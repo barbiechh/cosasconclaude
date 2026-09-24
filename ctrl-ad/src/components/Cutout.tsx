@@ -19,7 +19,16 @@ export interface CutoutProps {
   fromX?: number;
   fromY?: number;
   label?: string;
+  /** zoom inicial dentro del marco de la foto (encuadre más cerrado) */
+  zoom?: number;
+  /** punto de la foto que queda al centro, p. ej. '40% 30%' */
+  focus?: string;
+  /** flotación suave mientras está en pantalla */
+  float?: boolean;
 }
+
+// Fase distinta por recorte para que no floten todos al unísono.
+const phaseOf = (s: string) => [...s].reduce((a, c) => a + c.charCodeAt(0), 0) % 628 / 100;
 
 const EXIT_FRAMES = 8;
 
@@ -41,6 +50,9 @@ export const Cutout: React.FC<CutoutProps> = ({
   fromX = 0,
   fromY = 60,
   label,
+  zoom = 1,
+  focus = '50% 40%',
+  float = true,
 }) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
@@ -62,6 +74,11 @@ export const Cutout: React.FC<CutoutProps> = ({
   const tx = interpolate(enter, [0, 1], [fromX, 0]);
   const ty = interpolate(enter, [0, 1], [fromY, 0]) - exit * 30;
   const opacity = Math.min(1, local / 4) * (1 - exit);
+  const t = frame / fps + phaseOf(assetId + left + top);
+  const floatY = float ? Math.sin(t * 1.4) * 7 : 0;
+  const floatR = float ? Math.sin(t * 0.9) * 0.9 : 0;
+  // Zoom lento dentro de la foto (Ken Burns).
+  const kb = zoom * (1 + 0.07 * Math.min(1, local / (fps * 5)));
 
   const asset = resolveAsset(assetId, usePlaceholder);
 
@@ -74,7 +91,7 @@ export const Cutout: React.FC<CutoutProps> = ({
         width,
         height,
         opacity,
-        transform: `translate(${tx}px, ${ty}px) scale(${scale}) rotate(${rotation}deg)`,
+        transform: `translate(${tx}px, ${ty + floatY}px) scale(${scale}) rotate(${rotation + floatR}deg)`,
       }}
     >
       {!asset ? (
@@ -111,7 +128,20 @@ export const Cutout: React.FC<CutoutProps> = ({
             boxShadow: '0 12px 28px rgba(0,0,0,0.22), 0 2px 6px rgba(0,0,0,0.12)',
           }}
         >
-          <Img src={asset.src} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block'}} />
+          <div style={{width: '100%', height: '100%', overflow: 'hidden'}}>
+            <Img
+              src={asset.src}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: focus,
+                display: 'block',
+                transform: `scale(${kb})`,
+                transformOrigin: focus,
+              }}
+            />
+          </div>
         </div>
       ) : (
         <Img

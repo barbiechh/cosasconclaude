@@ -1,290 +1,372 @@
 import React from 'react';
 import {AbsoluteFill, Sequence, interpolate, useCurrentFrame} from 'remotion';
-import {PaperBackground} from './PaperBackground';
 import {Cutout} from './Cutout';
 import {TimedText} from './TimedText';
 import {DrawnCircle} from './DrawnCircle';
+import {SceneShell} from './SceneShell';
+import {
+  Battery, CalendarFlip, CalmLine, DopamineParticles, EstrogenMolecule, FogLayer, HormoneChart,
+  IconChip, JaggedBurst, LabReport, LightBulb, Meter, ScatterWord, Stamp,
+} from './graphics';
 import {COLORS, FONT_FAMILY, FONT_WEIGHT, LAYOUT} from '../styles/tokens';
-import {BODY_FRAMES, BodyCueKey, WIDTH, bodyCueFrame} from '../data/timing';
+import {WIDTH} from '../data/timing';
+import {SCENES, ScenePlan} from '../data/scenes';
 
 export interface BodyProps {
   usePlaceholder: boolean;
 }
 
 const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
-const {topText: TOP, bottomText: BOTTOM} = LAYOUT;
+const TOP = LAYOUT.topText;
 
-/**
- * Cada escena vive en su propia <Sequence>, delimitada por dos frases del
- * guion; al terminar, su contenido se desmonta y no tapa a la siguiente.
- * Dentro de la escena, `at(key)` da el frame local en que se dice esa frase.
- */
-const scene = (from: BodyCueKey, to: BodyCueKey | null) => {
-  const start = bodyCueFrame(from);
-  const end = to ? bodyCueFrame(to) : BODY_FRAMES;
-  return {
-    from: start,
-    durationInFrames: end - start,
-    at: (key: BodyCueKey, offset = 0) => bodyCueFrame(key) - start + offset,
-  };
-};
-
-// Cajas con la proporción de cada imagen entregada.
+// Cajas con la proporción de cada imagen.
 const POD = {width: 880, height: 523}; // foto 16:9 + borde
 const WOMAN_PHOTO = {width: 860, height: 671}; // foto 4:3 + borde
+const PH = {width: 720, height: 900}; // fotos nuevas 4:5 + borde
 
-export const Body: React.FC<BodyProps> = ({usePlaceholder}) => {
-  const p = usePlaceholder;
-  const orcas = scene('aroundForty', 'obviously');
-  const bridge = scene('obviously', 'becauseForAWoman');
-  const fade = scene('becauseForAWoman', 'nobodyTellsHer');
-  const brain = scene('nobodyTellsHer', 'usualAnswers');
-  const answers = scene('usualAnswers', 'pushingHarder');
-  const fix = scene('pushingHarder', 'onceTheBrain');
-  const recovery = scene('onceTheBrain', 'natureBuilt');
-  const closing = scene('natureBuilt', null);
+/** Palabra clave grande arriba (los captions de abajo llevan el texto completo). */
+const Key: React.FC<{text: string; hi?: string; from: number; to?: number; size?: number; top?: number}> = ({
+  text, hi, from, to, size = 78, top = TOP,
+}) => <TimedText text={text} highlight={hi ?? text} enterAtFrame={from} exitAtFrame={to} top={top} fontSize={size} />;
+
+/** Escena: Sequence + transición de entrada/salida + deriva de cámara. */
+const Scene: React.FC<{plan: ScenePlan; punches?: number[]; children: React.ReactNode}> = ({plan, punches, children}) => (
+  <Sequence from={plan.from} durationInFrames={plan.durationInFrames} name={plan.id}>
+    <SceneShell durationInFrames={plan.durationInFrames} enter={plan.enter} exit={plan.exit} punches={punches}>
+      {children}
+    </SceneShell>
+  </Sequence>
+);
+
+export const Body: React.FC<BodyProps> = ({usePlaceholder: p}) => {
+  const {orcas, bridge, fade, brain, answers, fix, recovery, closing} = SCENES;
 
   return (
     <AbsoluteFill>
-      <PaperBackground />
+      {/* 1. ORCAS */}
+      {(() => {
+        const at = orcas.at;
+        return (
+          <Scene plan={orcas} punches={[at('leaderOfPod'), at('fishDisappear')]}>
+            <Cutout assetId="body.orcaLeaderPod" usePlaceholder={p} enterAtFrame={at('aroundForty')} exitAtFrame={at('fishDisappear')}
+              {...POD} top={560} left={100} rotationDeg={-1.5} label="Orca mayor y su grupo" />
+            <Key text="AROUND 40" hi="40" from={at('aroundForty')} to={at('livesToNinety')} />
+            <AgeCounter from={at('livesToNinety')} to={at('thirtyYears')} />
+            <Key text="30 YEARS" from={at('thirtyYears')} to={at('leaderOfPod')} />
+            <Stamp text="30 YEARS OF DATA" x={250} y={1150} at={at('thirtyYears', 4)} until={at('leaderOfPod')} rotate={-6} color={COLORS.ink} />
+            <Key text="THE LEADER" hi="LEADER" from={at('leaderOfPod')} to={at('fishDisappear')} />
+            <DrawnCircle enterAtFrame={at('leaderOfPod', 3)} exitAtFrame={at('fishDisappear')} top={715} left={455} size={330} />
+            <DisappearingFish p={p} enterAtFrame={at('fishDisappear')} goneAtFrame={at('everyWhaleFollows')} />
+            <Key text="THE FISH DISAPPEAR" hi="DISAPPEAR" from={at('fishDisappear')} to={at('everyWhaleFollows')} size={70} />
+            <Cutout assetId="body.orcaLeaderPod" usePlaceholder={p} enterAtFrame={at('everyWhaleFollows')} exitAtFrame={at('sheRemembers')}
+              {...POD} top={560} left={100} rotationDeg={1.5} fromX={-260} fromY={0} label="El grupo sigue a la orca mayor" />
+            <FollowArrows from={at('everyWhaleFollows', 4)} to={at('sheRemembers')} />
+            <Key text="FOLLOWS HER" hi="HER" from={at('everyWhaleFollows')} to={at('sheRemembers')} />
+            <RouteToFood p={p} startFrame={at('sheRemembers')} />
+            <Key text="SHE REMEMBERS" hi="REMEMBERS" from={at('sheRemembers')} to={at('twentyYearsAgo')} />
+            <Key text="20 YEARS AGO" from={at('twentyYearsAgo')} />
+          </Scene>
+        );
+      })()}
 
-      {/* 1. ORCAS: la mayor y su grupo, los peces desaparecen, ella recuerda la ruta */}
-      <Sequence from={orcas.from} durationInFrames={orcas.durationInFrames} name="1 Orcas">
-        {(() => {
-          const at = orcas.at;
-          return (
-            <>
-              <Cutout assetId="body.orcaLeaderPod" usePlaceholder={p} enterAtFrame={at('aroundForty')} exitAtFrame={at('fishDisappear')}
-                {...POD} top={600} left={100} rotationDeg={-1.5} label="Orca mayor y su grupo" />
-              <TimedText text="Around 40, she stops having babies" highlight="stops having babies" enterAtFrame={at('aroundForty')} exitAtFrame={at('livesToNinety')} top={TOP} />
-              <TimedText text="then lives to 90." highlight="90" enterAtFrame={at('livesToNinety')} exitAtFrame={at('thirtyYears')} top={TOP} fontSize={64} />
-              <TimedText text="30 years" highlight="30 years" enterAtFrame={at('thirtyYears')} exitAtFrame={at('leaderOfPod')} top={TOP} fontSize={72} />
-              <TimedText text="the leader of the whole pod" highlight="leader" enterAtFrame={at('leaderOfPod')} exitAtFrame={at('fishDisappear')} top={TOP} />
-              <DisappearingFish p={p} enterAtFrame={at('fishDisappear')} goneAtFrame={at('everyWhaleFollows')} />
-              <TimedText text="the fish disappear" enterAtFrame={at('fishDisappear')} exitAtFrame={at('everyWhaleFollows')} top={TOP} />
-              <Cutout assetId="body.orcaLeaderPod" usePlaceholder={p} enterAtFrame={at('everyWhaleFollows')} exitAtFrame={at('sheRemembers')}
-                {...POD} top={600} left={100} rotationDeg={1.5} fromX={-220} fromY={0} label="El grupo sigue a la orca mayor" />
-              <TimedText text="every whale follows her" highlight="follows her" enterAtFrame={at('everyWhaleFollows')} exitAtFrame={at('sheRemembers')} top={TOP} />
-              <RouteToFood p={p} startFrame={at('sheRemembers')} />
-              <TimedText text="she remembers where the food was" enterAtFrame={at('sheRemembers')} exitAtFrame={at('twentyYearsAgo')} top={TOP} />
-              <TimedText text="20 years ago" highlight="20 years ago" enterAtFrame={at('twentyYearsAgo')} top={TOP} fontSize={72} />
-            </>
-          );
-        })()}
-      </Sequence>
+      {/* 2. PUENTE */}
+      {(() => {
+        const at = bridge.at;
+        return (
+          <Scene plan={bridge} punches={[at('worstVersion')]}>
+            <Key text="WOMAN ≠ WHALE" hi="≠" from={at('obviously')} to={at('butIfABrain')} />
+            <Desaturate from={at('worstVersion')} amount={0.75}>
+              <Cutout assetId="body.womanMidlifeDaily" usePlaceholder={p} enterAtFrame={at('obviously', 6)}
+                {...WOMAN_PHOTO} top={560} left={110} rotationDeg={-1.5} fromX={300} fromY={0} label="Mujer en su día a día" />
+            </Desaturate>
+            <Cutout assetId="hook.orca" usePlaceholder={p} enterAtFrame={at('obviously')} exitAtFrame={at('butIfABrain')}
+              width={300} height={316} top={440} left={60} rotationDeg={-10} fromX={-200} label="Orca" />
+            <Cutout assetId="body.brainDiagram" usePlaceholder={p} enterAtFrame={at('butIfABrain')} exitAtFrame={at('worstVersion')}
+              width={360} height={240} top={450} left={640} rotationDeg={8} fromX={200} fromY={-100} label="Cerebro" />
+            <Key text="AT ITS BEST" hi="BEST" from={at('atItsBest')} to={at('worstVersion')} />
+            <Stamp text="PEAK" x={700} y={1150} at={at('atItsBest', 3)} until={at('worstVersion')} color={COLORS.green} />
+            <Key text="THE WORST VERSION?" hi="WORST" from={at('worstVersion')} size={70} />
+            <DrawnCircle enterAtFrame={at('worstVersion', 4)} top={610} left={318} size={300} color={COLORS.red} />
+          </Scene>
+        );
+      })()}
 
-      {/* 2. PUENTE: de la naturaleza a una mujer en su día a día */}
-      <Sequence from={bridge.from} durationInFrames={bridge.durationInFrames} name="2 Puente">
-        {(() => {
-          const at = bridge.at;
-          return (
-            <>
-              <TimedText text="Obviously a woman isn't a whale." enterAtFrame={at('obviously')} exitAtFrame={at('butIfABrain')} top={TOP} />
-              <Cutout assetId="body.womanMidlifeDaily" usePlaceholder={p} enterAtFrame={at('obviously', 10)}
-                {...WOMAN_PHOTO} top={520} left={(WIDTH - WOMAN_PHOTO.width) / 2} rotationDeg={-1.5} label="Mujer en su día a día" />
-              <TimedText text="built to be at its best" highlight="best" enterAtFrame={at('atItsBest')} exitAtFrame={at('worstVersion')} top={BOTTOM} />
-              <TimedText text="the worst version of themselves?" highlight="worst" enterAtFrame={at('worstVersion')} top={BOTTOM} />
-            </>
-          );
-        })()}
-      </Sequence>
+      {/* 3. SLOW FADE: un plano por cada cosa que se va */}
+      {(() => {
+        const at = fade.at;
+        return (
+          <Scene plan={fade} punches={[at('snapsWord')]}>
+            <Desaturate from={at('slowFade')} to={at('firstTheFocus')} amount={0.85} blurPx={2}>
+              <Cutout assetId="body.womanFocusFade" usePlaceholder={p} enterAtFrame={0} exitAtFrame={at('firstTheFocus', 4)}
+                {...PH} top={450} left={180} rotationDeg={1} label="La misma mujer" />
+            </Desaturate>
+            <Key text="A SLOW FADE" hi="FADE" from={at('slowFade')} to={at('firstTheFocus')} />
 
-      {/* 3. SLOW FADE: ella se apaga y se le desprenden el foco, las palabras, el empuje */}
-      <Sequence from={fade.from} durationInFrames={fade.durationInFrames} name="3 Slow fade">
-        {(() => {
-          const at = fade.at;
-          return (
-            <>
-              <FadingPortrait startFrame={at('slowFade')} endFrame={at('thisIsJustWho')}>
-                <Cutout assetId="body.womanFocusFade" usePlaceholder={p} enterAtFrame={0}
-                  {...WOMAN_PHOTO} top={520} left={(WIDTH - WOMAN_PHOTO.width) / 2} rotationDeg={1} label="La misma mujer" />
-              </FadingPortrait>
-              <TimedText text="a slow fade" highlight="slow fade" enterAtFrame={at('slowFade')} exitAtFrame={at('snaps')} top={TOP} fontSize={72} />
-              <FallingWord text="focus" enterAtFrame={at('focusGoes')} top={600} centerX={260} />
-              <FallingWord text="words" enterAtFrame={at('wordsGo')} top={760} centerX={820} />
-              <FallingWord text="drive" enterAtFrame={at('driveGoes')} top={960} centerX={300} />
-              <TimedText text="she snaps at the people she loves most" enterAtFrame={at('snaps')} exitAtFrame={at('thisIsJustWho')} top={TOP} />
-              <TimedText text="“this is just who she is now”" enterAtFrame={at('thisIsJustWho')} top={BOTTOM} />
-            </>
-          );
-        })()}
-      </Sequence>
+            <BlurOut from={at('focusGoes', 6)} to={at('wordsGo')}>
+              <Cutout assetId="fade.focus" usePlaceholder={p} enterAtFrame={at('firstTheFocus')} exitAtFrame={at('wordsGo', 2)}
+                {...PH} top={450} left={160} zoom={1.25} focus="40% 30%" rotationDeg={-2} fromX={500} fromY={0} label="Foco: frente a la laptop" />
+            </BlurOut>
+            <Key text="FOCUS" from={at('focusGoes')} to={at('wordsGo')} size={96} />
+            <IconChip kind="focus" label="focus" x={60} y={960} enterAt={at('focusGoes')} flyOutAt={at('focusGoes', 16)} until={at('wordsGo')} fromX={-300} />
+
+            <Cutout assetId="fade.words" usePlaceholder={p} enterAtFrame={at('wordsGo')} exitAtFrame={at('driveGoes', 2)}
+              {...PH} top={470} left={200} zoom={1.1} focus="55% 35%" rotationDeg={2.5} fromX={-500} fromY={0} label="Palabras: a media conversación" />
+            <ScatterWord text="words" x={300} y={960} enterAt={at('wordsGo')} scatterAt={at('wordsGo', 10)} until={at('driveGoes')} />
+            <Key text="WORDS" from={at('wordsGo')} to={at('driveGoes')} size={96} />
+
+            <Cutout assetId="fade.drive" usePlaceholder={p} enterAtFrame={at('driveGoes')} exitAtFrame={at('snaps', 2)}
+              {...PH} top={450} left={170} zoom={1.35} focus="45% 60%" rotationDeg={-1.5} fromX={0} fromY={500} label="Empuje: sin energía" />
+            <Battery x={560} y={1030} w={300} enterAt={at('driveGoes')} until={at('snaps', 14)} from={0.75} to={0.04} changeFrom={at('driveGoes', 2)} changeTo={at('snaps', 10)} />
+            <Key text="DRIVE" from={at('driveGoes')} to={at('snaps')} size={96} />
+
+            <Shake at={at('snapsWord')}>
+              <Cutout assetId="fade.snaps" usePlaceholder={p} enterAtFrame={at('snaps')} exitAtFrame={at('creepsIn', 2)}
+                {...PH} top={450} left={180} zoom={1.15} focus="45% 35%" rotationDeg={2} fromX={500} fromY={0} label="Estalla con los suyos" />
+            </Shake>
+            <JaggedBurst cx={540} cy={820} at={at('snapsWord')} radius={330} until={at('creepsIn')} />
+            <Key text="SHE SNAPS" hi="SNAPS" from={at('snaps')} to={at('creepsIn')} />
+
+            <CalendarFlip x={330} y={560} enterAt={at('creepsIn')} flipFrom={at('creepsIn', 4)} flipTo={at('sheStarts')} until={at('sheStarts', 4)} />
+            <Key text="IT CREEPS IN" hi="CREEPS" from={at('creepsIn')} to={at('overAYear')} />
+            <Key text="A YEAR OR TWO" from={at('overAYear')} to={at('sheStarts')} />
+
+            <Cutout assetId="fade.mirror" usePlaceholder={p} enterAtFrame={at('sheStarts')}
+              {...PH} top={450} left={180} zoom={1.05} focus="50% 30%" rotationDeg={-1} fromX={0} fromY={0} label="Frente al espejo" />
+            <Key text="SHE STARTS TO BELIEVE" hi="BELIEVE" from={at('sheStarts')} to={at('thisIsJustWho')} size={66} />
+            <Key text="“JUST WHO SHE IS NOW”" hi="NOW" from={at('thisIsJustWho')} size={64} />
+          </Scene>
+        );
+      })()}
 
       {/* 4. ESTRÓGENO Y DOPAMINA */}
-      <Sequence from={brain.from} durationInFrames={brain.durationInFrames} name="4 Estrogeno-dopamina">
-        {(() => {
-          const at = brain.at;
-          return (
-            <>
-              <TimedText text="Nobody tells her otherwise." enterAtFrame={at('nobodyTellsHer')} exitAtFrame={at('whatTheHormones')} top={TOP} />
-              <TimedText text="what the hormones were doing for her brain" highlight="her brain" enterAtFrame={at('whatTheHormones')} exitAtFrame={at('estrogen')} top={TOP} />
-              <Cutout assetId="body.brainDiagram" usePlaceholder={p} enterAtFrame={at('herBrain')}
-                width={600} height={400} top={500} left={(WIDTH - 600) / 2} label="Grabado de un cerebro" />
-              <TimedText text="Estrogen had a second job" highlight="second job" enterAtFrame={at('estrogen')} exitAtFrame={at('makeDopamine')} top={TOP} />
-              <TimedText text="helping the brain make dopamine" highlight="dopamine" enterAtFrame={at('makeDopamine')} exitAtFrame={at('flickers')} top={TOP} />
-              <TimedText text="focus · drive · follow through" enterAtFrame={at('behindFocus')} exitAtFrame={at('flickers')} top={980} fontSize={48} />
-              <TimedText text="it flickers" highlight="flickers" enterAtFrame={at('flickers')} exitAtFrame={at('thatsTheFog')} top={TOP} fontSize={72} />
-              <SwitchFlicker usePlaceholder={p} flickerAtFrame={at('flickers')} />
-              <DopamineLine appearAtFrame={at('everyTimeItDips')} dipAtFrame={at('dopamineDips')} />
-              <Fog fromFrame={at('thatsTheFog')} />
-              <TimedText text="That's the fog." highlight="fog" enterAtFrame={at('thatsTheFog')} top={TOP} fontSize={72} />
-            </>
-          );
-        })()}
-      </Sequence>
+      {(() => {
+        const at = brain.at;
+        return (
+          <Scene plan={brain} punches={[at('herBrain'), at('flickers'), at('dopamineDips')]}>
+            <Cutout assetId="brain.doctor" usePlaceholder={p} enterAtFrame={at('nobodyTellsHer', 4)} exitAtFrame={at('everyoneLooking', 4)}
+              {...PH} top={450} left={180} zoom={1.1} focus="50% 40%" rotationDeg={-1.5} label="Consulta médica" />
+            <Key text="NOBODY TELLS HER" hi="NOBODY" from={at('nobodyTellsHer')} to={at('everyoneLooking')} />
 
-      {/* 5. HRT / ESTIMULANTES: tarjetas tipográficas, sin empaques */}
-      <Sequence from={answers.from} durationInFrames={answers.durationInFrames} name="5 HRT-estimulantes">
-        {(() => {
-          const at = answers.at;
-          return (
-            <>
-              <TimedText text="the usual answers don't reach it" enterAtFrame={at('usualAnswers')} exitAtFrame={at('hrtSorts')} top={TOP} />
-              <LabelCard title="HRT" enterAtFrame={at('hrtSorts')} left={90} top={640} rotationDeg={-2}
-                lines={[
-                  {text: 'sweats ✓', enterAtFrame: at('hrtSorts', 10)},
-                  {text: 'fog ✗', enterAtFrame: at('leavesTheFog'), strike: true},
-                ]} />
-              <TimedText text="sorts the sweats, leaves the fog" highlight="leaves the fog" enterAtFrame={at('hrtSorts')} exitAtFrame={at('stimulants')} top={TOP} />
-              <LabelCard title="Stimulants" enterAtFrame={at('stimulants')} left={560} top={700} rotationDeg={2}
-                lines={[
-                  {text: 'push out dopamine', enterAtFrame: at('canOnlyPush')},
-                  {text: 'stop working ✗', enterAtFrame: at('quietlyStop'), strike: true},
-                ]} />
-              <TimedText text="can only push out dopamine already made" enterAtFrame={at('canOnlyPush')} exitAtFrame={at('quietlyStop')} top={TOP} />
-              <TimedText text="they quietly stop working" highlight="stop working" enterAtFrame={at('quietlyStop')} top={TOP} />
-            </>
-          );
-        })()}
-      </Sequence>
+            <LabReport x={160} y={500} enterAt={at('everyoneLooking')} sweepFrom={at('everyoneLooking', 8)} sweepTo={at('whatTheHormones')} until={at('whatTheHormones', 4)} />
+            <Key text="THE HORMONES" hi="HORMONES" from={at('everyoneLooking')} to={at('whatTheHormones')} />
 
-      {/* 6. EL FIX: tirosina, B6, plantas -> CTRL (solo foto real del frasco) */}
-      <Sequence from={fix.from} durationInFrames={fix.durationInFrames} name="6 Ingredientes-CTRL">
-        {(() => {
-          const at = fix.at;
-          const ctrl = at('ctrl');
-          return (
-            <>
-              <TimedText text="Pushing harder was never the fix." enterAtFrame={at('pushingHarder')} exitAtFrame={at('theFixIs')} top={TOP} />
-              <TimedText text="what the brain builds dopamine from" highlight="builds" enterAtFrame={at('theFixIs')} exitAtFrame={at('tyrosine')} top={TOP} />
-              <TimedText text="an amino acid called tyrosine" highlight="tyrosine" enterAtFrame={at('tyrosine')} exitAtFrame={at('nothingLikeStimulant')} top={TOP} />
-              <Ingredient p={p} assetId="body.tyrosine" name="Tyrosine" enterAtFrame={at('tyrosine')} exitAtFrame={ctrl}
-                top={450} imageLeft={70} width={480} height={320} captionX={790} />
-              <Ingredient p={p} assetId="body.b6" name="B6" enterAtFrame={at('b6')} exitAtFrame={ctrl}
-                top={740} imageLeft={530} width={480} height={320} captionX={290} />
-              <Ingredient p={p} assetId="body.calmingPlants" name="2 calming plants" enterAtFrame={at('calmingPlants')} exitAtFrame={ctrl}
-                top={1020} imageLeft={70} width={540} height={270} captionX={800} />
-              <TimedText text="nothing like a stimulant" highlight="nothing" enterAtFrame={at('nothingLikeStimulant')} exitAtFrame={ctrl} top={TOP} />
-              <Cutout assetId="product.ctrlBottle" usePlaceholder={p} enterAtFrame={ctrl}
-                width={440} height={660} top={LAYOUT.imageTop} left={(WIDTH - 440) / 2} fromY={120} label="FRASCO REAL DE CTRL — PENDIENTE DE FOTO" />
-              <DrawnCircle enterAtFrame={ctrl + 8} top={LAYOUT.imageTop - 40} left={(WIDTH - 560) / 2} size={560} />
-              <TimedText text="CTRL" enterAtFrame={ctrl} top={TOP - 10} fontSize={110} />
-              <TimedText text="Nothing hormonal. Sits fine next to HRT." highlight="Nothing hormonal." enterAtFrame={at('nothingHormonal')} top={BOTTOM} fontSize={50} />
-            </>
-          );
-        })()}
-      </Sequence>
+            <BrainTrack p={p} at={at} />
+            <Key text="HER BRAIN" hi="BRAIN" from={at('whatTheHormones')} to={at('estrogen')} />
 
-      {/* 7. RECUPERACIÓN: la niebla se levanta y vuelve ella */}
-      <Sequence from={recovery.from} durationInFrames={recovery.durationInFrames} name="7 Recuperacion">
-        {(() => {
-          const at = recovery.at;
-          return (
-            <>
-              <Cutout assetId="body.brainDiagram" usePlaceholder={p} enterAtFrame={at('onceTheBrain')} exitAtFrame={at('driveComesBack')}
-                width={600} height={400} top={600} left={(WIDTH - 600) / 2} label="Grabado de un cerebro" />
-              <Fog fromFrame={at('onceTheBrain')} liftAtFrame={at('fogLifts')} />
-              <TimedText text="building dopamine again" highlight="again" enterAtFrame={at('onceTheBrain')} exitAtFrame={at('fogLifts')} top={TOP} />
-              <TimedText text="the fog lifts" highlight="lifts" enterAtFrame={at('fogLifts')} exitAtFrame={at('driveComesBack')} top={TOP} fontSize={72} />
-              <Cutout assetId="hook.woman" usePlaceholder={p} enterAtFrame={at('driveComesBack')}
-                width={460} height={690} top={450} left={(WIDTH - 460) / 2} label="Ella, con energía" />
-              <TimedText text="the drive comes back" highlight="drive" enterAtFrame={at('driveComesBack')} exitAtFrame={at('feelsLikeHerself')} top={TOP} />
-              <TimedText text="and so does the patience" highlight="patience" enterAtFrame={at('soDoesPatience')} exitAtFrame={at('feelsLikeHerself')} top={1180} />
-              <TimedText text="She feels like herself again." highlight="herself" enterAtFrame={at('feelsLikeHerself')} top={TOP} />
-            </>
-          );
-        })()}
-      </Sequence>
+            <EstrogenMolecule x={60} y={560} drawFrom={at('estrogen')} until={at('focusWord')} />
+            <Stamp text="2ND JOB" x={170} y={1000} at={at('estrogen', 21)} until={at('forFortyYears')} />
+            <Key text="ESTROGEN" from={at('estrogen')} to={at('forFortyYears')} />
 
-      {/* 8. CIERRE: la líder y su grupo, ahora conectados con ella */}
-      <Sequence from={closing.from} durationInFrames={closing.durationInFrames} name="8 Cierre">
-        {(() => {
-          const at = closing.at;
-          return (
-            <>
-              <TimedText text="Nature built this stage of life" enterAtFrame={at('natureBuilt')} exitAtFrame={at('everybodyFollows')} top={TOP} />
-              <Cutout assetId="body.orcaLeaderPod" usePlaceholder={p} enterAtFrame={at('natureBuilt')}
-                width={560} height={333} top={470} left={WIDTH - 610} rotationDeg={3} fromX={200} fromY={0} label="Orca mayor y su grupo" />
-              <FollowPath drawFrom={at('makeAWoman', 6)} />
-              <Cutout assetId="hook.woman" usePlaceholder={p} enterAtFrame={at('makeAWoman')}
-                width={420} height={630} top={640} left={90} rotationDeg={-2} fromX={-200} fromY={0} label="Ella, al frente" />
-              <TimedText text="the one everybody follows" highlight="everybody follows" enterAtFrame={at('everybodyFollows')} top={TOP} />
-            </>
-          );
-        })()}
-      </Sequence>
+            <ConnectArrow drawFrom={at('helpedTheBrain')} until={at('focusWord')} />
+            <Key text="40 YEARS" from={at('forFortyYears')} to={at('makeDopamine')} />
+            <DopamineParticles cx={790} cy={610} from={at('makeDopamine')} until={at('inPerimenopause')} spread={380} />
+            <Key text="DOPAMINE" from={at('makeDopamine')} to={at('focusWord')} size={90} />
+
+            <IconChip kind="focus" label="focus" x={60} y={980} enterAt={at('focusWord')} flyOutAt={at('inPerimenopause')} until={at('inPerimenopause', 16)} fromY={300} />
+            <IconChip kind="drive" label="drive" x={420} y={980} enterAt={at('driveWord')} flyOutAt={at('inPerimenopause', 3)} until={at('inPerimenopause', 18)} fromY={300} />
+            <IconChip kind="follow" label="follow-through" x={780} y={980} enterAt={at('followThrough')} flyOutAt={at('inPerimenopause', 6)} until={at('inPerimenopause', 22)} fromY={300} />
+            <Key text="FOCUS · DRIVE · FOLLOW-THROUGH" hi="FOCUS" from={at('focusWord')} to={at('inPerimenopause')} size={56} />
+
+            <HormoneChart x={100} y={880} appearAt={at('inPerimenopause')} dropAt={at('justDrop')} flickerAt={at('flickers')}
+              estrogenDipAt={at('itDips')} dopamineAt={at('everyTimeItDips')} dopamineDipAt={at('dopamineDips')} until={at('thatsTheFog', 2)} />
+            <Key text="IT DOESN'T JUST DROP" hi="DROP" from={at('inPerimenopause')} to={at('flickers')} size={70} />
+            <LightBulb x={150} y={430} size={250} enterAt={at('inPerimenopause', 6)} flickerAt={at('flickers')} until={at('thatsTheFog', 2)} />
+            <SwitchFlicker p={p} enterAt={at('inPerimenopause', 10)} flickerAt={at('flickers')} until={at('thatsTheFog', 2)} />
+            <Flash at={at('flickers')} />
+            <Key text="IT FLICKERS" hi="FLICKERS" from={at('flickers')} to={at('everyTimeItDips')} />
+            <Key text="EVERY TIME IT DIPS" hi="DIPS" from={at('everyTimeItDips')} to={at('dopamineDips')} size={70} />
+            <Key text="DOPAMINE DIPS" hi="DIPS" from={at('dopamineDips')} to={at('thatsTheFog')} />
+
+            <Cutout assetId="brain.foggy" usePlaceholder={p} enterAtFrame={at('thatsTheFog')}
+              {...PH} top={450} left={180} zoom={1.1} focus="50% 35%" rotationDeg={1.5} fromX={0} fromY={400} label="Tras un vidrio empañado" />
+            <FogLayer from={at('thatsTheFog', 2)} />
+            <Key text="THE FOG" hi="FOG" from={at('thatsTheFog')} size={96} />
+          </Scene>
+        );
+      })()}
+
+      {/* 5. HRT / ESTIMULANTES */}
+      {(() => {
+        const at = answers.at;
+        return (
+          <Scene plan={answers} punches={[at('quietlyStop')]}>
+            <Key text="THE USUAL ANSWERS" hi="USUAL" from={at('usualAnswers')} to={at('hrtSorts')} size={70} />
+            <LabelCard title="HRT" enterAtFrame={at('hrtSorts')} left={90} top={560} rotationDeg={-3}
+              lines={[
+                {text: 'sweats ✓', enterAtFrame: at('hrtSorts', 10)},
+                {text: 'fog ✗', enterAtFrame: at('leavesTheFog'), strike: true},
+              ]} />
+            <Key text="HRT" from={at('hrtSorts')} to={at('stimulants')} size={96} />
+            <LabelCard title="Stimulants" enterAtFrame={at('stimulants')} left={560} top={760} rotationDeg={3}
+              lines={[
+                {text: 'push out dopamine', enterAtFrame: at('canOnlyPush')},
+                {text: 'already made', enterAtFrame: at('canOnlyPush', 20)},
+                {text: 'stop working ✗', enterAtFrame: at('quietlyStop'), strike: true},
+              ]} />
+            <Key text="STIMULANTS" from={at('stimulants')} to={at('quietlyStop')} />
+            <DopamineParticles cx={775} cy={900} from={at('canOnlyPush')} until={at('quietlyStop')} count={12} spread={260} />
+            <Key text="THEY STOP WORKING" hi="STOP" from={at('quietlyStop')} size={70} />
+            <Stamp text="STOPS WORKING" x={130} y={1130} at={at('quietlyStop', 6)} />
+          </Scene>
+        );
+      })()}
+
+      {/* 6. EL FIX -> CTRL */}
+      {(() => {
+        const at = fix.at;
+        const ctrl = at('ctrl');
+        return (
+          <Scene plan={fix} punches={[ctrl]}>
+            <Key text="NEVER THE FIX" hi="NEVER" from={at('pushingHarder')} to={at('theFixIs')} />
+            <Stamp text="PUSH HARDER ✗" x={220} y={760} at={at('pushingHarder', 8)} until={at('theFixIs')} />
+            <Key text="THE FIX" hi="FIX" from={at('theFixIs')} to={at('nothingLikeStimulant')} size={90} />
+            <DopamineParticles cx={540} cy={800} from={at('theFixIs', 6)} until={at('tyrosine')} count={18} spread={320} mode="in" />
+            <Ingredient p={p} assetId="body.tyrosine" name="Tyrosine" enterAtFrame={at('tyrosine')} exitAtFrame={ctrl}
+              top={450} imageLeft={70} width={480} height={320} captionX={790} />
+            <Ingredient p={p} assetId="body.b6" name="B6" enterAtFrame={at('b6')} exitAtFrame={ctrl}
+              top={740} imageLeft={530} width={480} height={320} captionX={290} />
+            <Ingredient p={p} assetId="body.calmingPlants" name="2 calming plants" enterAtFrame={at('calmingPlants')} exitAtFrame={ctrl}
+              top={1020} imageLeft={70} width={540} height={270} captionX={800} />
+            <Key text="NOTHING LIKE A STIMULANT" hi="NOTHING" from={at('nothingLikeStimulant')} to={ctrl} size={60} />
+            <DopamineParticles cx={540} cy={800} from={ctrl - 6} until={ctrl + 24} count={24} spread={520} mode="in" rate={1.6} />
+            <Cutout assetId="product.ctrlBottle" usePlaceholder={p} enterAtFrame={ctrl}
+              width={440} height={660} top={LAYOUT.imageTop} left={(WIDTH - 440) / 2} fromY={160} label="FRASCO REAL DE CTRL — PENDIENTE DE FOTO" />
+            <DrawnCircle enterAtFrame={ctrl + 8} top={LAYOUT.imageTop - 40} left={(WIDTH - 560) / 2} size={560} />
+            <TimedText text="CTRL" enterAtFrame={ctrl} top={TOP - 10} fontSize={110} />
+            <Key text="NOTHING HORMONAL" hi="NOTHING" from={at('nothingHormonal')} top={1190} size={62} />
+          </Scene>
+        );
+      })()}
+
+      {/* 7. RECUPERACIÓN */}
+      {(() => {
+        const at = recovery.at;
+        return (
+          <Scene plan={recovery} punches={[at('fogLifts'), at('feelsLikeHerself')]}>
+            <Cutout assetId="body.brainDiagram" usePlaceholder={p} enterAtFrame={at('onceTheBrain')} exitAtFrame={at('fogLifts', 2)}
+              width={640} height={427} top={600} left={70} label="Cerebro" />
+            <DopamineParticles cx={390} cy={810} from={at('onceTheBrain', 4)} until={at('fogLifts')} mode="in" count={30} spread={520} rate={1.3} />
+            <Meter x={790} y={560} label="dopamine" enterAt={at('onceTheBrain', 2)} fillFrom={at('onceTheBrain', 6)} fillTo={at('fogLifts')} until={at('fogLifts', 4)} />
+            <Key text="DOPAMINE AGAIN" hi="AGAIN" from={at('onceTheBrain')} to={at('fogLifts')} />
+
+            <Cutout assetId="recovery.clear" usePlaceholder={p} enterAtFrame={at('fogLifts', -4)} exitAtFrame={at('driveComesBack', 2)}
+              {...PH} top={450} left={180} zoom={1.05} rotationDeg={1} fromY={0} label="Luz clara" />
+            <FogLayer from={at('fogLifts', -10)} liftAt={at('fogLifts', 2)} until={at('driveComesBack')} />
+            <Key text="THE FOG LIFTS" hi="LIFTS" from={at('fogLifts')} to={at('driveComesBack')} />
+
+            <Cutout assetId="recovery.drive" usePlaceholder={p} enterAtFrame={at('driveComesBack')} exitAtFrame={at('soDoesPatience', 2)}
+              {...PH} top={450} left={120} zoom={1.1} rotationDeg={-2.5} fromX={-500} fromY={0} label="Con empuje" />
+            <Battery x={600} y={1020} w={300} enterAt={at('driveComesBack', 2)} until={at('soDoesPatience')} from={0.08} to={1} changeFrom={at('driveComesBack', 4)} changeTo={at('soDoesPatience', -4)} />
+            <Key text="DRIVE" from={at('driveComesBack')} to={at('soDoesPatience')} size={96} />
+
+            <Cutout assetId="recovery.patience" usePlaceholder={p} enterAtFrame={at('soDoesPatience')} exitAtFrame={at('feelsLikeHerself', 2)}
+              {...PH} top={450} left={240} zoom={1.08} rotationDeg={2} fromX={500} fromY={0} label="Riendo con los suyos" />
+            <CalmLine x={110} y={1180} from={at('soDoesPatience')} calmAt={at('soDoesPatience', 6)} until={at('feelsLikeHerself')} />
+            <Key text="PATIENCE" from={at('soDoesPatience')} to={at('feelsLikeHerself')} size={96} />
+
+            <Cutout assetId="hook.woman" usePlaceholder={p} enterAtFrame={at('feelsLikeHerself')}
+              width={440} height={660} top={470} left={(WIDTH - 440) / 2} fromY={200} label="Ella" />
+            <IconChip kind="focus" label="focus" x={30} y={520} enterAt={at('feelsLikeHerself', 4)} checked={at('feelsLikeHerself', 10)} fromX={-500} />
+            <IconChip kind="words" label="words" x={810} y={640} enterAt={at('feelsLikeHerself', 8)} checked={at('feelsLikeHerself', 14)} fromX={500} />
+            <IconChip kind="drive" label="drive" x={40} y={900} enterAt={at('feelsLikeHerself', 12)} checked={at('feelsLikeHerself', 18)} fromX={-500} />
+            <Key text="HERSELF AGAIN" hi="HERSELF" from={at('feelsLikeHerself')} />
+          </Scene>
+        );
+      })()}
+
+      {/* 8. CIERRE */}
+      {(() => {
+        const at = closing.at;
+        return (
+          <Scene plan={closing} punches={[at('everybodyFollows')]}>
+            <Key text="NATURE BUILT THIS" hi="NATURE" from={at('natureBuilt')} to={at('everybodyFollows')} size={70} />
+            <Cutout assetId="body.orcaLeaderPod" usePlaceholder={p} enterAtFrame={at('natureBuilt')}
+              width={560} height={333} top={470} left={WIDTH - 610} rotationDeg={3} fromX={260} fromY={0} label="Orca mayor y su grupo" />
+            <FollowPath drawFrom={at('makeAWoman', 6)} />
+            <Cutout assetId="hook.woman" usePlaceholder={p} enterAtFrame={at('makeAWoman')}
+              width={420} height={630} top={640} left={90} rotationDeg={-2} fromX={-260} fromY={0} label="Ella, al frente" />
+            <Key text="EVERYBODY FOLLOWS" hi="FOLLOWS" from={at('everybodyFollows')} size={70} />
+          </Scene>
+        );
+      })()}
     </AbsoluteFill>
   );
 };
 
-const FadingPortrait: React.FC<{startFrame: number; endFrame: number; children: React.ReactNode}> = ({
-  startFrame,
-  endFrame,
-  children,
+// ---------------------------------------------------------------------------
+
+/** "LIVES TO 90": el número corre de 40 a 90. */
+const AgeCounter: React.FC<{from: number; to: number}> = ({from, to}) => {
+  const frame = useCurrentFrame();
+  const n = Math.round(interpolate(frame, [from, from + 18], [40, 90], clamp));
+  return <TimedText text={`LIVES TO ${n}`} highlight={String(n)} enterAtFrame={from} exitAtFrame={to} top={TOP} fontSize={78} />;
+};
+
+/** Desatura (y opcionalmente desenfoca) lo que envuelve a partir de `from`. */
+const Desaturate: React.FC<{from: number; to?: number; amount: number; blurPx?: number; children: React.ReactNode}> = ({
+  from, to, amount, blurPx = 0, children,
 }) => {
   const frame = useCurrentFrame();
-  const t = interpolate(frame, [startFrame, endFrame], [0, 1], clamp);
+  const t = interpolate(frame, [from, to ?? from + 20], [0, 1], clamp);
   return (
-    <AbsoluteFill style={{opacity: 1 - t * 0.55, filter: `grayscale(${t}) blur(${t * 2}px)`}}>{children}</AbsoluteFill>
+    <AbsoluteFill style={{filter: `grayscale(${t * amount}) blur(${t * blurPx}px)`, opacity: 1 - t * amount * 0.25}}>{children}</AbsoluteFill>
   );
 };
 
-/** Palabra que aparece al decirse y luego se desprende hacia abajo. */
-const FallingWord: React.FC<{text: string; enterAtFrame: number; top: number; centerX: number}> = ({
-  text,
-  enterAtFrame,
-  top,
-  centerX,
-}) => {
+/** Pierde el foco: desenfoque que va y viene. */
+const BlurOut: React.FC<{from: number; to: number; children: React.ReactNode}> = ({from, to, children}) => {
   const frame = useCurrentFrame();
-  const local = frame - enterAtFrame;
-  if (local < 0) return null;
-  const opacity = interpolate(local, [0, 4, 18, 40], [0, 1, 1, 0], clamp);
-  const drop = interpolate(local, [14, 40], [0, 160], clamp);
-  const rotate = interpolate(local, [14, 40], [0, -14], clamp);
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        top: top + drop,
-        left: centerX,
-        transform: `translateX(-50%) rotate(${rotate}deg)`,
-        opacity,
-        fontFamily: FONT_FAMILY,
-        fontWeight: FONT_WEIGHT,
-        fontSize: 64,
-        color: COLORS.ink,
-        backgroundColor: COLORS.yellow,
-        padding: '4px 22px',
-        borderRadius: 6,
-        boxShadow: '0 6px 14px rgba(0,0,0,0.18)',
-      }}
-    >
-      {text}
-    </div>
-  );
+  const t = interpolate(frame, [from, to], [0, 1], clamp);
+  const b = t * (6 + Math.sin(frame / 2.5) * 3);
+  return <AbsoluteFill style={{filter: `blur(${b}px)`}}>{children}</AbsoluteFill>;
+};
+
+/** Sacudida corta en `at`. */
+const Shake: React.FC<{at: number; children: React.ReactNode}> = ({at, children}) => {
+  const frame = useCurrentFrame();
+  const k = interpolate(frame - at, [0, 16], [1, 0], clamp) * (frame >= at ? 1 : 0);
+  const x = Math.sin(frame * 3.1) * 22 * k;
+  const r = Math.sin(frame * 2.3) * 2 * k;
+  return <AbsoluteFill style={{transform: `translateX(${x}px) rotate(${r}deg)`}}>{children}</AbsoluteFill>;
+};
+
+/** Destello blanco que parpadea con el foco. */
+const Flash: React.FC<{at: number}> = ({at}) => {
+  const frame = useCurrentFrame();
+  const local = frame - at;
+  if (local < 0 || local > 22) return null;
+  const pattern = [0.35, 0, 0.28, 0, 0.1, 0.3, 0, 0.18, 0, 0.12, 0];
+  return <AbsoluteFill style={{background: 'white', opacity: pattern[Math.floor(local / 2)] ?? 0}} />;
 };
 
 /** Cardumen que entra y se desvanece poco a poco antes del siguiente cue. */
 const DisappearingFish: React.FC<{p: boolean; enterAtFrame: number; goneAtFrame: number}> = ({p, enterAtFrame, goneAtFrame}) => {
   const frame = useCurrentFrame();
   const fade = interpolate(frame, [enterAtFrame + 10, goneAtFrame], [1, 0], clamp);
-  const drift = interpolate(frame, [enterAtFrame, goneAtFrame], [0, 90], clamp);
+  const drift = interpolate(frame, [enterAtFrame, goneAtFrame], [0, 140], clamp);
   return (
     <div style={{position: 'absolute', inset: 0, opacity: fade, transform: `translateX(${drift}px)`}}>
       <Cutout assetId="body.fishSchool" usePlaceholder={p} enterAtFrame={enterAtFrame}
-        width={900} height={300} top={720} left={90} fromX={-160} fromY={0} label="Cardumen" />
+        width={900} height={300} top={720} left={90} fromX={-200} fromY={0} label="Cardumen" />
     </div>
+  );
+};
+
+/** Flechas que avanzan: el grupo sigue a la orca mayor. */
+const FollowArrows: React.FC<{from: number; to: number}> = ({from, to}) => {
+  const frame = useCurrentFrame();
+  if (frame < from || frame >= to) return null;
+  const local = frame - from;
+  return (
+    <svg width={WIDTH} height={200} style={{position: 'absolute', left: 0, top: 1130}}>
+      {[0, 1, 2, 3, 4].map((i) => {
+        const x = ((local * 9 + i * 200) % 1100) - 60;
+        return (
+          <path key={i} d={`M ${x} 60 L ${x + 50} 100 L ${x} 140`} fill="none" stroke={COLORS.ink} strokeWidth={12}
+            strokeLinecap="round" strokeLinejoin="round" opacity={0.25 + 0.15 * i} />
+        );
+      })}
+    </svg>
   );
 };
 
@@ -326,63 +408,89 @@ const RouteToFood: React.FC<{p: boolean; startFrame: number}> = ({p, startFrame}
   );
 };
 
+/**
+ * El cerebro de la escena 4: entra grande en "her brain", se hace a un lado
+ * para la molécula en "Estrogen" y sale cuando empieza la gráfica.
+ */
+const BrainTrack: React.FC<{p: boolean; at: ScenePlan['at']}> = ({p, at}) => {
+  const frame = useCurrentFrame();
+  const enter = at('whatTheHormones');
+  const side = at('estrogen');
+  const exit = at('inPerimenopause');
+  if (frame < enter || frame >= exit) return null;
+  const move = interpolate(frame, [side, side + 12], [0, 1], clamp);
+  const zoomIn = interpolate(frame, [enter, enter + 10], [0.35, 1], clamp);
+  const out = interpolate(frame, [exit - 8, exit], [1, 0], clamp);
+  const x = interpolate(move, [0, 1], [180, 590]);
+  const y = interpolate(move, [0, 1], [520, 470]);
+  const s = interpolate(move, [0, 1], [1, 0.58]) * zoomIn;
+  return (
+    <div style={{position: 'absolute', left: x, top: y, width: 720, height: 480, transform: `scale(${s})`, transformOrigin: 'top left', opacity: out}}>
+      <Cutout assetId="body.brainDiagram" usePlaceholder={p} enterAtFrame={enter} width={720} height={480} top={0} left={0} fromY={0} label="Cerebro" />
+    </div>
+  );
+};
+
+/** Flecha que conecta la molécula de estrógeno con el cerebro ("it helped the brain"). */
+const ConnectArrow: React.FC<{drawFrom: number; until: number}> = ({drawFrom, until}) => {
+  const frame = useCurrentFrame();
+  if (frame < drawFrom || frame >= until) return null;
+  const draw = interpolate(frame, [drawFrom, drawFrom + 12], [0, 1], clamp);
+  const d = 'M 400 700 C 500 640, 560 640, 640 620';
+  return (
+    <svg width={WIDTH} height={1200} style={{position: 'absolute', left: 0, top: 0}}>
+      <path d={d} fill="none" stroke={COLORS.red} strokeWidth={10} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - draw} />
+      <path d="M 616 596 L 644 620 L 610 636" fill="none" stroke={COLORS.red} strokeWidth={10} strokeLinecap="round" strokeLinejoin="round" opacity={draw > 0.9 ? 1 : 0} />
+    </svg>
+  );
+};
+
 /** Ingrediente con su nombre al lado; la imagen y el nombre salen juntos. */
 const Ingredient: React.FC<{
-  p: boolean;
-  assetId: string;
-  name: string;
-  enterAtFrame: number;
-  exitAtFrame: number;
-  top: number;
-  imageLeft: number;
-  width: number;
-  height: number;
-  captionX: number;
-}> = ({p, assetId, name, enterAtFrame, exitAtFrame, top, imageLeft, width, height, captionX}) => (
-  <>
-    <Cutout assetId={assetId} usePlaceholder={p} enterAtFrame={enterAtFrame} exitAtFrame={exitAtFrame}
-      width={width} height={height} top={top} left={imageLeft} fromX={imageLeft < WIDTH / 2 ? -120 : 120} fromY={0} label={name} />
-    <TimedText text={name} highlight={name} enterAtFrame={enterAtFrame + 4} exitAtFrame={exitAtFrame} top={top + height / 2 - 34}
-      centerX={captionX} maxWidth={400} fontSize={name.length > 8 ? 44 : 60} />
-  </>
-);
+  p: boolean; assetId: string; name: string; enterAtFrame: number; exitAtFrame: number;
+  top: number; imageLeft: number; width: number; height: number; captionX: number;
+}> = ({p, assetId, name, enterAtFrame, exitAtFrame, top, imageLeft, width, height, captionX}) => {
+  const frame = useCurrentFrame();
+  // Al revelarse CTRL, cada ingrediente vuela hacia el centro (hacia el frasco).
+  const suck = interpolate(frame, [exitAtFrame - 10, exitAtFrame], [0, 1], clamp);
+  const cx = imageLeft + width / 2;
+  const cy = top + height / 2;
+  const dx = (540 - cx) * suck * suck;
+  const dy = (800 - cy) * suck * suck;
+  return (
+    <div style={{position: 'absolute', inset: 0, transform: `translate(${dx}px, ${dy}px)`}}>
+      <Cutout assetId={assetId} usePlaceholder={p} enterAtFrame={enterAtFrame} exitAtFrame={exitAtFrame}
+        width={width} height={height} top={top} left={imageLeft} fromX={imageLeft < WIDTH / 2 ? -160 : 160} fromY={0} label={name} />
+      <TimedText text={name} highlight={name} enterAtFrame={enterAtFrame + 4} exitAtFrame={exitAtFrame} top={top + height / 2 - 34}
+        centerX={captionX} maxWidth={400} fontSize={name.length > 8 ? 44 : 60} />
+    </div>
+  );
+};
 
 /** Tarjeta tipográfica (en lugar de un empaque médico). */
 const LabelCard: React.FC<{
-  title: string;
-  enterAtFrame: number;
-  left: number;
-  top: number;
-  rotationDeg: number;
+  title: string; enterAtFrame: number; left: number; top: number; rotationDeg: number;
   lines: {text: string; enterAtFrame: number; strike?: boolean}[];
 }> = ({title, enterAtFrame, left, top, rotationDeg, lines}) => {
   const frame = useCurrentFrame();
   if (frame < enterAtFrame) return null;
   const enter = interpolate(frame, [enterAtFrame, enterAtFrame + 8], [0, 1], clamp);
+  const fromX = left < WIDTH / 2 ? -500 : 500;
   return (
     <div
       style={{
-        position: 'absolute',
-        left,
-        top,
-        width: 430,
-        padding: '28px 30px',
-        boxSizing: 'border-box',
-        backgroundColor: '#fbfaf6',
-        border: `4px solid ${COLORS.ink}`,
-        boxShadow: '0 12px 26px rgba(0,0,0,0.18)',
-        transform: `rotate(${rotationDeg}deg) translateY(${(1 - enter) * 50}px) scale(${0.9 + enter * 0.1})`,
-        opacity: enter,
-        fontFamily: FONT_FAMILY,
-        fontWeight: FONT_WEIGHT,
-        color: COLORS.ink,
+        position: 'absolute', left, top, width: 430, padding: '28px 30px', boxSizing: 'border-box',
+        backgroundColor: COLORS.card, border: `4px solid ${COLORS.ink}`, boxShadow: '0 12px 26px rgba(0,0,0,0.18)',
+        transform: `translateX(${(1 - enter) * fromX}px) rotate(${rotationDeg + (1 - enter) * 12}deg)`,
+        opacity: enter, fontFamily: FONT_FAMILY, fontWeight: FONT_WEIGHT, color: COLORS.ink,
       }}
     >
       <div style={{fontSize: 64, lineHeight: 1.1, marginBottom: 14}}>{title}</div>
       {lines.map((l) => {
         const op = interpolate(frame, [l.enterAtFrame, l.enterAtFrame + 6], [0, 1], clamp);
         return (
-          <div key={l.text} style={{fontSize: 40, lineHeight: 1.35, opacity: op, color: l.strike ? COLORS.red : COLORS.ink}}>
+          <div key={l.text} style={{fontSize: 40, lineHeight: 1.35, opacity: op, color: l.strike ? COLORS.red : COLORS.ink,
+            transform: `translateX(${(1 - op) * 30}px)`}}>
             {l.text}
           </div>
         );
@@ -391,58 +499,19 @@ const LabelCard: React.FC<{
   );
 };
 
-/** Interruptor: parpadea justo en "flickers" y se queda encendido. */
-const SwitchFlicker: React.FC<{usePlaceholder: boolean; flickerAtFrame: number}> = ({usePlaceholder, flickerAtFrame}) => {
+/** Interruptor: aparece y parpadea justo en "flickers". */
+const SwitchFlicker: React.FC<{p: boolean; enterAt: number; flickerAt: number; until: number}> = ({p, enterAt, flickerAt, until}) => {
   const frame = useCurrentFrame();
-  const local = frame - flickerAtFrame;
+  if (frame >= until) return null;
+  const local = frame - flickerAt;
   const pattern = [1, 0.15, 1, 0.1, 0.9, 0.2, 1, 0.3, 1];
   const opacity = local < 0 ? 1 : local < pattern.length * 2 ? pattern[Math.floor(local / 2)] : 1;
+  const flipR = local >= 0 && local < pattern.length * 2 ? (Math.floor(local / 2) % 2 ? 6 : -6) : 0;
   return (
     <div style={{position: 'absolute', inset: 0, opacity}}>
-      <Cutout assetId="body.lightSwitch" usePlaceholder={usePlaceholder} enterAtFrame={flickerAtFrame - 2}
-        width={300} height={282} top={960} left={90} rotationDeg={-3} label="Interruptor de luz" />
+      <Cutout assetId="body.lightSwitch" usePlaceholder={p} enterAtFrame={enterAt}
+        width={280} height={264} top={470} left={690} rotationDeg={3 + flipR} fromX={300} fromY={0} label="Interruptor" />
     </div>
-  );
-};
-
-/** Línea de dopamina: aparece plana y cae exactamente en "dopamine dips". */
-const DopamineLine: React.FC<{appearAtFrame: number; dipAtFrame: number}> = ({appearAtFrame, dipAtFrame}) => {
-  const frame = useCurrentFrame();
-  if (frame < appearAtFrame) return null;
-  const draw = interpolate(frame, [appearAtFrame, appearAtFrame + 12], [0, 1], clamp);
-  const dip = interpolate(frame, [dipAtFrame, dipAtFrame + 8], [0, 1], clamp);
-  const w = 560;
-  const h = 300;
-  const base = 70;
-  const low = base + dip * 170;
-  const d = `M 0 ${base} L ${w * 0.35} ${base} C ${w * 0.45} ${base} ${w * 0.45} ${low} ${w * 0.55} ${low} L ${w} ${low}`;
-  return (
-    <svg width={w} height={h} style={{position: 'absolute', top: 960, left: 440, opacity: draw}}>
-      <path d={d} stroke={COLORS.red} strokeWidth={10} fill="none" strokeLinecap="round" pathLength={1}
-        strokeDasharray={1} strokeDashoffset={1 - draw} />
-      <text x={0} y={40} fontFamily={FONT_FAMILY} fontWeight={FONT_WEIGHT} fontSize={36} fill={COLORS.ink}>dopamine</text>
-    </svg>
-  );
-};
-
-/** Niebla blanca sobre el área de imagen; si hay liftAtFrame, se disipa ahí. */
-const Fog: React.FC<{fromFrame: number; liftAtFrame?: number}> = ({fromFrame, liftAtFrame}) => {
-  const frame = useCurrentFrame();
-  if (frame < fromFrame) return null;
-  const inOp = interpolate(frame, [fromFrame, fromFrame + 10], [0, 0.75], clamp);
-  const outOp = liftAtFrame === undefined ? 1 : interpolate(frame, [liftAtFrame, liftAtFrame + 20], [1, 0], clamp);
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        top: LAYOUT.imageTop - 60,
-        left: 0,
-        width: WIDTH,
-        height: LAYOUT.imageBottom - LAYOUT.imageTop + 120,
-        background: 'radial-gradient(ellipse at center, rgba(250,250,248,0.95) 0%, rgba(250,250,248,0.6) 45%, rgba(250,250,248,0) 75%)',
-        opacity: inOp * outOp,
-      }}
-    />
   );
 };
 

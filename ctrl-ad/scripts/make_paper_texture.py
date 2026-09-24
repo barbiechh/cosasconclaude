@@ -1,4 +1,4 @@
-"""Genera public/images/paper-grid.jpg: papel cuadriculado claro y arrugado, 1080x1920.
+"""Genera public/images/paper-grid.jpg: papel cuadriculado claro, 1080x1920, repetible en horizontal.
 
 Uso (desde ctrl-ad/):  pip install numpy pillow && python3 scripts/make_paper_texture.py
 Determinista (semilla fija): siempre produce la misma imagen.
@@ -6,7 +6,9 @@ Determinista (semilla fija): siempre produce la misma imagen.
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
-W, H = 1080, 1920
+TILE_W, H = 1080, 1920
+BLEND = 180  # franja extra para que la textura se repita sin costura en horizontal
+W = TILE_W + BLEND
 CELL = 36  # medido sobre la referencia: 12.2px a 372px de ancho = 35.5px a 1080
 rng = np.random.default_rng(11)
 
@@ -74,5 +76,12 @@ for _ in range(45):
 
 base = Image.fromarray(np.clip(img, 0, 255).astype(np.uint8), "RGB")
 base.paste(marks, (0, 0), marks)
-base.save("public/images/paper-grid.jpg", quality=92)
+
+# Repetible en horizontal: el borde izquierdo se funde con la franja extra de la
+# derecha (misma fase de cuadrícula, porque TILE_W es múltiplo de CELL).
+arr = np.asarray(base, np.float32)
+ramp = np.linspace(0, 1, BLEND, dtype=np.float32)[None, :, None]
+tile = arr[:, :TILE_W].copy()
+tile[:, :BLEND] = arr[:, TILE_W:TILE_W + BLEND] * (1 - ramp) + arr[:, :BLEND] * ramp
+Image.fromarray(np.clip(tile, 0, 255).astype(np.uint8), "RGB").save("public/images/paper-grid.jpg", quality=92)
 print("public/images/paper-grid.jpg")

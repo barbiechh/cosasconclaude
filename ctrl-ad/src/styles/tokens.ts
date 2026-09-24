@@ -4,6 +4,8 @@ export const COLORS = {
   inkSoft: '#3a352c',
   yellow: '#f4c93a',
   red: '#b23a2e',
+  green: '#3f7d4e',
+  card: '#fbfaf6',
   placeholderBg: '#d8d2c2',
   placeholderBorder: '#9c9482',
 };

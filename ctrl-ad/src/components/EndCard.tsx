@@ -1,6 +1,5 @@
 import React from 'react';
 import {AbsoluteFill, Img, interpolate, useCurrentFrame} from 'remotion';
-import {PaperBackground} from './PaperBackground';
 import {Cutout} from './Cutout';
 import {TimedText} from './TimedText';
 import {COLORS, FONT_FAMILY, FONT_WEIGHT, LAYOUT} from '../styles/tokens';
@@ -17,7 +16,6 @@ export interface EndCardProps {
 /** Frasco real de CTRL + garantía de 30 días. Entra en "CTRL just gives her brain...". */
 export const EndCard: React.FC<EndCardProps> = ({usePlaceholder, guaranteeAtFrame, yourSignAtFrame}) => {
   const frame = useCurrentFrame();
-  const opacity = interpolate(frame, [0, 8], [0, 1], {extrapolateRight: 'clamp'});
   const box = interpolate(frame, [guaranteeAtFrame, guaranteeAtFrame + 8], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -26,9 +24,7 @@ export const EndCard: React.FC<EndCardProps> = ({usePlaceholder, guaranteeAtFram
   const logo = resolveAsset('product.ctrlLogo', usePlaceholder);
 
   return (
-    <AbsoluteFill style={{opacity}}>
-      <PaperBackground />
-
+    <AbsoluteFill>
       <div style={{position: 'absolute', top: LAYOUT.topText, left: (WIDTH - 480) / 2, width: 480, height: 130}}>
         {!logo ? (
           <div
@@ -54,12 +50,12 @@ export const EndCard: React.FC<EndCardProps> = ({usePlaceholder, guaranteeAtFram
       </div>
 
       <Cutout assetId="product.ctrlBottle" usePlaceholder={usePlaceholder} enterAtFrame={4}
-        width={440} height={660} top={470} left={(WIDTH - 440) / 2} label="FRASCO REAL DE CTRL — PENDIENTE DE FOTO" />
+        width={380} height={570} top={450} left={(WIDTH - 380) / 2} label="FRASCO REAL DE CTRL — PENDIENTE DE FOTO" />
 
       <div
         style={{
           position: 'absolute',
-          top: 1180,
+          top: 1060,
           left: (WIDTH - 800) / 2,
           width: 800,
           height: 260,
@@ -68,8 +64,8 @@ export const EndCard: React.FC<EndCardProps> = ({usePlaceholder, guaranteeAtFram
           transform: `scale(${0.94 + box * 0.06})`,
         }}
       />
-      <TimedText text="30-day guarantee" highlight="30-day" enterAtFrame={guaranteeAtFrame} top={1215} fontSize={64} />
-      <TimedText text="that's your sign." enterAtFrame={yourSignAtFrame} top={1320} fontSize={52} />
+      <TimedText text="30-DAY GUARANTEE" highlight="30-DAY" enterAtFrame={guaranteeAtFrame} top={1095} fontSize={64} />
+      <TimedText text="that's your sign." enterAtFrame={yourSignAtFrame} top={1200} fontSize={52} />
     </AbsoluteFill>
   );
 };

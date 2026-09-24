@@ -9,6 +9,7 @@ export interface DrawnCircleProps {
   size: number;
   color?: string;
   strokeWidth?: number;
+  exitAtFrame?: number;
 }
 
 /** Círculo amarillo dibujado a mano alzada (SVG con stroke-dasharray animado). */
@@ -19,10 +20,12 @@ export const DrawnCircle: React.FC<DrawnCircleProps> = ({
   size,
   color = COLORS.yellow,
   strokeWidth = 10,
+  exitAtFrame,
 }) => {
   const frame = useCurrentFrame();
   const localFrame = frame - enterAtFrame;
   if (localFrame < 0) return null;
+  if (exitAtFrame !== undefined && frame >= exitAtFrame) return null;
 
   const progress = interpolate(localFrame, [0, 18], [0, 1], {extrapolateRight: 'clamp'});
   const circumference = Math.PI * size;
