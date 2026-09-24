@@ -216,7 +216,7 @@ export const Body: React.FC<BodyProps> = ({usePlaceholder: p}) => {
                 {text: 'already made', enterAtFrame: at('canOnlyPush', 20)},
                 {text: 'stop working ✗', enterAtFrame: at('quietlyStop'), strike: true},
               ]} />
-            <Stamp text="STOPS WORKING" x={500} y={500} at={at('quietlyStop', 6)} rotate={-8} />
+            <Stamp text="✗" x={690} y={640} at={at('quietlyStop', 6)} rotate={-8} />
           </Scene>
         );
       })()}
