@@ -6,6 +6,14 @@ export const COLORS = {
   red: '#b23a2e',
   green: '#3f7d4e',
   card: '#fbfaf6',
+  /** abrigo de la protagonista ilustrada (mismo azul en todo el video) */
+  blue: '#4f79a3',
+  skin: '#dcaa86',
+  /** figuras secundarias (familia, seguidores) */
+  grey: '#8f897e',
+  greyLight: '#bdb7ab',
+  /** la ruta "de hace veinte años" */
+  sepia: '#9a7650',
   placeholderBg: '#d8d2c2',
   placeholderBorder: '#9c9482',
 };
@@ -32,4 +40,20 @@ export const LAYOUT = {
   imageBottom: 1250,
   bottomText: 1310,
   textWidth: 820,
+};
+
+/** Escenario central: la acción de cada momento vive aquí. */
+export const STAGE = {
+  top: 470,
+  bottom: 1290,
+  centerY: 870,
+  left: 90,
+  right: 990,
+};
+
+/** Jerarquía de tamaños de las palabras clave. */
+export const TYPE = {
+  hero: 104,
+  key: 84,
+  long: 66,
 };

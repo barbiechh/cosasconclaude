@@ -6,13 +6,16 @@ export const OVERLAP = 10;
 /** push = barrido lateral (el papel se desplaza con el contenido); zoom = entra desde el fondo. */
 export type TransitionKind = 'push' | 'zoom';
 
-export type SceneId = 'orcas' | 'bridge' | 'fade' | 'brain' | 'answers' | 'fix' | 'recovery' | 'closing';
+export type SceneId =
+  | 'orcas' | 'bridge' | 'fade' | 'family' | 'brain' | 'flicker' | 'answers' | 'fix' | 'recovery' | 'closing';
 
 const PLAN: {id: SceneId; from: BodyCueKey; enter: TransitionKind}[] = [
   {id: 'orcas', from: 'aroundForty', enter: 'push'},
   {id: 'bridge', from: 'obviously', enter: 'push'},
   {id: 'fade', from: 'becauseForAWoman', enter: 'push'},
+  {id: 'family', from: 'snaps', enter: 'push'},
   {id: 'brain', from: 'nobodyTellsHer', enter: 'zoom'},
+  {id: 'flicker', from: 'inPerimenopause', enter: 'push'},
   {id: 'answers', from: 'usualAnswers', enter: 'push'},
   {id: 'fix', from: 'pushingHarder', enter: 'push'},
   {id: 'recovery', from: 'onceTheBrain', enter: 'zoom'},
@@ -20,7 +23,7 @@ const PLAN: {id: SceneId; from: BodyCueKey; enter: TransitionKind}[] = [
 ];
 
 export const END_CARD_CUE: BodyCueKey = 'ctrlJustGives';
-export const END_CARD_ENTER: TransitionKind = 'push';
+export const END_CARD_ENTER = 'zoom' as TransitionKind;
 
 export type ScenePlan = {
   id: SceneId;

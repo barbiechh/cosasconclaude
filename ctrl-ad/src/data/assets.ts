@@ -9,6 +9,9 @@ import {getStaticFiles, staticFile} from 'remotion';
  *
  * kind: 'cutout' = PNG con fondo transparente (sombra sobre la silueta);
  *       'photo'  = foto rectangular (se pega como foto impresa con borde).
+ *
+ * V2: no hay fotografías de personas. Las mujeres del anuncio son figuras
+ * ilustradas en código (src/components/figures.tsx), no imágenes.
  */
 export type AssetKind = 'cutout' | 'photo';
 
@@ -23,8 +26,6 @@ export type AssetSlot = {
 };
 
 export const ASSET_MANIFEST: AssetSlot[] = [
-  {id: 'hook.woman', kind: 'cutout', file: 'images/hook/woman-cutout.png',
-    description: 'Mujer de mediana edad, recorte editorial vertical.'},
   {id: 'hook.orca', kind: 'cutout', file: 'images/hook/orca-cutout.png',
     description: 'Orca, recorte naturalista.'},
 
@@ -32,12 +33,6 @@ export const ASSET_MANIFEST: AssetSlot[] = [
     description: 'Orca mayor al frente y su grupo detrás.'},
   {id: 'body.fishSchool', kind: 'cutout', file: 'images/body/fish-school.png',
     description: 'Cardumen de salmones.'},
-
-  {id: 'body.womanMidlifeDaily', kind: 'photo', file: 'images/body/woman-midlife-daily.png',
-    description: 'Mujer de mediana edad en una escena cotidiana, pensativa.'},
-  {id: 'body.womanFocusFade', kind: 'photo', file: 'images/body/woman-focus-fade.png',
-    fallback: 'body.womanMidlifeDaily',
-    description: 'Opcional: la misma mujer, cansada o distraída (si falta, se usa la escena cotidiana).'},
 
   {id: 'body.brainDiagram', kind: 'cutout', file: 'images/body/brain-diagram.png',
     description: 'Grabado de un cerebro.'},
@@ -50,21 +45,6 @@ export const ASSET_MANIFEST: AssetSlot[] = [
     description: 'Vitamina B6: garbanzos y tableta.'},
   {id: 'body.calmingPlants', kind: 'cutout', file: 'images/body/calming-plants.png',
     description: 'Las dos plantas calmantes.'},
-
-  // Fotos por frase (4:5 vertical, personas distintas). Opcionales: si faltan,
-  // el plano se sostiene con su gráfico animado.
-  {id: 'lost.focus', kind: 'photo', file: 'images/body/focus-lost.png', description: 'Pierde el foco.'},
-  {id: 'lost.words', kind: 'photo', file: 'images/body/words-lost.png', description: 'Se le van las palabras.'},
-  {id: 'lost.drive', kind: 'photo', file: 'images/body/drive-lost.png', description: 'Sin empuje.'},
-  {id: 'lost.patience', kind: 'photo', file: 'images/body/patience-lost.png', description: 'Pierde la paciencia con los suyos.'},
-  {id: 'lost.mirror', kind: 'photo', file: 'images/body/mirror.png', description: 'No se reconoce en el espejo.'},
-  {id: 'brain.doctor', kind: 'photo', file: 'images/body/doctor-visit.png', description: 'El médico mira el expediente, no a ella.'},
-  {id: 'brain.foggy', kind: 'photo', file: 'images/body/woman-foggy.png', description: 'Tras un vidrio empañado.'},
-  {id: 'back.focus', kind: 'photo', file: 'images/body/focus-back.png', description: 'Recupera el foco.'},
-  {id: 'back.words', kind: 'photo', file: 'images/body/words-back.png', description: 'Recupera las palabras.'},
-  {id: 'back.drive', kind: 'photo', file: 'images/body/drive-back.png', description: 'Recupera el empuje.'},
-  {id: 'back.patience', kind: 'photo', file: 'images/body/patience-back.png', description: 'Recupera la paciencia.'},
-  {id: 'back.herself', kind: 'photo', file: 'images/body/herself-again.png', description: 'Vuelve a ser ella.'},
 
   // Tramo "the usual answers": frascos de HRT y de pastillas (recortes).
   {id: 'body.hrtBottle', kind: 'cutout', file: 'images/body/hrt-bottle.png', description: 'Frasco de HRT.'},

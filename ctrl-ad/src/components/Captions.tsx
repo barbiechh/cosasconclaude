@@ -64,7 +64,9 @@ const TOP_TEXTS: {words: Set<string>; from: number; to: number}[] = [
     const to = k.to ? cueFrame(k.to) : sceneEnd(from);
     return {words: new Set(content(k.text)), from: bodyToTimeline(from), to: bodyToTimeline(to)};
   }),
-  {words: new Set(content(END_CARD_TEXTS.guarantee)), from: bodyToTimeline(bodyCueFrame('guarantee')), to: TOTAL_FRAMES},
+  {words: new Set(content(END_CARD_TEXTS.guarantee)), from: bodyToTimeline(bodyCueFrame('guaranteeWord')), to: TOTAL_FRAMES},
+  {words: new Set(content(END_CARD_TEXTS.stock)), from: bodyToTimeline(bodyCueFrame('inStock', -3)), to: TOTAL_FRAMES},
+  {words: new Set(content(END_CARD_TEXTS.tap)), from: bodyToTimeline(bodyCueFrame('tapBelow')), to: TOTAL_FRAMES},
   {words: new Set(content(END_CARD_TEXTS.sign)), from: bodyToTimeline(bodyCueFrame('yourSign')), to: TOTAL_FRAMES},
 ];
 

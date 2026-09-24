@@ -6,6 +6,7 @@ import {EndCard} from '../components/EndCard';
 import {PaperBackground} from '../components/PaperBackground';
 import {SceneShell} from '../components/SceneShell';
 import {Captions} from '../components/Captions';
+import {SoundDesign} from '../components/SoundDesign';
 import {
   AUDIO_SRC,
   BODY_AUDIO_START_FRAME,
@@ -56,14 +57,11 @@ export const MainVideo: React.FC<MainVideoProps> = ({usePlaceholder}) => {
       </Sequence>
       <Sequence from={endCardFrom} durationInFrames={endCardFrames} name="EndCard">
         <SceneShell durationInFrames={endCardFrames} enter={END_CARD_ENTER} exit="none" drift={0.03}>
-          <EndCard
-            usePlaceholder={usePlaceholder}
-            guaranteeAtFrame={bodyCueFrame('guarantee') - bodyCueFrame(END_CARD_CUE)}
-            yourSignAtFrame={bodyCueFrame('yourSign') - bodyCueFrame(END_CARD_CUE)}
-          />
+          <EndCard usePlaceholder={usePlaceholder} />
         </SceneShell>
       </Sequence>
 
+      <SoundDesign />
       <Captions />
     </AbsoluteFill>
   );
