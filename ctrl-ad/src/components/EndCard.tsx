@@ -1,11 +1,11 @@
 import React from 'react';
-import {AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Img, interpolate, useCurrentFrame} from 'remotion';
 import {PaperBackground} from './PaperBackground';
 import {Cutout} from './Cutout';
 import {TimedText} from './TimedText';
 import {COLORS, FONT_FAMILY, FONT_WEIGHT, LAYOUT} from '../styles/tokens';
 import {WIDTH} from '../data/timing';
-import {getAssetSlot} from '../data/assets';
+import {resolveAsset} from '../data/assets';
 
 export interface EndCardProps {
   usePlaceholder: boolean;
@@ -23,15 +23,14 @@ export const EndCard: React.FC<EndCardProps> = ({usePlaceholder, guaranteeAtFram
     extrapolateRight: 'clamp',
   });
 
-  const logo = getAssetSlot('product.ctrlLogo');
-  const showLogoPlaceholder = usePlaceholder || !logo.final;
+  const logo = resolveAsset('product.ctrlLogo', usePlaceholder);
 
   return (
     <AbsoluteFill style={{opacity}}>
       <PaperBackground />
 
       <div style={{position: 'absolute', top: LAYOUT.topText, left: (WIDTH - 480) / 2, width: 480, height: 130}}>
-        {showLogoPlaceholder ? (
+        {!logo ? (
           <div
             style={{
               width: '100%',
@@ -50,7 +49,7 @@ export const EndCard: React.FC<EndCardProps> = ({usePlaceholder, guaranteeAtFram
             LOGO REAL DE CTRL — PENDIENTE
           </div>
         ) : (
-          <Img src={staticFile(logo.final as string)} style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+          <Img src={logo.src} style={{width: '100%', height: '100%', objectFit: 'contain'}} />
         )}
       </div>
 

@@ -1,154 +1,81 @@
+import {getStaticFiles, staticFile} from 'remotion';
+
 /**
- * Manifiesto de recursos visuales.
+ * Manifiesto de recursos visuales. Cada entrada es un recorte o foto que el
+ * video usa. CTRL-Preview siempre muestra placeholders; CTRL-Final usa el
+ * archivo de `file` si EXISTE en /public (se comprueba con getStaticFiles),
+ * si no, prueba `fallback`, y si tampoco hay, muestra el placeholder.
+ * Para añadir o cambiar una imagen basta con dejar el archivo en su ruta.
  *
- * Cada entrada representa UN recorte/foto que el video necesita. `placeholder`
- * siempre existe (se genera con CSS/SVG, no depende de ningún archivo). `final`
- * apunta a un archivo dentro de /public/images/... que tú debes proporcionar.
- *
- * La composición "CTRL-Preview" siempre usa `placeholder`.
- * La composición "CTRL-Final" usa `final` si existe el archivo, y cae a
- * `placeholder` si no lo encuentra (para que nunca truene el render mientras
- * vas entregando fotos poco a poco).
- *
- * Para reemplazar un recorte: coloca el archivo en la ruta indicada en `final`
- * y vuelve a renderizar CTRL-Final. No hay que tocar ningún componente.
+ * kind: 'cutout' = PNG con fondo transparente (sombra sobre la silueta);
+ *       'photo'  = foto rectangular (se pega como foto impresa con borde).
  */
+export type AssetKind = 'cutout' | 'photo';
 
 export type AssetSlot = {
   id: string;
   description: string;
-  final: string | null; // ruta relativa a /public, o null si aún no se define
-  required: boolean;
+  file: string;
+  kind: AssetKind;
+  fallback?: string;
+  /** nunca se sustituye por otra imagen: si falta, placeholder explícito */
+  brand?: boolean;
 };
 
 export const ASSET_MANIFEST: AssetSlot[] = [
-  // ---- HOOK ----
-  {
-    id: 'hook.woman',
-    description: 'Recorte editorial de una mujer (foto o grabado), estilo collage, fondo removido.',
-    final: 'images/hook/woman-cutout.png',
-    required: true,
-  },
-  {
-    id: 'hook.orca',
-    description: 'Recorte editorial de una orca (foto o grabado naturalista), fondo removido.',
-    final: 'images/hook/orca-cutout.png',
-    required: true,
-  },
+  {id: 'hook.woman', kind: 'cutout', file: 'images/hook/woman-cutout.png',
+    description: 'Mujer de mediana edad, recorte editorial vertical.'},
+  {id: 'hook.orca', kind: 'cutout', file: 'images/hook/orca-cutout.png',
+    description: 'Orca, recorte naturalista.'},
 
-  // ---- BODY: orcas ----
-  {
-    id: 'body.orcaLeaderPod',
-    description: 'Lámina naturalista: orca mayor liderando un grupo/pod.',
-    final: 'images/body/orca-leader-pod.png',
-    required: true,
-  },
-  {
-    id: 'body.fishSchoolFading',
-    description: 'Grabado de cardumen de peces, para la idea de "los peces desaparecen".',
-    final: 'images/body/fish-school.png',
-    required: true,
-  },
-  {
-    id: 'body.oceanRouteMap',
-    description: 'Ilustración tipo mapa/ruta punteada en el océano ("recuerda dónde estaba la comida").',
-    final: 'images/body/ocean-route-map.png',
-    required: false,
-  },
+  {id: 'body.orcaLeaderPod', kind: 'photo', file: 'images/body/orca-leader-pod.png',
+    description: 'Orca mayor al frente y su grupo detrás.'},
+  {id: 'body.fishSchool', kind: 'cutout', file: 'images/body/fish-school.png',
+    description: 'Cardumen de salmones.'},
 
-  // ---- BODY: mujer cotidiana ----
-  {
-    id: 'body.womanMidlifeDaily',
-    description: 'Recorte de mujer de mediana edad en escena cotidiana (trabajo/casa), estilo collage.',
-    final: 'images/body/woman-midlife-daily.png',
-    required: true,
-  },
-  {
-    id: 'body.womanFocusFade',
-    description: 'Recorte de mujer con elementos gráficos que se atenúan/desprenden (foco, palabras).',
-    final: 'images/body/woman-focus-fade.png',
-    required: false,
-  },
+  {id: 'body.womanMidlifeDaily', kind: 'photo', file: 'images/body/woman-midlife-daily.png',
+    description: 'Mujer de mediana edad en una escena cotidiana, pensativa.'},
+  {id: 'body.womanFocusFade', kind: 'photo', file: 'images/body/woman-focus-fade.png',
+    fallback: 'body.womanMidlifeDaily',
+    description: 'Opcional: la misma mujer, cansada o distraída (si falta, se usa la escena cotidiana).'},
 
-  // ---- BODY: ciencia / estrógeno-dopamina ----
-  {
-    id: 'body.brainDiagram',
-    description: 'Ilustración lineal simple de un cerebro, estilo grabado editorial.',
-    final: 'images/body/brain-diagram.png',
-    required: true,
-  },
-  {
-    id: 'body.lightSwitch',
-    description: 'Ilustración de un interruptor de luz / foco, para la metáfora "like a light on a bad switch".',
-    final: 'images/body/light-switch.png',
-    required: true,
-  },
+  {id: 'body.brainDiagram', kind: 'cutout', file: 'images/body/brain-diagram.png',
+    description: 'Grabado de un cerebro.'},
+  {id: 'body.lightSwitch', kind: 'cutout', file: 'images/body/light-switch.png',
+    description: 'Interruptor de pared antiguo.'},
 
-  // ---- BODY: HRT / Adderall (tramo explicativo, sin empaques inventados) ----
-  {
-    id: 'body.hrtIcon',
-    description: 'Icono/recorte editorial genérico para HRT (sin nombre de marca ni empaque real).',
-    final: 'images/body/hrt-icon.png',
-    required: false,
-  },
-  {
-    id: 'body.stimulantIcon',
-    description: 'Icono/recorte editorial genérico para estimulantes (sin nombre de marca ni empaque real).',
-    final: 'images/body/stimulant-icon.png',
-    required: false,
-  },
+  {id: 'body.tyrosine', kind: 'cutout', file: 'images/body/tyrosine.png',
+    description: 'Tirosina: polvo y alimentos fuente.'},
+  {id: 'body.b6', kind: 'cutout', file: 'images/body/b6.png',
+    description: 'Vitamina B6: garbanzos y tableta.'},
+  {id: 'body.calmingPlants', kind: 'cutout', file: 'images/body/calming-plants.png',
+    description: 'Las dos plantas calmantes.'},
 
-  // ---- BODY: ingredientes ----
-  {
-    id: 'body.tyrosine',
-    description: 'Recorte editorial del ingrediente tirosina (ilustración o foto de referencia genérica).',
-    final: 'images/body/tyrosine.png',
-    required: true,
-  },
-  {
-    id: 'body.b6',
-    description: 'Recorte editorial de vitamina B6.',
-    final: 'images/body/b6.png',
-    required: true,
-  },
-  {
-    id: 'body.calmingPlants',
-    description: 'Recorte editorial de las dos plantas calmantes (genérico, sin nombre de marca).',
-    final: 'images/body/calming-plants.png',
-    required: true,
-  },
-
-  // ---- CTRL (producto real, NUNCA inventar) ----
-  {
-    id: 'product.ctrlBottle',
-    description:
-      'FOTO REAL del frasco de CTRL. Obligatoria. Mientras no exista, se usa un placeholder ' +
-      'explícito de "FRASCO CTRL — PENDIENTE" y NUNCA una etiqueta o frasco inventado.',
-    final: 'images/endcard/ctrl-bottle.png',
-    required: true,
-  },
-  {
-    id: 'product.ctrlLogo',
-    description: 'Logo real de CTRL en negro o blanco, fondo transparente. Obligatorio para el titular final.',
-    final: 'images/endcard/ctrl-logo.png',
-    required: true,
-  },
-
+  {id: 'product.ctrlBottle', kind: 'cutout', file: 'images/endcard/ctrl-bottle.png', brand: true,
+    description: 'FOTO REAL del frasco de CTRL, fondo transparente. Nunca se inventa.'},
+  {id: 'product.ctrlLogo', kind: 'cutout', file: 'images/endcard/ctrl-logo.png', brand: true,
+    description: 'Logo real de CTRL, fondo transparente. Nunca se inventa.'},
 ];
 
 export const getAssetSlot = (id: string): AssetSlot => {
   const slot = ASSET_MANIFEST.find((a) => a.id === id);
-  if (!slot) {
-    throw new Error(`Asset slot "${id}" no existe en el manifiesto.`);
-  }
+  if (!slot) throw new Error(`Asset slot "${id}" no existe en el manifiesto.`);
   return slot;
 };
 
-/**
- * Lista de archivos que el usuario debe proporcionar para el render final,
- * en el orden en que aparecen en pantalla. Útil para generar la lista de
- * pendientes al final del proyecto.
- */
-export const MISSING_ASSET_CHECKLIST = ASSET_MANIFEST.filter((a) => a.required).map(
-  (a) => `${a.final}  ->  ${a.description}`
-);
+const exists = (file: string) => getStaticFiles().some((f) => f.name === file);
+
+/** Imagen a mostrar para un slot, o null si toca placeholder. */
+export const resolveAsset = (
+  id: string,
+  usePlaceholder: boolean
+): {src: string; kind: AssetKind} | null => {
+  if (usePlaceholder) return null;
+  let slot: AssetSlot | undefined = getAssetSlot(id);
+  while (slot) {
+    if (exists(slot.file)) return {src: staticFile(slot.file), kind: slot.kind};
+    if (slot.brand) return null;
+    slot = slot.fallback ? getAssetSlot(slot.fallback) : undefined;
+  }
+  return null;
+};

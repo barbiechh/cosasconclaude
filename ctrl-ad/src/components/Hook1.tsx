@@ -57,10 +57,10 @@ export const Hook1: React.FC<HookProps> = ({usePlaceholder}) => {
             assetId="hook.orca"
             usePlaceholder={usePlaceholder}
             enterAtFrame={f.whales}
-            width={500}
-            height={420}
-            top={620}
-            left={30}
+            width={520}
+            height={548}
+            top={560}
+            left={20}
             rotationDeg={-4}
             fromX={-120}
             fromY={0}

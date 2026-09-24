@@ -64,25 +64,22 @@ línea de tiempo según la duración del nuevo hook.
 - Área segura: los textos viven entre y = 260 y y = 1560 y x = 90–950
   (`src/styles/tokens.ts`).
 
-## Recursos pendientes
+## Recursos
 
-La lista completa está en `src/data/assets.ts`. Todos son PNG con fondo
-transparente, salvo que se indique otra cosa:
+`src/data/assets.ts` lista cada imagen. CTRL-Final usa el archivo si existe en
+`public/`; si falta, usa su respaldo (si tiene) o un placeholder visible.
+
+Ya integrados: `images/hook/woman-cutout.png`, `images/hook/orca-cutout.png`,
+`images/body/orca-leader-pod.png`, `fish-school.png`, `woman-midlife-daily.png`,
+`brain-diagram.png`, `light-switch.png`, `tyrosine.png`, `b6.png`,
+`calming-plants.png`.
+
+**Pendientes (obligatorios, no se inventan):**
 
 | Archivo | Qué es |
 | --- | --- |
-| `images/hook/woman-cutout.png` | Mujer, recorte editorial grande (vertical) |
-| `images/hook/orca-cutout.png` | Orca, recorte o grabado naturalista |
-| `images/body/orca-leader-pod.png` | Lámina: orca mayor al frente y su grupo detrás (horizontal) |
-| `images/body/fish-school.png` | Grabado de un cardumen |
-| `images/body/ocean-route-map.png` | Mapa antiguo con una ruta punteada |
-| `images/body/woman-midlife-daily.png` | Mujer de 45–55 años en una escena cotidiana |
-| `images/body/woman-focus-fade.png` | La misma mujer, plano medio, gesto cansado o distraído |
-| `images/body/brain-diagram.png` | Grabado simple de un cerebro |
-| `images/body/light-switch.png` | Interruptor de pared antiguo |
-| `images/body/tyrosine.png` | Ilustración para tirosina (p. ej. molécula o alimento fuente) |
-| `images/body/b6.png` | Ilustración para vitamina B6 |
-| `images/body/calming-plants.png` | Las dos plantas calmantes de la fórmula |
-| `images/body/hrt-icon.png`, `images/body/stimulant-icon.png` | Opcionales, genéricos, sin marca |
-| `images/endcard/ctrl-bottle.png` | **Foto real del frasco de CTRL** |
-| `images/endcard/ctrl-logo.png` | **Logo real de CTRL** |
+| `images/endcard/ctrl-bottle.png` | Foto real del frasco de CTRL, PNG con fondo transparente, vertical (~2:3) |
+| `images/endcard/ctrl-logo.png` | Logo real de CTRL, PNG con fondo transparente |
+
+Opcional: `images/body/woman-focus-fade.png` (la misma mujer, cansada o
+distraída, 4:3). Si no está, el tramo "slow fade" usa `woman-midlife-daily.png`.

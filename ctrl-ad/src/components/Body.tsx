@@ -29,6 +29,10 @@ const scene = (from: BodyCueKey, to: BodyCueKey | null) => {
   };
 };
 
+// Cajas con la proporción de cada imagen entregada.
+const POD = {width: 880, height: 523}; // foto 16:9 + borde
+const WOMAN_PHOTO = {width: 860, height: 671}; // foto 4:3 + borde
+
 export const Body: React.FC<BodyProps> = ({usePlaceholder}) => {
   const p = usePlaceholder;
   const orcas = scene('aroundForty', 'obviously');
@@ -44,26 +48,24 @@ export const Body: React.FC<BodyProps> = ({usePlaceholder}) => {
     <AbsoluteFill>
       <PaperBackground />
 
-      {/* 1. ORCAS: lámina, líder, peces que desaparecen, ruta que recuerda */}
+      {/* 1. ORCAS: la mayor y su grupo, los peces desaparecen, ella recuerda la ruta */}
       <Sequence from={orcas.from} durationInFrames={orcas.durationInFrames} name="1 Orcas">
         {(() => {
           const at = orcas.at;
           return (
             <>
               <Cutout assetId="body.orcaLeaderPod" usePlaceholder={p} enterAtFrame={at('aroundForty')} exitAtFrame={at('fishDisappear')}
-                width={860} height={600} top={560} left={110} label="LÁMINA — orca mayor con su grupo" />
+                {...POD} top={600} left={100} rotationDeg={-1.5} label="Orca mayor y su grupo" />
               <TimedText text="Around 40, she stops having babies" highlight="stops having babies" enterAtFrame={at('aroundForty')} exitAtFrame={at('livesToNinety')} top={TOP} />
               <TimedText text="then lives to 90." highlight="90" enterAtFrame={at('livesToNinety')} exitAtFrame={at('thirtyYears')} top={TOP} fontSize={64} />
               <TimedText text="30 years" highlight="30 years" enterAtFrame={at('thirtyYears')} exitAtFrame={at('leaderOfPod')} top={TOP} fontSize={72} />
               <TimedText text="the leader of the whole pod" highlight="leader" enterAtFrame={at('leaderOfPod')} exitAtFrame={at('fishDisappear')} top={TOP} />
-              <Cutout assetId="body.fishSchoolFading" usePlaceholder={p} enterAtFrame={at('fishDisappear')} exitAtFrame={at('everyWhaleFollows')}
-                width={700} height={440} top={640} left={190} rotationDeg={-2} label="Cardumen de peces" />
+              <DisappearingFish p={p} enterAtFrame={at('fishDisappear')} goneAtFrame={at('everyWhaleFollows')} />
               <TimedText text="the fish disappear" enterAtFrame={at('fishDisappear')} exitAtFrame={at('everyWhaleFollows')} top={TOP} />
               <Cutout assetId="body.orcaLeaderPod" usePlaceholder={p} enterAtFrame={at('everyWhaleFollows')} exitAtFrame={at('sheRemembers')}
-                width={860} height={600} top={560} left={110} fromX={-200} fromY={0} label="LÁMINA — el grupo sigue a la orca mayor" />
+                {...POD} top={600} left={100} rotationDeg={1.5} fromX={-220} fromY={0} label="El grupo sigue a la orca mayor" />
               <TimedText text="every whale follows her" highlight="follows her" enterAtFrame={at('everyWhaleFollows')} exitAtFrame={at('sheRemembers')} top={TOP} />
-              <Cutout assetId="body.oceanRouteMap" usePlaceholder={p} enterAtFrame={at('sheRemembers')}
-                width={800} height={560} top={560} left={140} rotationDeg={2} label="Mapa antiguo con ruta punteada" />
+              <RouteToFood p={p} startFrame={at('sheRemembers')} />
               <TimedText text="she remembers where the food was" enterAtFrame={at('sheRemembers')} exitAtFrame={at('twentyYearsAgo')} top={TOP} />
               <TimedText text="20 years ago" highlight="20 years ago" enterAtFrame={at('twentyYearsAgo')} top={TOP} fontSize={72} />
             </>
@@ -71,15 +73,15 @@ export const Body: React.FC<BodyProps> = ({usePlaceholder}) => {
         })()}
       </Sequence>
 
-      {/* 2. PUENTE A LA MUJER */}
+      {/* 2. PUENTE: de la naturaleza a una mujer en su día a día */}
       <Sequence from={bridge.from} durationInFrames={bridge.durationInFrames} name="2 Puente">
         {(() => {
           const at = bridge.at;
           return (
             <>
               <TimedText text="Obviously a woman isn't a whale." enterAtFrame={at('obviously')} exitAtFrame={at('butIfABrain')} top={TOP} />
-              <Cutout assetId="body.womanMidlifeDaily" usePlaceholder={p} enterAtFrame={at('obviously', 12)}
-                width={620} height={760} top={LAYOUT.imageTop} left={(WIDTH - 620) / 2} label="Mujer de mediana edad, escena cotidiana" />
+              <Cutout assetId="body.womanMidlifeDaily" usePlaceholder={p} enterAtFrame={at('obviously', 10)}
+                {...WOMAN_PHOTO} top={520} left={(WIDTH - WOMAN_PHOTO.width) / 2} rotationDeg={-1.5} label="Mujer en su día a día" />
               <TimedText text="built to be at its best" highlight="best" enterAtFrame={at('atItsBest')} exitAtFrame={at('worstVersion')} top={BOTTOM} />
               <TimedText text="the worst version of themselves?" highlight="worst" enterAtFrame={at('worstVersion')} top={BOTTOM} />
             </>
@@ -87,7 +89,7 @@ export const Body: React.FC<BodyProps> = ({usePlaceholder}) => {
         })()}
       </Sequence>
 
-      {/* 3. SLOW FADE: la mujer se atenúa y se le desprenden foco, palabras, empuje */}
+      {/* 3. SLOW FADE: ella se apaga y se le desprenden el foco, las palabras, el empuje */}
       <Sequence from={fade.from} durationInFrames={fade.durationInFrames} name="3 Slow fade">
         {(() => {
           const at = fade.at;
@@ -95,12 +97,12 @@ export const Body: React.FC<BodyProps> = ({usePlaceholder}) => {
             <>
               <FadingPortrait startFrame={at('slowFade')} endFrame={at('thisIsJustWho')}>
                 <Cutout assetId="body.womanFocusFade" usePlaceholder={p} enterAtFrame={0}
-                  width={620} height={760} top={LAYOUT.imageTop} left={(WIDTH - 620) / 2} label="Mujer (misma persona), plano medio" />
+                  {...WOMAN_PHOTO} top={520} left={(WIDTH - WOMAN_PHOTO.width) / 2} rotationDeg={1} label="La misma mujer" />
               </FadingPortrait>
               <TimedText text="a slow fade" highlight="slow fade" enterAtFrame={at('slowFade')} exitAtFrame={at('snaps')} top={TOP} fontSize={72} />
-              <FallingWord text="focus" enterAtFrame={at('focusGoes')} top={560} centerX={250} />
-              <FallingWord text="words" enterAtFrame={at('wordsGo')} top={760} centerX={850} />
-              <FallingWord text="drive" enterAtFrame={at('driveGoes')} top={980} centerX={240} />
+              <FallingWord text="focus" enterAtFrame={at('focusGoes')} top={600} centerX={260} />
+              <FallingWord text="words" enterAtFrame={at('wordsGo')} top={760} centerX={820} />
+              <FallingWord text="drive" enterAtFrame={at('driveGoes')} top={960} centerX={300} />
               <TimedText text="she snaps at the people she loves most" enterAtFrame={at('snaps')} exitAtFrame={at('thisIsJustWho')} top={TOP} />
               <TimedText text="“this is just who she is now”" enterAtFrame={at('thisIsJustWho')} top={BOTTOM} />
             </>
@@ -117,10 +119,10 @@ export const Body: React.FC<BodyProps> = ({usePlaceholder}) => {
               <TimedText text="Nobody tells her otherwise." enterAtFrame={at('nobodyTellsHer')} exitAtFrame={at('whatTheHormones')} top={TOP} />
               <TimedText text="what the hormones were doing for her brain" highlight="her brain" enterAtFrame={at('whatTheHormones')} exitAtFrame={at('estrogen')} top={TOP} />
               <Cutout assetId="body.brainDiagram" usePlaceholder={p} enterAtFrame={at('herBrain')}
-                width={560} height={440} top={LAYOUT.imageTop} left={(WIDTH - 560) / 2} label="Grabado simple de un cerebro" />
+                width={600} height={400} top={500} left={(WIDTH - 600) / 2} label="Grabado de un cerebro" />
               <TimedText text="Estrogen had a second job" highlight="second job" enterAtFrame={at('estrogen')} exitAtFrame={at('makeDopamine')} top={TOP} />
               <TimedText text="helping the brain make dopamine" highlight="dopamine" enterAtFrame={at('makeDopamine')} exitAtFrame={at('flickers')} top={TOP} />
-              <TimedText text="focus · drive · follow through" enterAtFrame={at('behindFocus')} exitAtFrame={at('flickers')} top={960} fontSize={48} />
+              <TimedText text="focus · drive · follow through" enterAtFrame={at('behindFocus')} exitAtFrame={at('flickers')} top={980} fontSize={48} />
               <TimedText text="it flickers" highlight="flickers" enterAtFrame={at('flickers')} exitAtFrame={at('thatsTheFog')} top={TOP} fontSize={72} />
               <SwitchFlicker usePlaceholder={p} flickerAtFrame={at('flickers')} />
               <DopamineLine appearAtFrame={at('everyTimeItDips')} dipAtFrame={at('dopamineDips')} />
@@ -131,20 +133,24 @@ export const Body: React.FC<BodyProps> = ({usePlaceholder}) => {
         })()}
       </Sequence>
 
-      {/* 5. HRT / ESTIMULANTES — tramo explicativo breve, sin empaques */}
+      {/* 5. HRT / ESTIMULANTES: tarjetas tipográficas, sin empaques */}
       <Sequence from={answers.from} durationInFrames={answers.durationInFrames} name="5 HRT-estimulantes">
         {(() => {
           const at = answers.at;
           return (
             <>
               <TimedText text="the usual answers don't reach it" enterAtFrame={at('usualAnswers')} exitAtFrame={at('hrtSorts')} top={TOP} />
-              <Cutout assetId="body.hrtIcon" usePlaceholder={p} enterAtFrame={at('hrtSorts')}
-                width={360} height={360} top={600} left={120} rotationDeg={-3} label="HRT (recorte genérico)" />
-              <TimedText text="HRT" enterAtFrame={at('hrtSorts')} top={990} centerX={300} maxWidth={360} fontSize={52} />
+              <LabelCard title="HRT" enterAtFrame={at('hrtSorts')} left={90} top={640} rotationDeg={-2}
+                lines={[
+                  {text: 'sweats ✓', enterAtFrame: at('hrtSorts', 10)},
+                  {text: 'fog ✗', enterAtFrame: at('leavesTheFog'), strike: true},
+                ]} />
               <TimedText text="sorts the sweats, leaves the fog" highlight="leaves the fog" enterAtFrame={at('hrtSorts')} exitAtFrame={at('stimulants')} top={TOP} />
-              <Cutout assetId="body.stimulantIcon" usePlaceholder={p} enterAtFrame={at('stimulants')}
-                width={360} height={360} top={600} left={WIDTH - 480} rotationDeg={3} label="Estimulantes (recorte genérico)" />
-              <TimedText text="Stimulants" enterAtFrame={at('stimulants')} top={990} centerX={WIDTH - 300} maxWidth={380} fontSize={52} />
+              <LabelCard title="Stimulants" enterAtFrame={at('stimulants')} left={560} top={700} rotationDeg={2}
+                lines={[
+                  {text: 'push out dopamine', enterAtFrame: at('canOnlyPush')},
+                  {text: 'stop working ✗', enterAtFrame: at('quietlyStop'), strike: true},
+                ]} />
               <TimedText text="can only push out dopamine already made" enterAtFrame={at('canOnlyPush')} exitAtFrame={at('quietlyStop')} top={TOP} />
               <TimedText text="they quietly stop working" highlight="stop working" enterAtFrame={at('quietlyStop')} top={TOP} />
             </>
@@ -161,10 +167,13 @@ export const Body: React.FC<BodyProps> = ({usePlaceholder}) => {
             <>
               <TimedText text="Pushing harder was never the fix." enterAtFrame={at('pushingHarder')} exitAtFrame={at('theFixIs')} top={TOP} />
               <TimedText text="what the brain builds dopamine from" highlight="builds" enterAtFrame={at('theFixIs')} exitAtFrame={at('tyrosine')} top={TOP} />
-              <Ingredient p={p} assetId="body.tyrosine" name="Tyrosine" enterAtFrame={at('tyrosine')} exitAtFrame={ctrl} centerX={250} />
               <TimedText text="an amino acid called tyrosine" highlight="tyrosine" enterAtFrame={at('tyrosine')} exitAtFrame={at('nothingLikeStimulant')} top={TOP} />
-              <Ingredient p={p} assetId="body.b6" name="B6" enterAtFrame={at('b6')} exitAtFrame={ctrl} centerX={WIDTH / 2} />
-              <Ingredient p={p} assetId="body.calmingPlants" name="2 calming plants" enterAtFrame={at('calmingPlants')} exitAtFrame={ctrl} centerX={WIDTH - 250} />
+              <Ingredient p={p} assetId="body.tyrosine" name="Tyrosine" enterAtFrame={at('tyrosine')} exitAtFrame={ctrl}
+                top={450} imageLeft={70} width={480} height={320} captionX={790} />
+              <Ingredient p={p} assetId="body.b6" name="B6" enterAtFrame={at('b6')} exitAtFrame={ctrl}
+                top={740} imageLeft={530} width={480} height={320} captionX={290} />
+              <Ingredient p={p} assetId="body.calmingPlants" name="2 calming plants" enterAtFrame={at('calmingPlants')} exitAtFrame={ctrl}
+                top={1020} imageLeft={70} width={540} height={270} captionX={800} />
               <TimedText text="nothing like a stimulant" highlight="nothing" enterAtFrame={at('nothingLikeStimulant')} exitAtFrame={ctrl} top={TOP} />
               <Cutout assetId="product.ctrlBottle" usePlaceholder={p} enterAtFrame={ctrl}
                 width={440} height={660} top={LAYOUT.imageTop} left={(WIDTH - 440) / 2} fromY={120} label="FRASCO REAL DE CTRL — PENDIENTE DE FOTO" />
@@ -183,14 +192,14 @@ export const Body: React.FC<BodyProps> = ({usePlaceholder}) => {
           return (
             <>
               <Cutout assetId="body.brainDiagram" usePlaceholder={p} enterAtFrame={at('onceTheBrain')} exitAtFrame={at('driveComesBack')}
-                width={560} height={440} top={LAYOUT.imageTop + 120} left={(WIDTH - 560) / 2} label="Grabado simple de un cerebro" />
+                width={600} height={400} top={600} left={(WIDTH - 600) / 2} label="Grabado de un cerebro" />
               <Fog fromFrame={at('onceTheBrain')} liftAtFrame={at('fogLifts')} />
               <TimedText text="building dopamine again" highlight="again" enterAtFrame={at('onceTheBrain')} exitAtFrame={at('fogLifts')} top={TOP} />
               <TimedText text="the fog lifts" highlight="lifts" enterAtFrame={at('fogLifts')} exitAtFrame={at('driveComesBack')} top={TOP} fontSize={72} />
-              <Cutout assetId="body.womanMidlifeDaily" usePlaceholder={p} enterAtFrame={at('driveComesBack')}
-                width={620} height={760} top={LAYOUT.imageTop} left={(WIDTH - 620) / 2} label="La misma mujer, con energía y foco" />
+              <Cutout assetId="hook.woman" usePlaceholder={p} enterAtFrame={at('driveComesBack')}
+                width={460} height={690} top={450} left={(WIDTH - 460) / 2} label="Ella, con energía" />
               <TimedText text="the drive comes back" highlight="drive" enterAtFrame={at('driveComesBack')} exitAtFrame={at('feelsLikeHerself')} top={TOP} />
-              <TimedText text="and so does the patience" highlight="patience" enterAtFrame={at('soDoesPatience')} exitAtFrame={at('feelsLikeHerself')} top={BOTTOM} />
+              <TimedText text="and so does the patience" highlight="patience" enterAtFrame={at('soDoesPatience')} exitAtFrame={at('feelsLikeHerself')} top={1180} />
               <TimedText text="She feels like herself again." highlight="herself" enterAtFrame={at('feelsLikeHerself')} top={TOP} />
             </>
           );
@@ -205,10 +214,10 @@ export const Body: React.FC<BodyProps> = ({usePlaceholder}) => {
             <>
               <TimedText text="Nature built this stage of life" enterAtFrame={at('natureBuilt')} exitAtFrame={at('everybodyFollows')} top={TOP} />
               <Cutout assetId="body.orcaLeaderPod" usePlaceholder={p} enterAtFrame={at('natureBuilt')}
-                width={560} height={390} top={LAYOUT.imageTop} left={WIDTH - 640} rotationDeg={2} fromX={200} fromY={0} label="LÁMINA — orca mayor y su grupo" />
+                width={560} height={333} top={470} left={WIDTH - 610} rotationDeg={3} fromX={200} fromY={0} label="Orca mayor y su grupo" />
               <FollowPath drawFrom={at('makeAWoman', 6)} />
-              <Cutout assetId="body.womanMidlifeDaily" usePlaceholder={p} enterAtFrame={at('makeAWoman')}
-                width={440} height={560} top={720} left={90} rotationDeg={-2} fromX={-200} fromY={0} label="La mujer, al frente" />
+              <Cutout assetId="hook.woman" usePlaceholder={p} enterAtFrame={at('makeAWoman')}
+                width={420} height={630} top={640} left={90} rotationDeg={-2} fromX={-200} fromY={0} label="Ella, al frente" />
               <TimedText text="the one everybody follows" highlight="everybody follows" enterAtFrame={at('everybodyFollows')} top={TOP} />
             </>
           );
@@ -258,6 +267,7 @@ const FallingWord: React.FC<{text: string; enterAtFrame: number; top: number; ce
         backgroundColor: COLORS.yellow,
         padding: '4px 22px',
         borderRadius: 6,
+        boxShadow: '0 6px 14px rgba(0,0,0,0.18)',
       }}
     >
       {text}
@@ -265,22 +275,123 @@ const FallingWord: React.FC<{text: string; enterAtFrame: number; top: number; ce
   );
 };
 
+/** Cardumen que entra y se desvanece poco a poco antes del siguiente cue. */
+const DisappearingFish: React.FC<{p: boolean; enterAtFrame: number; goneAtFrame: number}> = ({p, enterAtFrame, goneAtFrame}) => {
+  const frame = useCurrentFrame();
+  const fade = interpolate(frame, [enterAtFrame + 10, goneAtFrame], [1, 0], clamp);
+  const drift = interpolate(frame, [enterAtFrame, goneAtFrame], [0, 90], clamp);
+  return (
+    <div style={{position: 'absolute', inset: 0, opacity: fade, transform: `translateX(${drift}px)`}}>
+      <Cutout assetId="body.fishSchool" usePlaceholder={p} enterAtFrame={enterAtFrame}
+        width={900} height={300} top={720} left={90} fromX={-160} fromY={0} label="Cardumen" />
+    </div>
+  );
+};
+
+/** Ruta punteada que se dibuja; la orca la recorre hasta donde estaba la comida. */
+const RouteToFood: React.FC<{p: boolean; startFrame: number}> = ({p, startFrame}) => {
+  const frame = useCurrentFrame();
+  if (frame < startFrame) return null;
+  const t = interpolate(frame, [startFrame, startFrame + 45], [0, 1], clamp);
+  const ease = 1 - Math.pow(1 - t, 2);
+  const P0 = [140, 1220];
+  const P1 = [280, 600];
+  const P2 = [850, 740];
+  const bez = (k: number, u: number) => (1 - u) * (1 - u) * P0[k] + 2 * (1 - u) * u * P1[k] + u * u * P2[k];
+  // La orca se detiene antes del final para no tapar la comida.
+  const x = bez(0, ease * 0.72);
+  const y = bez(1, ease * 0.72);
+  const d = `M ${P0[0]} ${P0[1]} Q ${P1[0]} ${P1[1]} ${P2[0]} ${P2[1]}`;
+  const fishIn = interpolate(frame, [startFrame + 30, startFrame + 42], [0, 1], clamp);
+  return (
+    <AbsoluteFill>
+      <svg width={WIDTH} height={1400} style={{position: 'absolute', top: 0, left: 0}}>
+        <defs>
+          <mask id="route-reveal">
+            <path d={d} stroke="white" strokeWidth={30} fill="none" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - ease} />
+          </mask>
+        </defs>
+        <path d={d} stroke={COLORS.yellow} strokeWidth={10} fill="none" strokeLinecap="round" strokeDasharray="2 26" mask="url(#route-reveal)" />
+        <ellipse cx={P2[0]} cy={P2[1]} rx={190} ry={80} fill="none" stroke={COLORS.ink} strokeWidth={5} opacity={fishIn} strokeDasharray="10 10" />
+      </svg>
+      <div style={{position: 'absolute', inset: 0, opacity: fishIn}}>
+        <Cutout assetId="body.fishSchool" usePlaceholder={p} enterAtFrame={startFrame + 30}
+          width={330} height={110} top={P2[1] - 55} left={P2[0] - 165} fromY={0} label="Peces" />
+      </div>
+      <div style={{position: 'absolute', left: x - 150, top: y - 140, width: 300, height: 280}}>
+        <Cutout assetId="hook.orca" usePlaceholder={p} enterAtFrame={startFrame} width={300} height={280} top={0} left={0}
+          rotationDeg={-8} fromY={0} label="Orca" />
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+/** Ingrediente con su nombre al lado; la imagen y el nombre salen juntos. */
 const Ingredient: React.FC<{
   p: boolean;
   assetId: string;
   name: string;
   enterAtFrame: number;
   exitAtFrame: number;
-  centerX: number;
-}> = ({p, assetId, name, enterAtFrame, exitAtFrame, centerX}) => (
+  top: number;
+  imageLeft: number;
+  width: number;
+  height: number;
+  captionX: number;
+}> = ({p, assetId, name, enterAtFrame, exitAtFrame, top, imageLeft, width, height, captionX}) => (
   <>
     <Cutout assetId={assetId} usePlaceholder={p} enterAtFrame={enterAtFrame} exitAtFrame={exitAtFrame}
-      width={300} height={300} top={620} left={centerX - 150} label={name} />
-    <TimedText text={name} enterAtFrame={enterAtFrame} exitAtFrame={exitAtFrame} top={950} centerX={centerX} maxWidth={320} fontSize={42} />
+      width={width} height={height} top={top} left={imageLeft} fromX={imageLeft < WIDTH / 2 ? -120 : 120} fromY={0} label={name} />
+    <TimedText text={name} highlight={name} enterAtFrame={enterAtFrame + 4} exitAtFrame={exitAtFrame} top={top + height / 2 - 34}
+      centerX={captionX} maxWidth={400} fontSize={name.length > 8 ? 44 : 60} />
   </>
 );
 
-/** Interruptor: parpadea justo en "flickers" y se queda encendido a medias. */
+/** Tarjeta tipográfica (en lugar de un empaque médico). */
+const LabelCard: React.FC<{
+  title: string;
+  enterAtFrame: number;
+  left: number;
+  top: number;
+  rotationDeg: number;
+  lines: {text: string; enterAtFrame: number; strike?: boolean}[];
+}> = ({title, enterAtFrame, left, top, rotationDeg, lines}) => {
+  const frame = useCurrentFrame();
+  if (frame < enterAtFrame) return null;
+  const enter = interpolate(frame, [enterAtFrame, enterAtFrame + 8], [0, 1], clamp);
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left,
+        top,
+        width: 430,
+        padding: '28px 30px',
+        boxSizing: 'border-box',
+        backgroundColor: '#fbfaf6',
+        border: `4px solid ${COLORS.ink}`,
+        boxShadow: '0 12px 26px rgba(0,0,0,0.18)',
+        transform: `rotate(${rotationDeg}deg) translateY(${(1 - enter) * 50}px) scale(${0.9 + enter * 0.1})`,
+        opacity: enter,
+        fontFamily: FONT_FAMILY,
+        fontWeight: FONT_WEIGHT,
+        color: COLORS.ink,
+      }}
+    >
+      <div style={{fontSize: 64, lineHeight: 1.1, marginBottom: 14}}>{title}</div>
+      {lines.map((l) => {
+        const op = interpolate(frame, [l.enterAtFrame, l.enterAtFrame + 6], [0, 1], clamp);
+        return (
+          <div key={l.text} style={{fontSize: 40, lineHeight: 1.35, opacity: op, color: l.strike ? COLORS.red : COLORS.ink}}>
+            {l.text}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+/** Interruptor: parpadea justo en "flickers" y se queda encendido. */
 const SwitchFlicker: React.FC<{usePlaceholder: boolean; flickerAtFrame: number}> = ({usePlaceholder, flickerAtFrame}) => {
   const frame = useCurrentFrame();
   const local = frame - flickerAtFrame;
@@ -289,7 +400,7 @@ const SwitchFlicker: React.FC<{usePlaceholder: boolean; flickerAtFrame: number}>
   return (
     <div style={{position: 'absolute', inset: 0, opacity}}>
       <Cutout assetId="body.lightSwitch" usePlaceholder={usePlaceholder} enterAtFrame={flickerAtFrame - 2}
-        width={280} height={300} top={960} left={110} label="Interruptor de luz" />
+        width={300} height={282} top={960} left={90} rotationDeg={-3} label="Interruptor de luz" />
     </div>
   );
 };
@@ -335,15 +446,20 @@ const Fog: React.FC<{fromFrame: number; liftAtFrame?: number}> = ({fromFrame, li
   );
 };
 
-/** Ruta punteada que une a la orca mayor con la mujer (el grupo la sigue). */
+/** Ruta punteada de la orca mayor hacia la mujer: el grupo la sigue a ella. */
 const FollowPath: React.FC<{drawFrom: number}> = ({drawFrom}) => {
   const frame = useCurrentFrame();
   if (frame < drawFrom) return null;
   const draw = interpolate(frame, [drawFrom, drawFrom + 18], [0, 1], clamp);
+  const d = 'M 640 800 C 600 880, 560 920, 470 930';
   return (
     <svg width={WIDTH} height={1300} style={{position: 'absolute', top: 0, left: 0}}>
-      <path d="M 700 880 C 640 1000, 600 1040, 520 1060" pathLength={1} stroke={COLORS.yellow} strokeWidth={12}
-        fill="none" strokeLinecap="round" strokeDasharray={1} strokeDashoffset={1 - draw} />
+      <defs>
+        <mask id="follow-reveal">
+          <path d={d} stroke="white" strokeWidth={30} fill="none" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - draw} />
+        </mask>
+      </defs>
+      <path d={d} stroke={COLORS.yellow} strokeWidth={10} fill="none" strokeLinecap="round" strokeDasharray="2 24" mask="url(#follow-reveal)" />
     </svg>
   );
 };

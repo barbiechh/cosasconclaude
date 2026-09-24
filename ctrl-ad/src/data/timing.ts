@@ -116,6 +116,7 @@ const BODY_CUE_PHRASES = {
 
   usualAnswers: ["It's also why"],
   hrtSorts: ['HRT sorts the sweats'],
+  leavesTheFog: ['leaves the fog'],
   stimulants: ['Stimulants like Adderall'],
   canOnlyPush: ['can only push'],
   quietlyStop: ['quietly stop working'],

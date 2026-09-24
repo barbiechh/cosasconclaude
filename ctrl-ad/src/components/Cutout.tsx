@@ -1,7 +1,7 @@
 import React from 'react';
-import {Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {Img, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {COLORS, FONT_FAMILY, FONT_WEIGHT} from '../styles/tokens';
-import {getAssetSlot} from '../data/assets';
+import {getAssetSlot, resolveAsset} from '../data/assets';
 
 export interface CutoutProps {
   assetId: string;
@@ -63,8 +63,7 @@ export const Cutout: React.FC<CutoutProps> = ({
   const ty = interpolate(enter, [0, 1], [fromY, 0]) - exit * 30;
   const opacity = Math.min(1, local / 4) * (1 - exit);
 
-  const slot = getAssetSlot(assetId);
-  const showPlaceholder = usePlaceholder || !slot.final;
+  const asset = resolveAsset(assetId, usePlaceholder);
 
   return (
     <div
@@ -78,7 +77,7 @@ export const Cutout: React.FC<CutoutProps> = ({
         transform: `translate(${tx}px, ${ty}px) scale(${scale}) rotate(${rotation}deg)`,
       }}
     >
-      {showPlaceholder ? (
+      {!asset ? (
         <div
           style={{
             width: '100%',
@@ -99,11 +98,24 @@ export const Cutout: React.FC<CutoutProps> = ({
             color: COLORS.inkSoft,
           }}
         >
-          {label ?? slot.description}
+          {label ?? getAssetSlot(assetId).description}
+        </div>
+      ) : asset.kind === 'photo' ? (
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
+            padding: 14,
+            boxSizing: 'border-box',
+            backgroundColor: '#fbfaf6',
+            boxShadow: '0 12px 28px rgba(0,0,0,0.22), 0 2px 6px rgba(0,0,0,0.12)',
+          }}
+        >
+          <Img src={asset.src} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block'}} />
         </div>
       ) : (
         <Img
-          src={staticFile(slot.final as string)}
+          src={asset.src}
           style={{
             width: '100%',
             height: '100%',
