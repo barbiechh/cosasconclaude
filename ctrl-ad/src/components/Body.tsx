@@ -276,9 +276,9 @@ export const Body: React.FC<BodyProps> = ({usePlaceholder: p}) => {
             <Cutout assetId="back.herself" usePlaceholder={p} enterAtFrame={herself}
               width={600} height={750} top={460} left={240} fromY={200} label="Vuelve a ser ella" />
             <Center on={!withPhoto} cx={540} cy={765} scale={1.35}>
-              <Recovered p={p} id="back.focus" kind="focus" label="focus" x={withPhoto ? 20 : 60} y={withPhoto ? 520 : 640} enterAt={herself + 4} fromX={-500} />
-              <Recovered p={p} id="back.words" kind="words" label="words" x={withPhoto ? 800 : 420} y={withPhoto ? 640 : 640} enterAt={herself + 8} fromX={500} />
-              <Recovered p={p} id="back.drive" kind="drive" label="drive" x={withPhoto ? 30 : 780} y={withPhoto ? 920 : 640} enterAt={herself + 12} fromX={withPhoto ? -500 : 500} />
+              <Recovered p={p} id="back.focus" kind="focus" label="focus" x={withPhoto ? 40 : 60} y={withPhoto ? 540 : 640} enterAt={herself + 4} fromX={-500} />
+              <Recovered p={p} id="back.words" kind="words" label="words" x={withPhoto ? 740 : 420} y={withPhoto ? 720 : 640} enterAt={herself + 8} fromX={500} />
+              <Recovered p={p} id="back.drive" kind="drive" label="drive" x={withPhoto ? 60 : 780} y={withPhoto ? 930 : 640} enterAt={herself + 12} fromX={withPhoto ? -500 : 500} />
             </Center>
           </Scene>
         );
