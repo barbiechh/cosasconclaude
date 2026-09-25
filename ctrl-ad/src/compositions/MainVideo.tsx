@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, Audio, Sequence, staticFile} from 'remotion';
-import {Hook1} from '../components/Hook1';
+import {Hook2} from '../components/Hook2';
 import {Body} from '../components/Body';
 import {EndCard} from '../components/EndCard';
 import {PaperBackground} from '../components/PaperBackground';
@@ -47,9 +47,9 @@ export const MainVideo: React.FC<MainVideoProps> = ({usePlaceholder}) => {
         <Audio src={staticFile(AUDIO_SRC)} startFrom={BODY_AUDIO_START_FRAME} />
       </Sequence>
 
-      <Sequence from={0} durationInFrames={HOOK_FRAMES + OVERLAP} name="Hook1">
+      <Sequence from={0} durationInFrames={HOOK_FRAMES + OVERLAP} name="Hook2">
         <SceneShell durationInFrames={HOOK_FRAMES + OVERLAP} enter="none" exit="push" drift={0}>
-          <Hook1 usePlaceholder={usePlaceholder} />
+          <Hook2 usePlaceholder={usePlaceholder} />
         </SceneShell>
       </Sequence>
       <Sequence from={HOOK_FRAMES} durationInFrames={BODY_FRAMES} name="Body">

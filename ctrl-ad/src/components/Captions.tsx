@@ -1,8 +1,7 @@
 import React from 'react';
 import {interpolate, useCurrentFrame} from 'remotion';
-import rawWords from '../data/voiceover-words.json';
-import {BODY_AUDIO_START_SECONDS, HOOK, HOOK_FRAMES, TOTAL_FRAMES, WIDTH, bodyCueFrame, hookCueFrame, secToFrame} from '../data/timing';
-import {BODY_KEYWORDS, END_CARD_TEXTS, HOOK_TEXT_WINDOWS, cueFrame} from '../data/keywords';
+import {BODY_AUDIO_START_SECONDS, BODY_WORDS, HOOK, HOOK_FRAMES, TOTAL_FRAMES, WIDTH, bodyCueFrame, secToFrame} from '../data/timing';
+import {BODY_KEYWORDS, CAPTION_PLATE, END_CARD_TEXTS, HOOK_TEXT_WINDOWS, cueFrame} from '../data/keywords';
 import {OVERLAP, SCENES} from '../data/scenes';
 import {COLORS, FONT_FAMILY, FONT_WEIGHT} from '../styles/tokens';
 
@@ -24,7 +23,8 @@ export const CHUNKS: Chunk[] = (() => {
   const out: Chunk[] = [];
   let cur: Chunk | null = null;
   let chars = 0;
-  for (const w of rawWords as VoWord[]) {
+  const all: VoWord[] = [...HOOK.words.map((w) => ({...w, section: 'hook' as const})), ...BODY_WORDS];
+  for (const w of all) {
     const text = w.word.replace(/[.,]+$/, '');
     const from = toFrame(w, w.start);
     if (!cur || cur.words.length >= MAX_WORDS || chars + text.length > MAX_CHARS) {
@@ -84,10 +84,8 @@ export const HIDDEN: boolean[] = CHUNKS.map((chunk, i) => {
   });
 });
 
-// Mientras el hook muestra la raya divisoria, el caption lleva una placa de
-// papel para leerse por encima de la raya.
-const PLATE_FROM = hookCueFrame('but');
-const PLATE_TO = HOOK_FRAMES + OVERLAP;
+// Donde hay gráficos detrás (carriles, raya), el caption lleva una placa de papel.
+const [PLATE_FROM, PLATE_TO] = CAPTION_PLATE;
 
 /** Caption abajo en el área segura, con la palabra hablada resaltada (salvo si repite el titular). */
 export const Captions: React.FC = () => {

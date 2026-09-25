@@ -5,7 +5,7 @@ import {Figure, Fin, LeaderRing, Orca, headPoint} from './figures';
 import {Arrow, Bar, Target} from './mechanisms';
 import {Layer, clamp, ease, easeOut, font, mix, ramp, springAt} from './kit';
 import {COLORS, LAYOUT, TYPE} from '../styles/tokens';
-import {HEIGHT, WIDTH, hookCueFrame} from '../data/timing';
+import {HEIGHT, WIDTH, hook1CueFrame as hookCueFrame} from '../data/timing';
 
 export interface HookProps {
   usePlaceholder: boolean;

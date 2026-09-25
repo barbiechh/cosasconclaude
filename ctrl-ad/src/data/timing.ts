@@ -12,6 +12,7 @@
  * (CTRL) 94.39s, igual que la alineación.
  */
 import rawWords from './voiceover-words.json';
+import rawHook2Words from './hook2-words.json';
 
 export const FPS = 30;
 export const WIDTH = 1080;
@@ -33,6 +34,9 @@ interface VoWord {
   end: number;
 }
 const WORDS = rawWords as VoWord[];
+const HOOK2_WORDS = rawHook2Words as VoWord[];
+/** Palabras del body (tiempos del MP3 del body). */
+export const BODY_WORDS = WORDS.filter((w) => w.section === 'body');
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9']/g, '');
 
@@ -41,9 +45,9 @@ const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9']/g, '');
  * sección indicada. `focus` elige qué palabra de la frase marca el cue
  * (0 = la primera). Falla al renderizar si la frase no existe en el guion.
  */
-export const phraseAt = (section: Section, phrase: string, focus = 0): number => {
+export const phraseAt = (section: Section, phrase: string, focus = 0, words: VoWord[] = WORDS): number => {
   const target = phrase.split(/\s+/).map(norm);
-  const pool = WORDS.filter((w) => w.section === section);
+  const pool = words.filter((w) => w.section === section);
   for (let i = 0; i + target.length <= pool.length; i++) {
     if (target.every((t, k) => norm(pool[i + k].word) === t)) {
       return pool[i + focus].start;
@@ -53,33 +57,81 @@ export const phraseAt = (section: Section, phrase: string, focus = 0): number =>
 };
 
 // ---------------------------------------------------------------------------
-// HOOK — módulo sustituible. Sus cues son relativos a su propio inicio.
-// Para Hook2: nuevo texto en script/, nuevo audio, re-alinear y cambiar este
-// bloque (audioSrc, audioStartSeconds, durationSeconds, cues).
+// HOOKS — módulos sustituibles, cada uno con su audio, sus palabras y sus cues
+// (relativos a su propio inicio). `HOOK` es el que usa el video.
 // ---------------------------------------------------------------------------
-const HOOK_AUDIO_START = 0;
 export const BODY_AUDIO_START_SECONDS = WORDS.find((w) => w.section === 'body')!.start;
 
-const hookCue = (phrase: string, focus = 0) => phraseAt('hook', phrase, focus) - HOOK_AUDIO_START;
+type HookWord = {word: string; start: number; end: number};
+type HookDef<C extends string> = {
+  id: string;
+  audioSrc: string;
+  audioStartSeconds: number;
+  durationSeconds: number;
+  /** palabras del hook con tiempos relativos al inicio del hook (captions) */
+  words: HookWord[];
+  cues: Record<C, number>;
+};
 
-export const HOOK = {
+const hookCueIn = (words: VoWord[], start: number) => (phrase: string, focus = 0) => phraseAt('hook', phrase, focus, words) - start;
+
+// HOOK 1 (ya no va en el render final): primeros 7.86 s de la voz original.
+const h1 = hookCueIn(WORDS, 0);
+export const HOOK1: HookDef<'women' | 'killerWhales' | 'only' | 'earth' | 'but' | 'perimenopause' | 'toAWhale' | 'completeOpposite' | 'opposite' | 'toAWoman'> = {
+  id: 'hook1',
   audioSrc: AUDIO_SRC,
-  audioStartSeconds: HOOK_AUDIO_START,
+  audioStartSeconds: 0,
   // El hook termina exactamente donde empieza "Around forty".
-  durationSeconds: BODY_AUDIO_START_SECONDS - HOOK_AUDIO_START,
+  durationSeconds: BODY_AUDIO_START_SECONDS,
+  words: WORDS.filter((w) => w.section === 'hook'),
   cues: {
-    women: hookCue('Women'),
-    killerWhales: hookCue('killer whales'),
-    only: hookCue('the only animals', 1),
-    earth: hookCue('on Earth', 1),
-    but: hookCue('But what it does'),
-    perimenopause: hookCue('perimenopause'),
-    toAWhale: hookCue('to a whale', 2),
-    completeOpposite: hookCue('complete opposite'),
-    opposite: hookCue('complete opposite', 1),
-    toAWoman: hookCue('to a woman', 2),
+    women: h1('Women'),
+    killerWhales: h1('killer whales'),
+    only: h1('the only animals', 1),
+    earth: h1('on Earth', 1),
+    but: h1('But what it does'),
+    perimenopause: h1('perimenopause'),
+    toAWhale: h1('to a whale', 2),
+    completeOpposite: h1('complete opposite'),
+    opposite: h1('complete opposite', 1),
+    toAWoman: h1('to a woman', 2),
   },
 };
+
+// HOOK 2: grabación propia (script/hook2.txt, audio-src/hook2-original.mp3 ->
+// public/audio/hook2.wav con scripts/prepare_hook_audio.py), alineada en
+// src/data/hook2-words.json.
+const h2 = hookCueIn(HOOK2_WORDS, 0);
+export const HOOK2: HookDef<'killer' | 'perimenopause' | 'atTheSameAge' | 'same' | 'age' | 'womenDo' | 'but' | 'exact' | 'opposite' | 'toThem' | 'reason' | 'why' | 'explains' | 'really' | 'womans' | 'brain' | 'rightNow'> = {
+  id: 'hook2',
+  audioSrc: 'audio/hook2.wav',
+  audioStartSeconds: 0,
+  // La grabación entera (la voz termina en 8.64 s; el resto es respiro).
+  durationSeconds: 8.72,
+  words: HOOK2_WORDS,
+  cues: {
+    killer: h2('Killer whales'),
+    perimenopause: h2('perimenopause'),
+    atTheSameAge: h2('at the same age'),
+    same: h2('the same age', 1),
+    age: h2('same age', 1),
+    womenDo: h2('women do'),
+    but: h2('But it does'),
+    exact: h2('the exact opposite', 1),
+    opposite: h2('exact opposite', 1),
+    toThem: h2('to them'),
+    reason: h2('the reason why', 1),
+    why: h2('reason why', 1),
+    explains: h2('explains'),
+    really: h2("what's really", 1),
+    womans: h2("a woman's brain", 1),
+    brain: h2("woman's brain", 1),
+    rightNow: h2('right now'),
+  },
+};
+
+/** Hook activo en el video. Para volver a Hook1: HOOK = HOOK1 y <Hook1> en MainVideo. */
+export const HOOK = HOOK2;
 
 // ---------------------------------------------------------------------------
 // BODY — empieza en BODY_AUDIO_START_SECONDS del MP3 original.
@@ -251,6 +303,10 @@ export const TOTAL_FRAMES = HOOK_FRAMES + BODY_FRAMES + secToFrame(END_CARD_HOLD
 export const bodyCueFrame = (key: BodyCueKey, offsetFrames = 0): number =>
   secToFrame(BODY_CUES[key] - BODY_AUDIO_START_SECONDS) + offsetFrames;
 
-/** Frame de un cue del hook, relativo al inicio del componente <Hook1>. */
+/** Frame de un cue del hook activo, relativo al inicio del hook. */
 export const hookCueFrame = (key: keyof typeof HOOK.cues, offsetFrames = 0): number =>
   secToFrame(HOOK.cues[key]) + offsetFrames;
+
+/** Frames de cues de cada hook (cada componente usa el suyo). */
+export const hook1CueFrame = (key: keyof typeof HOOK1.cues, offsetFrames = 0): number => secToFrame(HOOK1.cues[key]) + offsetFrames;
+export const hook2CueFrame = (key: keyof typeof HOOK2.cues, offsetFrames = 0): number => secToFrame(HOOK2.cues[key]) + offsetFrames;

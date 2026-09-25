@@ -49,7 +49,16 @@ python3 scripts/align_voiceover.py --audio public/audio/voz-elegida.mp3 \
 
 Corte hook/body verificado: "woman" termina y "Around" empieza en **7.86 s**.
 
-## Cambiar a Hook2
+## Hook activo: Hook2
+
+El video usa **Hook2** (`src/components/Hook2.tsx`, texto en `script/hook2.txt`,
+audio `public/audio/hook2.wav` preparado con `scripts/prepare_hook_audio.py`
+desde `audio-src/hook2-original.mp3`, palabras en `src/data/hook2-words.json`).
+Hook1 sigue en el proyecto (`src/components/Hook1.tsx`, datos en `HOOK1` de
+`timing.ts`) pero fuera de la composición. Para cambiar de hook: `HOOK` en
+`timing.ts` y el componente en `MainVideo.tsx`.
+
+## Crear otro hook
 
 1. Guarda el texto en `script/hook2.txt` y el audio del hook en `public/audio/`.
 2. Alinea ese audio con ese texto (mismo script, `--hook script/hook2.txt`).
@@ -66,7 +75,7 @@ línea de tiempo según la duración del nuevo hook.
 - Fondo: `public/images/paper-grid.jpg` (papel cuadriculado de 36 px, generado
   con `scripts/make_paper_texture.py`). Se puede sustituir por otra textura de
   1080×1920.
-- Tipografía: Poppins Bold, incluida en `public/fonts/` (licencia OFL).
+- Tipografía: Montserrat Bold 700 en todos los textos (`public/fonts/`, licencia OFL, incrustada en `src/styles/montserrat-bold-woff2.ts`); Poppins queda solo como respaldo de símbolos.
 - Área segura: los textos viven entre y = 260 y y = 1560 y x = 90–950
   (`src/styles/tokens.ts`).
 

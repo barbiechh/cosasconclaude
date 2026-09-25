@@ -18,7 +18,8 @@ export const COLORS = {
   placeholderBorder: '#9c9482',
 };
 
-export const FONT_FAMILY = 'Poppins, sans-serif';
+/** Montserrat Bold 700 en todo el video (Poppins solo para símbolos que le falten). */
+export const FONT_FAMILY = "'Montserrat', 'Poppins', sans-serif";
 export const FONT_WEIGHT = 700;
 
 /**

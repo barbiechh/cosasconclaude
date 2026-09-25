@@ -4,7 +4,8 @@
  * abajo lo que ya dice arriba. `from`/`to` son cues del guion ([cue, desfase
  * en frames]); sin `to`, la palabra se queda hasta que termina su escena.
  */
-import {BodyCueKey, HOOK_FRAMES, bodyCueFrame, hookCueFrame} from './timing';
+import {BodyCueKey, HOOK_FRAMES, bodyCueFrame} from './timing';
+import {OVERLAP} from './scenes';
 import {TYPE} from '../styles/tokens';
 
 type Cue = [BodyCueKey] | [BodyCueKey, number];
@@ -91,9 +92,12 @@ export const cueFrame = ([key, offset = 0]: Cue) => bodyCueFrame(key, offset);
 
 /** Textos de arriba fuera del Body (hook y EndCard), en frames de la línea de tiempo. */
 export const HOOK_TEXT_WINDOWS: {text: string; from: number; to: number}[] = [
-  {text: 'PERIMENOPAUSE', from: hookCueFrame('perimenopause'), to: hookCueFrame('but')},
-  {text: 'COMPLETE OPPOSITE', from: hookCueFrame('completeOpposite'), to: HOOK_FRAMES},
+  // Hook2 no tiene titulares arriba (la pancarta de la meta es parte del
+  // dibujo), así que todos sus captions se muestran.
 ];
+
+/** Tramo (frames de la línea de tiempo) en que el caption lleva placa de papel: todo el hook. */
+export const CAPTION_PLATE: [number, number] = [0, HOOK_FRAMES + OVERLAP];
 
 export const END_CARD_TEXTS = {
   guarantee: '30-DAY GUARANTEE',
