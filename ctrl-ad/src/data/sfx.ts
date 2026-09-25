@@ -33,14 +33,14 @@ export const SFX: SfxCue[] = [
   ...PUSH_FRAMES.map((f) => ({sfx: 'whoosh' as const, at: f - 2, volume: 0.16})),
 
   // Hook
-  // Hook 3: el libro
-  {sfx: 'riffle', at: H('peri'), volume: 0.26},
-  {sfx: 'chime', at: H('age', 2), volume: 0.3},
-  {sfx: 'shimmer', at: H('best'), volume: 0.3},
-  {sfx: 'whoosh', at: H('forOther', -2), volume: 0.26},
-  {sfx: 'flip', at: H('years'), volume: 0.22},
-  {sfx: 'erase', at: H('rather'), volume: 0.28},
-  {sfx: 'splash', at: H('forget', 8), volume: 0.28},
+  // Hook 4: el museo (un efecto distinto por gesto)
+  {sfx: 'riffle', at: 0, volume: 0.3}, // se cierran las láminas
+  {sfx: 'thud', at: H('whales', 2), volume: 0.36}, // cae la ficha de la orca
+  {sfx: 'card', at: H('women', 6), volume: 0.32}, // cae la ficha de ella
+  {sfx: 'splash', at: H('one', 2), volume: 0.34}, // el mar se abre
+  {sfx: 'whoosh', at: H('other'), volume: 0.24}, // vuelta a su ficha
+  {sfx: 'stamp', at: H('just', -1), volume: 0.46}, // el sello
+  {sfx: 'flip', at: H('getting', 2), volume: 0.24}, // aparta la etiqueta
 
   // Orcas
   {sfx: 'bubble', at: B('stopsHaving'), volume: 0.35},

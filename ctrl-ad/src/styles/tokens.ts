@@ -18,9 +18,9 @@ export const COLORS = {
   placeholderBorder: '#9c9482',
 };
 
-/** Montserrat Bold 700 en todo el video (Poppins solo para símbolos que le falten). */
-export const FONT_FAMILY = "'Montserrat', 'Poppins', sans-serif";
-export const FONT_WEIGHT = 700;
+/** Google Sans SemiBold 600 Italic en todo el video (ver styles/fonts.ts). */
+export const FONT_FAMILY = "'Google Sans', 'Montserrat', 'Poppins', sans-serif";
+export const FONT_WEIGHT = 600;
 
 /**
  * Área segura para Reels/TikTok en 1080x1920: arriba queda la barra de la

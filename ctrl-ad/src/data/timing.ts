@@ -14,6 +14,7 @@
 import rawWords from './voiceover-words.json';
 import rawHook2Words from './hook2-words.json';
 import rawHook3Words from './hook3-words.json';
+import rawHook4Words from './hook4-words.json';
 
 export const FPS = 30;
 export const WIDTH = 1080;
@@ -37,6 +38,7 @@ interface VoWord {
 const WORDS = rawWords as VoWord[];
 const HOOK2_WORDS = rawHook2Words as VoWord[];
 const HOOK3_WORDS = rawHook3Words as VoWord[];
+const HOOK4_WORDS = rawHook4Words as VoWord[];
 /** Palabras del body (tiempos del MP3 del body). */
 export const BODY_WORDS = WORDS.filter((w) => w.section === 'body');
 
@@ -173,11 +175,46 @@ export const HOOK3: HookDef<'peri' | 'hits' | 'killer' | 'women' | 'exactly' | '
   },
 };
 
+// HOOK 4: museo de láminas ilustradas (script/hook4.txt,
+// audio-src/hook4-original.mp3 -> public/audio/hook4.wav con 0.35 s de
+// respiro), palabras en src/data/hook4-words.json.
+const h4 = hookCueIn(HOOK4_WORDS, 0);
+export const HOOK4: HookDef<'only' | 'two' | 'animals' | 'earth' | 'peri' | 'killer' | 'whales' | 'women' | 'one' | 'comesOut' | 'stronger' | 'been' | 'other' | 'gets' | 'told' | 'just' | 'part' | 'getting' | 'older'> = {
+  id: 'hook4',
+  audioSrc: 'audio/hook4.wav',
+  audioStartSeconds: 0,
+  // voz 0.11..9.99 s + 0.35 s de respiro
+  durationSeconds: 10.48,
+  words: HOOK4_WORDS,
+  exitToBody: 'match',
+  cues: {
+    only: h4('Only two'),
+    two: h4('Only two', 1),
+    animals: h4('two animals', 1),
+    earth: h4('on Earth', 1),
+    peri: h4('through perimenopause', 1),
+    killer: h4('Killer whales'),
+    whales: h4('Killer whales', 1),
+    women: h4('and women', 1),
+    one: h4('One of them'),
+    comesOut: h4('comes out', 0),
+    stronger: h4('it stronger', 1),
+    been: h4('ever been', 1),
+    other: h4('The other one'),
+    gets: h4('one gets', 1),
+    told: h4('gets told', 1),
+    just: h4("it's just", 1),
+    part: h4('just part', 1),
+    getting: h4('of getting', 1),
+    older: h4('getting older', 1),
+  },
+};
+
 /**
- * Hook activo en el video: HOOK = HOOK1 | HOOK2 | HOOK3, y el componente
- * correspondiente en MainVideo.tsx. El body no cambia.
+ * Hook activo en el video: HOOK = HOOK1 | HOOK2 | HOOK3 | HOOK4, y el
+ * componente correspondiente en MainVideo.tsx. El body no cambia.
  */
-export const HOOK = HOOK3;
+export const HOOK = HOOK4;
 
 // ---------------------------------------------------------------------------
 // BODY — empieza en BODY_AUDIO_START_SECONDS del MP3 original.
@@ -357,3 +394,4 @@ export const hookCueFrame = (key: keyof typeof HOOK.cues, offsetFrames = 0): num
 export const hook1CueFrame = (key: keyof typeof HOOK1.cues, offsetFrames = 0): number => secToFrame(HOOK1.cues[key]) + offsetFrames;
 export const hook2CueFrame = (key: keyof typeof HOOK2.cues, offsetFrames = 0): number => secToFrame(HOOK2.cues[key]) + offsetFrames;
 export const hook3CueFrame = (key: keyof typeof HOOK3.cues, offsetFrames = 0): number => secToFrame(HOOK3.cues[key]) + offsetFrames;
+export const hook4CueFrame = (key: keyof typeof HOOK4.cues, offsetFrames = 0): number => secToFrame(HOOK4.cues[key]) + offsetFrames;

@@ -4,7 +4,7 @@ import {Calf, Figure, Fin, Orca, headPoint} from './figures';
 import {Rays} from './mechanisms';
 import {Layer, Pic, ease, easeOut, font, mix, ramp, springAt} from './kit';
 import {COLORS} from '../styles/tokens';
-import {HOOK_FRAMES, hook3CueFrame} from '../data/timing';
+import {HOOK3, hook3CueFrame, secToFrame} from '../data/timing';
 
 export interface HookProps {
   usePlaceholder: boolean;
@@ -56,7 +56,7 @@ export const Hook3: React.FC<HookProps> = ({usePlaceholder: p}) => {
     forget: hook3CueFrame('forget'),
   };
   // El hook termina (sin solape) donde empieza el body.
-  const END = HOOK_FRAMES;
+  const END = secToFrame(HOOK3.durationSeconds);
   const MATCH_FROM = END - 15;
 
   // Cámara

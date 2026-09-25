@@ -49,9 +49,14 @@ python3 scripts/align_voiceover.py --audio public/audio/voz-elegida.mp3 \
 
 Corte hook/body verificado: "woman" termina y "Around" empieza en **7.86 s**.
 
-## Hook activo: Hook3
+## Hook activo: Hook4
 
-El video usa **Hook3** (`src/components/Hook3.tsx`: doble página de libro
+El video usa **Hook4** (`src/components/Hook4.tsx`: museo de láminas
+ilustradas; texto en `script/hook4.txt`, audio `public/audio/hook4.wav`,
+palabras en `src/data/hook4-words.json`), con el mismo corte a juego hacia la
+orca del body.
+
+Hook3 (`src/components/Hook3.tsx`: doble página de libro
 ilustrado; texto en `script/hook3.txt`, audio `public/audio/hook3.wav`,
 palabras en `src/data/hook3-words.json`). Termina con un corte a juego: la orca
 queda en la pose exacta con la que empieza la escena de orcas
@@ -60,8 +65,8 @@ queda en la pose exacta con la que empieza la escena de orcas
 Hook2 (`src/components/Hook2.tsx`, texto en `script/hook2.txt`,
 audio `public/audio/hook2.wav` preparado con `scripts/prepare_hook_audio.py`
 desde `audio-src/hook2-original.mp3`, palabras en `src/data/hook2-words.json`).
-Hook1 y Hook2 siguen en el proyecto (datos en `HOOK1`/`HOOK2` de `timing.ts`)
-pero fuera de la composición. Para cambiar de hook: `HOOK` en
+Hook1, Hook2 y Hook3 siguen en el proyecto (datos en `HOOK1`..`HOOK3` de
+`timing.ts`) pero fuera de la composición. Para cambiar de hook: `HOOK` en
 `timing.ts` y el componente en `MainVideo.tsx`.
 
 ## Crear otro hook
@@ -81,7 +86,7 @@ línea de tiempo según la duración del nuevo hook.
 - Fondo: `public/images/paper-grid.jpg` (papel cuadriculado de 36 px, generado
   con `scripts/make_paper_texture.py`). Se puede sustituir por otra textura de
   1080×1920.
-- Tipografía: Montserrat Bold 700 en todos los textos (`public/fonts/`, licencia OFL, incrustada en `src/styles/montserrat-bold-woff2.ts`); Poppins queda solo como respaldo de símbolos.
+- Tipografía: Google Sans SemiBold 600 Italic en todos los textos (`public/fonts/`, licencia OFL, incrustada en `src/styles/google-sans-600-italic-woff2.ts`); Montserrat y Poppins quedan solo como respaldo de símbolos.
 - Área segura: los textos viven entre y = 260 y y = 1560 y x = 90–950
   (`src/styles/tokens.ts`).
 
