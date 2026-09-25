@@ -42,6 +42,11 @@ python3 scripts/align_voiceover.py --audio public/audio/voz-elegida.mp3 \
   --hook script/hook1.txt --body script/body.txt --out src/data/voiceover-words.json
 ```
 
+**Voz final:** `public/audio/voz-final.wav` es la voz original con el tramo
+"Nature built this stage ... get back there." reemplazado por una toma nueva
+(`audio-src/nature-built-ctrl.mp3`). Se regenera con
+`python3 scripts/splice_voiceover.py && python3 scripts/splice_words.py`.
+
 Corte hook/body verificado: "woman" termina y "Around" empieza en **7.86 s**.
 
 ## Cambiar a Hook2

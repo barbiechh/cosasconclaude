@@ -19,9 +19,11 @@ export const HEIGHT = 1920;
 
 export const secToFrame = (seconds: number) => Math.round(seconds * FPS);
 
-// Medido con ffprobe.
-export const AUDIO_SRC = 'audio/voz-elegida.mp3';
-export const AUDIO_DURATION_SECONDS = 116.22;
+// Voz final: la original (voz-elegida.mp3) con el tramo "Nature built this
+// stage ... get back there." reemplazado por una toma nueva
+// (scripts/splice_voiceover.py + scripts/splice_words.py). Medido con ffprobe.
+export const AUDIO_SRC = 'audio/voz-final.wav';
+export const AUDIO_DURATION_SECONDS = 116.84;
 
 type Section = 'hook' | 'body';
 interface VoWord {
