@@ -1,4 +1,4 @@
-import {BodyCueKey, HOOK_FRAMES, bodyCueFrame} from './timing';
+import {BodyCueKey, HOOK, HOOK_FRAMES, bodyCueFrame} from './timing';
 
 /** Frames que dura cada transición: la escena saliente y la entrante se solapan. */
 export const OVERLAP = 10;
@@ -31,7 +31,8 @@ export type ScenePlan = {
   from: number;
   /** duración incluida la salida solapada con la siguiente */
   durationInFrames: number;
-  enter: TransitionKind;
+  /** 'none' = corte a juego desde el hook (sin barrido) */
+  enter: TransitionKind | 'none';
   exit: TransitionKind;
   /** frame local de un cue dentro de la escena */
   at: (key: BodyCueKey, offset?: number) => number;
@@ -46,7 +47,8 @@ export const SCENES: Record<SceneId, ScenePlan> = Object.fromEntries(
       id: s.id,
       from,
       durationInFrames: to - from + OVERLAP,
-      enter: s.enter,
+      // la primera escena entra como pida el hook activo
+      enter: i === 0 && HOOK.exitToBody === 'match' ? 'none' : s.enter,
       exit: next ? next.enter : END_CARD_ENTER,
       at: (key, offset = 0) => bodyCueFrame(key) - from + offset,
     };
@@ -56,7 +58,7 @@ export const SCENES: Record<SceneId, ScenePlan> = Object.fromEntries(
 
 /** Frames (en la línea de tiempo completa) donde empieza un barrido lateral. */
 export const PUSH_FRAMES: number[] = [
-  HOOK_FRAMES, // hook -> orcas
+  ...(HOOK.exitToBody === 'push' ? [HOOK_FRAMES] : []), // hook -> orcas
   ...PLAN.slice(1).filter((s) => s.enter === 'push').map((s) => HOOK_FRAMES + bodyCueFrame(s.from)),
   ...(END_CARD_ENTER === 'push' ? [HOOK_FRAMES + bodyCueFrame(END_CARD_CUE)] : []),
 ];

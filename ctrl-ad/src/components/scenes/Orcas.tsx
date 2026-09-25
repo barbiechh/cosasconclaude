@@ -25,7 +25,8 @@ export const Orcas: React.FC<SceneProps> = ({plan, p}) => {
   const end = plan.durationInFrames;
   return (
     <Scene plan={plan} punches={[at('ninety'), at('leaderWord'), at('disappearWord')]}>
-      <Beat from={0} to={at('nobodyCould')} exit="up">
+      {/* tras un hook con corte a juego, la orca ya está en su lugar: sin entrada */}
+      <Beat from={0} to={at('nobodyCould')} enter={plan.enter === 'none' ? 'none' : 'pop'} exit="up">
         <Lifeline p={p} at={at} />
       </Beat>
       <Beat from={at('nobodyCould')} to={at('afterMenopause')} enter="up" exit="left">

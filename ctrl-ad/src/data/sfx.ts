@@ -33,13 +33,14 @@ export const SFX: SfxCue[] = [
   ...PUSH_FRAMES.map((f) => ({sfx: 'whoosh' as const, at: f - 2, volume: 0.16})),
 
   // Hook
-  // Hook 2: la carrera
-  {sfx: 'splash', at: H('killer', 2), volume: 0.4},
-  {sfx: 'whoosh', at: H('perimenopause', -2), volume: 0.22},
-  {sfx: 'snap', at: H('age', 2), volume: 0.34},
-  {sfx: 'whoosh', at: H('but'), volume: 0.3},
-  {sfx: 'draw', at: H('exact'), volume: 0.24},
-  {sfx: 'shimmer', at: H('womans'), volume: 0.3},
+  // Hook 3: el libro
+  {sfx: 'riffle', at: H('peri'), volume: 0.26},
+  {sfx: 'chime', at: H('age', 2), volume: 0.3},
+  {sfx: 'shimmer', at: H('best'), volume: 0.3},
+  {sfx: 'whoosh', at: H('forOther', -2), volume: 0.26},
+  {sfx: 'flip', at: H('years'), volume: 0.22},
+  {sfx: 'erase', at: H('rather'), volume: 0.28},
+  {sfx: 'splash', at: H('forget', 8), volume: 0.28},
 
   // Orcas
   {sfx: 'bubble', at: B('stopsHaving'), volume: 0.35},

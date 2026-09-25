@@ -49,13 +49,19 @@ python3 scripts/align_voiceover.py --audio public/audio/voz-elegida.mp3 \
 
 Corte hook/body verificado: "woman" termina y "Around" empieza en **7.86 s**.
 
-## Hook activo: Hook2
+## Hook activo: Hook3
 
-El video usa **Hook2** (`src/components/Hook2.tsx`, texto en `script/hook2.txt`,
+El video usa **Hook3** (`src/components/Hook3.tsx`: doble página de libro
+ilustrado; texto en `script/hook3.txt`, audio `public/audio/hook3.wav`,
+palabras en `src/data/hook3-words.json`). Termina con un corte a juego: la orca
+queda en la pose exacta con la que empieza la escena de orcas
+(`exitToBody: 'match'` en `HOOK3`).
+
+Hook2 (`src/components/Hook2.tsx`, texto en `script/hook2.txt`,
 audio `public/audio/hook2.wav` preparado con `scripts/prepare_hook_audio.py`
 desde `audio-src/hook2-original.mp3`, palabras en `src/data/hook2-words.json`).
-Hook1 sigue en el proyecto (`src/components/Hook1.tsx`, datos en `HOOK1` de
-`timing.ts`) pero fuera de la composición. Para cambiar de hook: `HOOK` en
+Hook1 y Hook2 siguen en el proyecto (datos en `HOOK1`/`HOOK2` de `timing.ts`)
+pero fuera de la composición. Para cambiar de hook: `HOOK` en
 `timing.ts` y el componente en `MainVideo.tsx`.
 
 ## Crear otro hook

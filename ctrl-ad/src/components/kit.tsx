@@ -29,7 +29,7 @@ export const useSpringAt = (at: number, damping = 13, stiffness = 190) => {
   return springAt(frame, fps, at, damping, stiffness);
 };
 
-type Enter = 'pop' | 'up' | 'down' | 'left' | 'right' | 'fade' | 'drop';
+type Enter = 'pop' | 'up' | 'down' | 'left' | 'right' | 'fade' | 'drop' | 'none';
 type Exit = 'fade' | 'up' | 'down' | 'left' | 'right' | 'shrink';
 
 /**
@@ -67,7 +67,7 @@ export const Beat: React.FC<{
   if (exit === 'left') x -= out * 500;
   if (exit === 'right') x += out * 500;
   if (exit === 'shrink') s *= 1 - 0.4 * out;
-  const opIn = enter === 'fade' ? ramp(frame, from, from + 8) : Math.min(1, (frame - from) / 4);
+  const opIn = enter === 'none' ? 1 : enter === 'fade' ? ramp(frame, from, from + 8) : Math.min(1, (frame - from) / 4);
   return (
     <div
       style={{

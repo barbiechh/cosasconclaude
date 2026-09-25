@@ -13,6 +13,7 @@
  */
 import rawWords from './voiceover-words.json';
 import rawHook2Words from './hook2-words.json';
+import rawHook3Words from './hook3-words.json';
 
 export const FPS = 30;
 export const WIDTH = 1080;
@@ -35,6 +36,7 @@ interface VoWord {
 }
 const WORDS = rawWords as VoWord[];
 const HOOK2_WORDS = rawHook2Words as VoWord[];
+const HOOK3_WORDS = rawHook3Words as VoWord[];
 /** Palabras del body (tiempos del MP3 del body). */
 export const BODY_WORDS = WORDS.filter((w) => w.section === 'body');
 
@@ -70,6 +72,11 @@ type HookDef<C extends string> = {
   durationSeconds: number;
   /** palabras del hook con tiempos relativos al inicio del hook (captions) */
   words: HookWord[];
+  /**
+   * Paso al body: 'push' = barrido lateral; 'match' = corte a juego (el hook
+   * termina con la orca exactamente donde empieza la primera escena).
+   */
+  exitToBody: 'push' | 'match';
   cues: Record<C, number>;
 };
 
@@ -84,6 +91,7 @@ export const HOOK1: HookDef<'women' | 'killerWhales' | 'only' | 'earth' | 'but' 
   // El hook termina exactamente donde empieza "Around forty".
   durationSeconds: BODY_AUDIO_START_SECONDS,
   words: WORDS.filter((w) => w.section === 'hook'),
+  exitToBody: 'push',
   cues: {
     women: h1('Women'),
     killerWhales: h1('killer whales'),
@@ -109,6 +117,7 @@ export const HOOK2: HookDef<'killer' | 'perimenopause' | 'atTheSameAge' | 'same'
   // La grabación entera (la voz termina en 8.64 s; el resto es respiro).
   durationSeconds: 8.72,
   words: HOOK2_WORDS,
+  exitToBody: 'push',
   cues: {
     killer: h2('Killer whales'),
     perimenopause: h2('perimenopause'),
@@ -130,8 +139,45 @@ export const HOOK2: HookDef<'killer' | 'perimenopause' | 'atTheSameAge' | 'same'
   },
 };
 
-/** Hook activo en el video. Para volver a Hook1: HOOK = HOOK1 y <Hook1> en MainVideo. */
-export const HOOK = HOOK2;
+// HOOK 3: doble página de libro ilustrado (script/hook3.txt,
+// audio-src/hook3-original.mp3 -> public/audio/hook3.wav con 0.3 s de respiro
+// al final), palabras en src/data/hook3-words.json.
+const h3 = hookCueIn(HOOK3_WORDS, 0);
+export const HOOK3: HookDef<'peri' | 'hits' | 'killer' | 'women' | 'exactly' | 'same' | 'age' | 'forOne' | 'them' | 'best' | 'happens' | 'herBrain' | 'brain' | 'forOther' | 'other' | 'years' | 'rather' | 'forget'> = {
+  id: 'hook3',
+  audioSrc: 'audio/hook3.wav',
+  audioStartSeconds: 0,
+  // voz 0.09..9.04 s + 0.3 s de respiro
+  durationSeconds: 9.34,
+  words: HOOK3_WORDS,
+  exitToBody: 'match',
+  cues: {
+    peri: h3('Perimenopause hits'),
+    hits: h3('hits killer'),
+    killer: h3('killer whales'),
+    women: h3('and women', 1),
+    exactly: h3('at exactly', 1),
+    same: h3('the same age', 1),
+    age: h3('same age', 1),
+    forOne: h3('For one of them'),
+    them: h3('of them', 1),
+    best: h3('the best thing', 1),
+    happens: h3('ever happens', 1),
+    herBrain: h3('to her brain', 1),
+    brain: h3('her brain', 1),
+    forOther: h3('For the other'),
+    other: h3('the other', 1),
+    years: h3('the years', 1),
+    rather: h3("she'd rather", 1),
+    forget: h3('rather forget', 1),
+  },
+};
+
+/**
+ * Hook activo en el video: HOOK = HOOK1 | HOOK2 | HOOK3, y el componente
+ * correspondiente en MainVideo.tsx. El body no cambia.
+ */
+export const HOOK = HOOK3;
 
 // ---------------------------------------------------------------------------
 // BODY — empieza en BODY_AUDIO_START_SECONDS del MP3 original.
@@ -310,3 +356,4 @@ export const hookCueFrame = (key: keyof typeof HOOK.cues, offsetFrames = 0): num
 /** Frames de cues de cada hook (cada componente usa el suyo). */
 export const hook1CueFrame = (key: keyof typeof HOOK1.cues, offsetFrames = 0): number => secToFrame(HOOK1.cues[key]) + offsetFrames;
 export const hook2CueFrame = (key: keyof typeof HOOK2.cues, offsetFrames = 0): number => secToFrame(HOOK2.cues[key]) + offsetFrames;
+export const hook3CueFrame = (key: keyof typeof HOOK3.cues, offsetFrames = 0): number => secToFrame(HOOK3.cues[key]) + offsetFrames;
