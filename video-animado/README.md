@@ -1,4 +1,4 @@
-# Video explicativo animado (Remotion) · prueba de 15 s
+# Video explicativo animado (Remotion) · CTRL.
 
 Vertical 9:16 (1080×1920, 30 fps). Voiceover original en `public/voiceover.mp3`.
 
@@ -44,3 +44,21 @@ cinta adhesiva, garabatos a rotulador y animación "a dos" (12 fps aparentes) co
 - Render: `renders/vox-preview-15s.mp4`.
 
 Cada escena también está registrada como composición propia (carpeta "Escenas" en Studio).
+
+## Versión final editorial (`CTRL-Editorial`, video completo de 191 s)
+
+Una línea más sobria y elegante del estilo Vox para todo el voiceover: papel cálido y azul marino
+(tomado del envase CTRL.), titulares en DM Serif Display alineados a la izquierda que aparecen palabra por palabra,
+etiqueta de capítulo en IBM Plex Mono, recortes con borde fino y sombra suave, semitono discreto y movimiento fluido.
+
+Código de color constante: azul = dopamina y CTRL., ocre = alcohol, ladrillo = estimulante o alerta,
+salvia = tirosina e ingredientes, rosa = cerebro.
+
+- `src/editorial/timeline.ts`: 30 escenas; cada corte se ancla al índice de una palabra del voiceover.
+- `src/data/transcriptFull.ts`: transcripción completa con tiempos por palabra (`scripts/transcribe_full.py`).
+- `src/editorial/Headline.tsx`: frases automáticas a partir de la transcripción y palabras clave en cursiva de color.
+- `src/editorial/characters/`: `Brain` (vista lateral, con nivel de dopamina) y `Person` (busto con expresiones).
+- `src/editorial/objects/`: `Tank` (el "tanque de dopamina", metáfora central) y el resto de objetos.
+- `src/editorial/scenes/Act1Hook … Act5Product`: las escenas por acto.
+- `public/img/ctrl-product.png`: foto del producto recortada.
+- Render: `renders/ctrl-editorial-full.mp4`.
