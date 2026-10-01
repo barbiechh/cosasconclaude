@@ -29,4 +29,18 @@ Si Remotion no puede descargar Chrome Headless Shell, apunta a un Chromium local
 - `src/data/transcript.ts`: palabras con timestamps reales (ver `scripts/word_timestamps.py`).
 - `src/data/timeline.ts`: cortes de escena y conversión de segundos a frames.
 
+## Versión estilo Vox (`Vox-Preview15s`)
+
+`src/vox/` contiene una segunda versión de los mismos 15 s, con los mismos tiempos:
+collage de papel recortado con borde blanco de pegatina y sombra dura, tramas de semitono,
+fondo de papel con grano, cuadrícula y viñeta, titulares en Oswald que se construyen palabra a palabra
+con marcador amarillo y subrayado de rotulador rojo, etiquetas de máquina de escribir (Special Elite),
+cinta adhesiva, garabatos a rotulador y animación "a dos" (12 fps aparentes) con temblor de papel.
+
+- `src/vox/style.tsx`: kit de estilo (papel, pegatina, semitono, cinta, rotulador, etiquetas).
+- `src/vox/characters/`: `PaperDoll` y `PaperBrain` (las mismas siluetas, recortadas en papel).
+- `src/vox/objects/PaperProps.tsx`: vaso, frasco, cápsula, estudio, sobre, bombilla, flecha y lupa.
+- `src/vox/scenes/`: las cuatro escenas.
+- Render: `renders/vox-preview-15s.mp4`.
+
 Cada escena también está registrada como composición propia (carpeta "Escenas" en Studio).

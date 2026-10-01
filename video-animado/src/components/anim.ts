@@ -16,7 +16,7 @@ export const settle = (frame: number, start: number, fps: number) =>
 export const ramp = (
   frame: number,
   [a, b]: [number, number],
-  [x, y]: [number, number],
+  [x, y]: [number, number] = [0, 1],
   easing: (t: number) => number = Easing.bezier(0.45, 0, 0.2, 1),
 ) => interpolate(frame, [a, b], [x, y], {...clamp, easing});
 

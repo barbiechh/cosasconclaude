@@ -5,6 +5,11 @@ import {QuestionScene} from './scenes/QuestionScene';
 import {StudyScene} from './scenes/StudyScene';
 import {RevealScene} from './scenes/RevealScene';
 import {BackwardsScene} from './scenes/BackwardsScene';
+import {VoxExplainer} from './vox/VoxExplainer';
+import {VoxQuestion} from './vox/scenes/VoxQuestion';
+import {VoxStudy} from './vox/scenes/VoxStudy';
+import {VoxReveal} from './vox/scenes/VoxReveal';
+import {VoxBackwards} from './vox/scenes/VoxBackwards';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -15,6 +20,13 @@ export const RemotionRoot: React.FC = () => {
         <Composition id="Escena2-Estudio" component={StudyScene} width={1080} height={1920} fps={30} durationInFrames={153} />
         <Composition id="Escena3-Revelacion" component={RevealScene} width={1080} height={1920} fps={30} durationInFrames={40} />
         <Composition id="Escena4-AlReves" component={BackwardsScene} width={1080} height={1920} fps={30} durationInFrames={144} />
+      </Folder>
+      <Composition id="Vox-Preview15s" component={VoxExplainer} width={1080} height={1920} fps={30} durationInFrames={474} />
+      <Folder name="Escenas-Vox">
+        <Composition id="Vox1-Pregunta" component={VoxQuestion} width={1080} height={1920} fps={30} durationInFrames={137} />
+        <Composition id="Vox2-Estudio" component={VoxStudy} width={1080} height={1920} fps={30} durationInFrames={153} />
+        <Composition id="Vox3-Revelacion" component={VoxReveal} width={1080} height={1920} fps={30} durationInFrames={40} />
+        <Composition id="Vox4-AlReves" component={VoxBackwards} width={1080} height={1920} fps={30} durationInFrames={144} />
       </Folder>
     </>
   );

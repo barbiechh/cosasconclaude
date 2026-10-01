@@ -13,6 +13,8 @@ type Props = {
   readonly gap?: number; // frames entre partículas
   readonly size?: number;
   readonly color?: string;
+  readonly glow?: string | null; // halo detrás de cada partícula (null = sin halo)
+  readonly shine?: boolean;
 };
 
 export const PathParticles: React.FC<Props> = ({
@@ -24,6 +26,8 @@ export const PathParticles: React.FC<Props> = ({
   gap = 5,
   size = 14,
   color = C.amberLight,
+  glow = C.glow,
+  shine = true,
 }) => {
   const frame = useCurrentFrame();
   const len = useMemo(() => getLength(d), [d]);
@@ -40,9 +44,9 @@ export const PathParticles: React.FC<Props> = ({
         const r = size * (0.75 + 0.25 * Math.sin(frame * 0.5 + i));
         return (
           <g key={i} opacity={fade}>
-            <circle cx={p.x} cy={p.y} r={r * 2.4} fill={C.glow} opacity={0.25} />
+            {glow ? <circle cx={p.x} cy={p.y} r={r * 2.4} fill={glow} opacity={0.25} /> : null}
             <circle cx={p.x} cy={p.y} r={r} fill={color} />
-            <circle cx={p.x - r * 0.3} cy={p.y - r * 0.3} r={r * 0.35} fill="#fff" opacity={0.8} />
+            {shine ? <circle cx={p.x - r * 0.3} cy={p.y - r * 0.3} r={r * 0.35} fill="#fff" opacity={0.8} /> : null}
           </g>
         );
       })}
