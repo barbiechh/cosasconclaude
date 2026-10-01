@@ -62,3 +62,20 @@ salvia = tirosina e ingredientes, rosa = cerebro.
 - `src/editorial/scenes/Act1Hook … Act5Product`: las escenas por acto.
 - `public/img/ctrl-product.png`: foto del producto recortada.
 - Render: `renders/ctrl-editorial-full.mp4`.
+
+## Collage editorial (`Collage-Hook15s`, prueba de 15,8 s)
+
+Sistema visual de collage de revista: papel crema con textura (imagen generada una vez,
+`scripts/make_paper_textures.py`), recortes con contorno blanco y sombra corta, papel rasgado,
+siluetas en blanco y negro, acentos amarillo, verde, rojo y azul, una sola tipografía (Anton),
+etiquetas sobre tiras de papel y marcas a mano (flechas, círculos, subrayados, check).
+
+- `STORYBOARD-collage.md`: storyboard completo (28 escenas, tiempos reales) y recursos faltantes.
+- `src/collage/theme.ts`: colores, fuente, sombras y texturas centralizados.
+- `src/collage/assets.ts`: registro de fotos con su procedencia. `src: null` = foto pendiente:
+  se muestra un sustituto marcado "FOTO PROVISIONAL". Para usar la foto real, copia el archivo
+  a `public/assets/photos/` y rellena `src`, `source` y `license`.
+- `src/collage/paper.tsx`, `pieces.tsx`, `marks.tsx`, `text.tsx`, `camera.tsx` (parallax), `transitions.tsx`.
+- `src/collage/scenes/S01…S05`: las cinco escenas de los primeros 15 s.
+- Recursos en `public/assets/` (fonts, textures, photos, audio).
+- Render de prueba: `renders/collage-hook-15s.mp4`.
